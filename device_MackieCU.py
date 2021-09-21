@@ -184,9 +184,9 @@ class TMackieCU():
 			self.OnSendTempMsg(self.ArrowsStr + 'Pattern: ' + s, 500);
 
 	def Jog(self, event):
-		# ------ START rd3d2 forcing job dial to use the playlist
+		# ------ START rd3d2 forcing jog dial to use the playlist
 		ui.setFocused(midi.widPlaylist)
-		# ------ END rd3d2 forcing job dial to use the playlist
+		# ------ END rd3d2 forcing jog dial to use the playlist
 		if self.JogSource == 0:
 			transport.globalTransport(midi.FPT_Jog + int(self.Shift ^ self.Scrub), event.outEv, event.pmeFlags) # relocate
 		elif self.JogSource == MackieCUNote_Move:
