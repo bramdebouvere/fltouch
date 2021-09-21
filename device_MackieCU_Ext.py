@@ -18,7 +18,7 @@ import midi
 import utils
 import time
 
-MackieCU_KnobOffOnT = [(midi.MIDI_CONTROLCHANGE + (1 << 6)) << 16, midi.MIDI_CONTROLCHANGE + ((0xB + (2 << 4) + (1 << 6)) << 16)];
+MackieCU_KnobOffOnT = [(midi.MIDI_CONTROLCHANGE + (1 << 6)) << 16, midi.MIDI_CONTROLCHANGE + ((0xB + (2 << 4) + (1 << 6)) << 16)]
 MackieCU_nFreeTracks = 64
 
 # Mackie CU pages
@@ -96,7 +96,7 @@ class TMackieCU_Ext():
 		self.UpdateMeterMode()
 
 		self.SetPage(self.Page)
-		self.OnSendTempMsg('Linked to ' + ui.getProgTitle() + ' (' + ui.getVersion() + ')', 2000);
+		self.OnSendTempMsg('Linked to ' + ui.getProgTitle() + ' (' + ui.getVersion() + ')', 2000)
 		print('OnInit ready')
 
 	def OnDeInit(self):
@@ -323,7 +323,7 @@ class TMackieCU_Ext():
 
 	def SendAssignmentMsg(self, Msg):
 
-		s_ansi = Msg + chr(0) #AnsiString(Msg);
+		s_ansi = Msg + chr(0) #AnsiString(Msg)
 		if device.isAssigned():
 			for m in range(1, 3):
 				device.midiOutMsg(midi.MIDI_CONTROLCHANGE + ((0x4C - m) << 8) + (ord(s_ansi[m]) << 16))
@@ -360,7 +360,7 @@ class TMackieCU_Ext():
 			self.SendMsg(s1, 1)
 
 	def GetSplitMarks(self):
-		s2 = '';
+		s2 = ''
 		for m in range(0, len(self.ColT) - 1):
 			s2 = s2 + '      .'
 		return s2
@@ -404,7 +404,7 @@ class TMackieCU_Ext():
 			if self.CurMeterMode == 2:
 				n = 1
 			else:
-				n = 1 + 2;
+				n = 1 + 2
 			for m  in range(0, 8):
 				device.midiOutSysex(bytes([0xF0, 0x00, 0x00, 0x66, 0x15, 0x20, m, n, 0xF7]))
 
