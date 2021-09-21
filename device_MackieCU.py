@@ -184,7 +184,9 @@ class TMackieCU():
 			self.OnSendTempMsg(self.ArrowsStr + 'Pattern: ' + s, 500);
 
 	def Jog(self, event):
-
+		# ------ START rd3d2 forcing job dial to use the playlist
+		ui.setFocused(midi.widPlaylist)
+		# ------ END rd3d2 forcing job dial to use the playlist
 		if self.JogSource == 0:
 			transport.globalTransport(midi.FPT_Jog + int(self.Shift ^ self.Scrub), event.outEv, event.pmeFlags) # relocate
 		elif self.JogSource == MackieCUNote_Move:
@@ -301,7 +303,7 @@ class TMackieCU():
 						if mixer.trackNumber != self.ColT[event.midiChan].TrackNum:
 							mixer.setTrackNumber(self.ColT[event.midiChan].TrackNum)
 					# ---- END Auto Select channel code by rd3d2
-					
+
 					# slider (mixer track volume)
 					event.handled = True
 					mixer.automateEvent(self.ColT[event.midiChan].SliderEventID, self.AlphaTrack_SliderToLevel(event.inEv + 0x2000), midi.REC_MIDIController, self.SmoothSpeed)
