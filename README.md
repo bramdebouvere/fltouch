@@ -1,5 +1,5 @@
 # fltouch
-FL Studio MIDI scripts for the Behringer X-Touch + extender(s) (Mackie Control Universal), based on the official scripts by Image-Line.
+FL Studio MIDI scripts for the Behringer X-Touch + extender(s) (Mackie Control Universal) MIDI controllers, based on the official scripts by Image-Line.
 
 ## Differences with official scripts
 - Support for multiple extenders
