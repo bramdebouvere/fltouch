@@ -141,7 +141,6 @@ class TMackieCU_Ext():
 			self.UpdateLEDs()
 
 	def OnMidiMsg(self, event):
-
 		if (event.midiId == midi.MIDI_CONTROLCHANGE):
 			if (event.midiChan == 0):
 				event.inEv = event.data2
@@ -150,7 +149,7 @@ class TMackieCU_Ext():
 				else:
 					event.outEv = event.inEv
 
-					# knobs
+				# knobs
 				if event.data1 in [0x10, 0x11, 0x12, 0x13, 0x14, 0x15, 0x16, 0x17]:
 					r = utils.KnobAccelToRes2(event.outEv)  #todo outev signof
 					Res = r * (1 / (40 * 2.5))
@@ -517,7 +516,6 @@ class TMackieCU_Ext():
 		return min(round(Value / self.AlphaTrack_SliderMax * Max), Max)
 
 	def UpdateColT(self):
-
 		f = self.FirstTrackT[self.FirstTrack]
 		CurID = mixer.getTrackPluginId(mixer.trackNumber(), 0)
 
@@ -590,35 +588,11 @@ class TMackieCU_Ext():
 						else:
 							self.ColT[m].KnobMode = 4
 						self.ColT[m].KnobCenter = int(IsValid & IsEnabledAuto)
-#					elif self.Page == MackieCUPage_EQ:
-#						if m < 3:
-#							# gain & freq
-#							self.ColT[m].SliderEventID = CurID + midi.REC_Mixer_EQ_Gain + m
-#							self.ColT[m].KnobResetEventID = self.ColT[m].SliderEventID
-#							s = mixer.getEventIDName(self.ColT[m].SliderEventID)
-#							self.ColT[m].SliderName = s
-#							self.ColT[m].KnobEventID = CurID + midi.REC_Mixer_EQ_Freq + m
-#							s = mixer.getEventIDName(self.ColT[m].KnobEventID)
-#							self.ColT[m].KnobName = s
-#							self.ColT[m].KnobResetValue = midi.FromMIDI_Max >> 1
-#							self.ColT[m].KnobCenter = -2
-#							self.ColT[m].KnobMode = 0
-#						else:
-#							if m < 6:
-#								# Q
-#								self.ColT[m].SliderEventID = CurID + midi.REC_Mixer_EQ_Q + m - 3
-#								self.ColT[m].KnobResetEventID = self.ColT[m].SliderEventID
-#								s = mixer.getEventIDName(self.ColT[m].SliderEventID)
-#								self.ColT[m].SliderName = s
-#								self.ColT[m].KnobEventID = self.ColT[m].SliderEventID
-#								self.ColT[m].KnobName = self.ColT[m].SliderName
-#								self.ColT[m].KnobResetValue = 17500
-#								self.ColT[m].KnobCenter = -1
-#								self.ColT[m].KnobMode = 2
-#							else:
-#								self.ColT[m].SliderEventID = -1
-#								self.ColT[m].KnobEventID = -1
-#								self.ColT[m].KnobMode = 4
+					elif self.Page == MackieCUPage_EQ:
+						# turn off knobs and sliders in EQ on extender
+						self.ColT[m].SliderEventID = -1
+						self.ColT[m].KnobEventID = -1
+						self.ColT[m].KnobMode = 4
 
 					# self.Flip knob & slider
 					if self.Flip:
@@ -638,7 +612,6 @@ class TMackieCU_Ext():
 			self.UpdateCol(m)
 
 	def SetKnobValue(self, Num, Value, Res = midi.EKRes):
-
 		if (self.ColT[Num].KnobEventID >= 0) & (self.ColT[Num].KnobMode < 4):
 			if Value == midi.MaxInt:
 				if self.Page == MackieCUPage_FX:
