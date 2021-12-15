@@ -243,7 +243,6 @@ class TMackieCU():
 
 
 	def OnMidiMsg(self, event):
-
 		ArrowStepT = [2, -2, -1, 1]
 		CutCopyMsgT = ('Cut', 'Copy', 'Paste', 'Insert', 'Delete')  #FPT_Cut..FPT_Delete
 
@@ -337,22 +336,22 @@ class TMackieCU():
 								self.MeterMode = (self.MeterMode + 1) % 3
 								self.OnSendTempMsg(self.MackieCU_MeterModeNameT[self.MeterMode])
 								self.UpdateMeterMode()
-								device.dispatch(0, midi.MIDI_NOTEON + (event.data1 << 8) + (event.data2 << 16) )
+								self.DispatchToReceivers(midi.MIDI_NOTEON + (event.data1 << 8) + (event.data2 << 16))
 					elif event.data1 == 0x35: # time format
 						if event.data2 > 0:
 							ui.setTimeDispMin()
 					elif (event.data1 == 0x2E) | (event.data1 == 0x2F): # mixer bank
 						if event.data2 > 0:
 							self.SetFirstTrack(self.FirstTrackT[self.FirstTrack] - 8 + int(event.data1 == 0x2F) * 16)
-							device.dispatch(0, midi.MIDI_NOTEON + (event.data1 << 8) + (event.data2 << 16))
+							self.DispatchToReceivers(midi.MIDI_NOTEON + (event.data1 << 8) + (event.data2 << 16))
 					elif (event.data1 == 0x30) | (event.data1 == 0x31):
 						if event.data2 > 0:
 							self.SetFirstTrack(self.FirstTrackT[self.FirstTrack] - 1 + int(event.data1 == 0x31) * 2)
-							device.dispatch(0, midi.MIDI_NOTEON + (event.data1 << 8) + (event.data2 << 16) )
+							self.DispatchToReceivers(midi.MIDI_NOTEON + (event.data1 << 8) + (event.data2 << 16))
 					elif event.data1 == 0x32: # self.Flip
 						if event.data2 > 0:
 							self.Flip = not self.Flip
-							device.dispatch(0, midi.MIDI_NOTEON + (event.data1 << 8) + (event.data2 << 16))
+							self.DispatchToReceivers(midi.MIDI_NOTEON + (event.data1 << 8) + (event.data2 << 16))
 							self.UpdateColT()
 							self.UpdateLEDs()
 					elif event.data1 == 0x33: # smoothing
@@ -393,7 +392,7 @@ class TMackieCU():
 							n = event.data1 - 0x28
 							self.OnSendTempMsg(self.MackieCU_PageNameT[n], 500)
 							self.SetPage(n)
-							device.dispatch(0, midi.MIDI_NOTEON + (event.data1 << 8) + (event.data2 << 16) )
+							self.DispatchToReceivers(midi.MIDI_NOTEON + (event.data1 << 8) + (event.data2 << 16))
 
 					elif event.data1 == 0x54: # self.Shift
 						self.Shift = event.data2 > 0
@@ -1084,6 +1083,11 @@ class TMackieCU():
 	def SetBackLight(self, Minutes): # set backlight timeout (0 should switch off immediately, but doesn't really work well)
 		if device.isAssigned():
 			device.midiOutSysex(bytes([0xF0, 0x00, 0x00, 0x66, 0x14, 0x0B, Minutes, 0xF7]))
+
+	def DispatchToReceivers(self, message): # dispatches a midi message to all receivers (extenders)
+		receiverCount = device.dispatchReceiverCount()
+		for n in range(0, receiverCount):
+			device.dispatch(n, message)
 
 MackieCU = TMackieCU()
 
