@@ -257,10 +257,9 @@ class TMackieCU():
 				if event.data1 == 0x3C:
 					self.Jog(event)
 					event.handled = True
-					# knobs
+				# knobs
 				elif event.data1 in [0x10, 0x11, 0x12, 0x13, 0x14, 0x15, 0x16, 0x17]:
-					r = utils.KnobAccelToRes2(event.outEv)  #todo outev signof
-					Res = r * (1 / (40 * 2.5))
+					Res = 0.005 + ((abs(event.outEv)-1) / 2000)
 					if self.Page == MackieCUPage_Free:
 						i = event.data1 - 0x10
 						self.ColT[i].Peak = self.ActivityMax
