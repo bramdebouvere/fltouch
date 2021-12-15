@@ -245,7 +245,6 @@ class TMackieCU():
 	def OnMidiMsg(self, event):
 		ArrowStepT = [2, -2, -1, 1]
 		CutCopyMsgT = ('Cut', 'Copy', 'Paste', 'Insert', 'Delete')  #FPT_Cut..FPT_Delete
-
 		if (event.midiId == midi.MIDI_CONTROLCHANGE):
 			if (event.midiChan == 0):
 				event.inEv = event.data2
@@ -294,14 +293,6 @@ class TMackieCU():
 					self.OnSendTempMsg('Free slider ' + str(event.data1) + ': ' + ui.getHintValue(event.outEv, midi.FromMIDI_Max), 500)
 					device.processMIDICC(event)
 				elif self.ColT[event.midiChan].SliderEventID >= 0:
-					# ---- START Auto Select Channel code by rd3d2 (modified by Bram):
-					# https://gadgeteer.home.blog/2021/02/08/adding-touch-sensitivity-to-faders-on-a-mackie-compatible-eg-behringer-x-touch-or-icon-qcon-pro-control-surface/
-					if (self.Page == MackieCUPage_Pan or self.Page == MackieCUPage_Stereo) and self.ColT[event.midiChan].TrackNum >=0: 
-						# if this track is not already selected then select it
-						if mixer.trackNumber != self.ColT[event.midiChan].TrackNum:
-							mixer.setTrackNumber(self.ColT[event.midiChan].TrackNum)
-					# ---- END Auto Select channel code by rd3d2
-
 					# slider (mixer track volume)
 					event.handled = True
 					mixer.automateEvent(self.ColT[event.midiChan].SliderEventID, self.AlphaTrack_SliderToLevel(event.inEv + 0x2000), midi.REC_MIDIController, self.SmoothSpeed)
@@ -315,8 +306,13 @@ class TMackieCU():
 		elif (event.midiId == midi.MIDI_NOTEON) | (event.midiId == midi.MIDI_NOTEOFF):  # NOTE
 			if event.midiId == midi.MIDI_NOTEON:
 				# slider hold
-				if event.data1 in [0x68, 0x69, 0x70]:
+				if (event.data1 in [104, 105, 106, 107, 108, 109, 110, 111, 112]):
 					self.SliderHoldCount += -1 + (int(event.data2 > 0) * 2)
+					# Auto select channel
+					if event.data1 != 112 and event.data2 > 0 and (self.Page == MackieCUPage_Pan or self.Page == MackieCUPage_Stereo):
+						fader_index = event.data1 - 104
+						if mixer.trackNumber != self.ColT[fader_index].TrackNum:
+							mixer.setTrackNumber(self.ColT[fader_index].TrackNum)
 
 				if (event.pmeFlags & midi.PME_System != 0):
 					# F1..F8
