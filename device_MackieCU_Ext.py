@@ -86,7 +86,7 @@ class TMackieCU_Ext():
 		self.Clicking = True
 
 		device.setHasMeters()
-		for m in range (0, len(self.FreeCtrlT)):
+		for m in range(0, len(self.FreeCtrlT)):
 			self.FreeCtrlT[m] = 8192 # default free faders to center
 		if device.isAssigned():
 			device.midiOutSysex(bytes([0xF0, 0x00, 0x00, 0x66, 0x15, 0x0C, 1, 0xF7]))
@@ -190,7 +190,7 @@ class TMackieCU_Ext():
 				elif self.ColT[event.midiChan].SliderEventID >= 0:
 					# ---- START Auto Select Channel code by rd3d2:
 					# https://gadgeteer.home.blog/2021/02/08/adding-touch-sensitivity-to-faders-on-a-mackie-compatible-eg-behringer-x-touch-or-icon-qcon-pro-control-surface/
-					if self.ColT[event.midiChan].TrackNum >=0: 
+					if (self.Page == MackieCUPage_Pan or self.Page == MackieCUPage_Stereo) and self.ColT[event.midiChan].TrackNum >=0: 
 						# if this track is not already selected then select it
 						if mixer.trackNumber != self.ColT[event.midiChan].TrackNum:
 							mixer.setTrackNumber(self.ColT[event.midiChan].TrackNum)
@@ -378,7 +378,7 @@ class TMackieCU_Ext():
 			for m in range(0, len(self.ColT) - 1):
 				device.midiOutMsg(midi.MIDI_CHANAFTERTOUCH + (0xF << 8) + (m << 12))
 			# disable all meters
-			for m in range (0, 8):
+			for m in range(0, 8):
 				device.midiOutSysex(bytes([0xF0, 0x00, 0x00, 0x66, 0x15, 0x20, m, 0, 0xF7]))
 
 		# reset stuff
@@ -420,7 +420,7 @@ class TMackieCU_Ext():
 		if self.Page == MackieCUPage_Free:
 
 			BaseID = midi.EncodeRemoteControlID(device.getPortNumber(), 0, self.FreeEventID + 7)
-			for n in range(0,  len(self.FreeCtrlT)):
+			for n in range(0, len(self.FreeCtrlT)):
 				d = mixer.remoteFindEventValue(BaseID + n * 8, 1)
 				if d >= 0:
 					self.FreeCtrlT[n] = min(round(d * 16384), 16384)
@@ -590,35 +590,35 @@ class TMackieCU_Ext():
 						else:
 							self.ColT[m].KnobMode = 4
 						self.ColT[m].KnobCenter = int(IsValid & IsEnabledAuto)
-					elif self.Page == MackieCUPage_EQ:
-						if m < 3:
-							# gain & freq
-							self.ColT[m].SliderEventID = CurID + midi.REC_Mixer_EQ_Gain + m
-							self.ColT[m].KnobResetEventID = self.ColT[m].SliderEventID
-							s = mixer.getEventIDName(self.ColT[m].SliderEventID)
-							self.ColT[m].SliderName = s
-							self.ColT[m].KnobEventID = CurID + midi.REC_Mixer_EQ_Freq + m
-							s = mixer.getEventIDName(self.ColT[m].KnobEventID)
-							self.ColT[m].KnobName = s
-							self.ColT[m].KnobResetValue = midi.FromMIDI_Max >> 1
-							self.ColT[m].KnobCenter = -2
-							self.ColT[m].KnobMode = 0
-						else:
-							if m < 6:
-								# Q
-								self.ColT[m].SliderEventID = CurID + midi.REC_Mixer_EQ_Q + m - 3
-								self.ColT[m].KnobResetEventID = self.ColT[m].SliderEventID
-								s = mixer.getEventIDName(self.ColT[m].SliderEventID)
-								self.ColT[m].SliderName = s
-								self.ColT[m].KnobEventID = self.ColT[m].SliderEventID
-								self.ColT[m].KnobName = self.ColT[m].SliderName
-								self.ColT[m].KnobResetValue = 17500
-								self.ColT[m].KnobCenter = -1
-								self.ColT[m].KnobMode = 2
-							else:
-								self.ColT[m].SliderEventID = -1
-								self.ColT[m].KnobEventID = -1
-								self.ColT[m].KnobMode = 4
+#					elif self.Page == MackieCUPage_EQ:
+#						if m < 3:
+#							# gain & freq
+#							self.ColT[m].SliderEventID = CurID + midi.REC_Mixer_EQ_Gain + m
+#							self.ColT[m].KnobResetEventID = self.ColT[m].SliderEventID
+#							s = mixer.getEventIDName(self.ColT[m].SliderEventID)
+#							self.ColT[m].SliderName = s
+#							self.ColT[m].KnobEventID = CurID + midi.REC_Mixer_EQ_Freq + m
+#							s = mixer.getEventIDName(self.ColT[m].KnobEventID)
+#							self.ColT[m].KnobName = s
+#							self.ColT[m].KnobResetValue = midi.FromMIDI_Max >> 1
+#							self.ColT[m].KnobCenter = -2
+#							self.ColT[m].KnobMode = 0
+#						else:
+#							if m < 6:
+#								# Q
+#								self.ColT[m].SliderEventID = CurID + midi.REC_Mixer_EQ_Q + m - 3
+#								self.ColT[m].KnobResetEventID = self.ColT[m].SliderEventID
+#								s = mixer.getEventIDName(self.ColT[m].SliderEventID)
+#								self.ColT[m].SliderName = s
+#								self.ColT[m].KnobEventID = self.ColT[m].SliderEventID
+#								self.ColT[m].KnobName = self.ColT[m].SliderName
+#								self.ColT[m].KnobResetValue = 17500
+#								self.ColT[m].KnobCenter = -1
+#								self.ColT[m].KnobMode = 2
+#							else:
+#								self.ColT[m].SliderEventID = -1
+#								self.ColT[m].KnobEventID = -1
+#								self.ColT[m].KnobMode = 4
 
 					# self.Flip knob & slider
 					if self.Flip:
@@ -627,7 +627,7 @@ class TMackieCU_Ext():
 						self.ColT[m].SliderName = self.ColT[m].KnobName
 						self.ColT[m].KnobName = s
 						self.ColT[m].KnobMode = 2
-						if not (self.Page in [MackieCUPage_Sends, MackieCUPage_FX, MackieCUPage_EQ]):
+						if not (self.Page in [MackieCUPage_Sends, MackieCUPage_FX]): # , MackieCUPage_EQ
 							self.ColT[m].KnobCenter = -1
 							self.ColT[m].KnobResetValue = round(12800 * midi.FromMIDI_Max / 16000)
 							self.ColT[m].KnobResetEventID = self.ColT[m].KnobEventID
@@ -679,7 +679,7 @@ class TMackieCU_Ext():
 		# refresh meters
 		if device.isAssigned():
 			f = False
-			for m in range(0,  len(self.ColT) - 1):
+			for m in range(0, len(self.ColT) - 1):
 				self.ColT[m].Tag = utils.Limited(self.ColT[m].Peak, 0, self.MeterMax)
 				self.ColT[m].Peak = 0
 				if self.ColT[m].Tag == 0:
@@ -708,10 +708,10 @@ class TMackieCU_Ext():
 		if device.isAssigned():
 			r = transport.isRecording()
 			b = 0
-			for m in range(0,  mixer.trackCount()):
-			  if mixer.isTrackArmed(m):
-			    b = 1 + int(r)
-			    break
+			for m in range(0, mixer.trackCount()):
+				if mixer.isTrackArmed(m):
+					b = 1 + int(r)
+					break
 
 			device.midiOutNewMsg((0x73 << 8) + midi.TranzPort_OffOnBlinkT[b], 16)
 

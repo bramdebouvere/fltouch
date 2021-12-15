@@ -296,9 +296,9 @@ class TMackieCU():
 					self.OnSendTempMsg('Free slider ' + str(event.data1) + ': ' + ui.getHintValue(event.outEv, midi.FromMIDI_Max), 500)
 					device.processMIDICC(event)
 				elif self.ColT[event.midiChan].SliderEventID >= 0:
-					# ---- START Auto Select Channel code by rd3d2:
+					# ---- START Auto Select Channel code by rd3d2 (modified by Bram):
 					# https://gadgeteer.home.blog/2021/02/08/adding-touch-sensitivity-to-faders-on-a-mackie-compatible-eg-behringer-x-touch-or-icon-qcon-pro-control-surface/
-					if self.ColT[event.midiChan].TrackNum >=0: 
+					if (self.Page == MackieCUPage_Pan or self.Page == MackieCUPage_Stereo) and self.ColT[event.midiChan].TrackNum >=0: 
 						# if this track is not already selected then select it
 						if mixer.trackNumber != self.ColT[event.midiChan].TrackNum:
 							mixer.setTrackNumber(self.ColT[event.midiChan].TrackNum)
@@ -1043,7 +1043,7 @@ class TMackieCU():
 			device.midiOutNewMsg((0x72 << 8) + midi.TranzPort_OffOnT[not ui.getTimeDispMin()], 4)
 			# self.Page
 			for m in range(0,  6):
-			  device.midiOutNewMsg(((0x28 + m) << 8) + midi.TranzPort_OffOnT[m == self.Page], 5 + m)
+				device.midiOutNewMsg(((0x28 + m) << 8) + midi.TranzPort_OffOnT[m == self.Page], 5 + m)
 			# changed flag
 			device.midiOutNewMsg((0x50 << 8) + midi.TranzPort_OffOnT[general.getChangedFlag() > 0], 11)
 			# metronome
@@ -1055,9 +1055,9 @@ class TMackieCU():
 			# use RUDE SOLO to show if any track is armed for recording
 			b = 0
 			for m in range(0,  mixer.trackCount()):
-			  if mixer.isTrackArmed(m):
-			    b = 1 + int(r)
-			    break
+				if mixer.isTrackArmed(m):
+					b = 1 + int(r)
+					break
 
 			device.midiOutNewMsg((0x73 << 8) + midi.TranzPort_OffOnBlinkT[b], 16)
 			# smoothing
@@ -1075,16 +1075,13 @@ class TMackieCU():
 		self.JogSource = Value
 
 	def OnWaitingForInput(self):
-
-	  self.SendTimeMsg('..........')
+		self.SendTimeMsg('..........')
 
 	def UpdateClicking(self): # switch self.Clicking for transport buttons
-
 		if device.isAssigned():
 			device.midiOutSysex(bytes([0xF0, 0x00, 0x00, 0x66, 0x14, 0x0A, int(self.Clicking), 0xF7]))
 
 	def SetBackLight(self, Minutes): # set backlight timeout (0 should switch off immediately, but doesn't really work well)
-
 		if device.isAssigned():
 			device.midiOutSysex(bytes([0xF0, 0x00, 0x00, 0x66, 0x14, 0x0B, Minutes, 0xF7]))
 
