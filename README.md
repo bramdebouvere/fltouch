@@ -6,7 +6,11 @@ FL Studio MIDI scripts for the Behringer X-Touch + extender(s) (Mackie Control U
 - Improved knob resolution and acceleration
 - Forces jog dial to use the playlist instead changing the active mixer channel
 - Auto channel selection when touching a fader
+- Make use of the full scribble strip width
+- Meters can now reach to clip
 - Minor bugfixes
+
+More improvements later...
 
 ## How to use
 Put [device_MackieCU.py](./device_MackieCU.py) and [device_MackieCU_Ext.py](./device_MackieCU.py) in your FL Studio Scripts folder (usually this would be `<Documents>\Image-Line\Data\FL Studio\Settings\Hardware\Mackie Control Unit`).
