@@ -1,5 +1,5 @@
-# name=Mackie Control Universal
-# url=
+# name=FLtouch X-Touch
+# url=https://github.com/bramdebouvere/fltouch
 # supportedDevices=X-Touch
 
 import patterns

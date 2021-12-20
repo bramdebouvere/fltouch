@@ -1,6 +1,6 @@
-# name=Mackie Control Universal Extender
-# url=
-# receiveFrom=Mackie Control Universal
+# name=FLtouch X-Touch Extender
+# url=https://github.com/bramdebouvere/fltouch
+# receiveFrom=FLtouch X-Touch
 # supportedDevices=X-Touch-Ext
 
 import patterns

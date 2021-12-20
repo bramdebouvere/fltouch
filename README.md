@@ -13,6 +13,11 @@ FL Studio MIDI scripts for the Behringer X-Touch + extender(s) (Mackie Control U
 More improvements later...
 
 ## How to use
-Put [device_MackieCU.py](./device_MackieCU.py) and [device_MackieCU_Ext.py](./device_MackieCU.py) in your FL Studio Scripts folder (usually this would be `<Documents>\Image-Line\Data\FL Studio\Settings\Hardware\Mackie Control Unit`).
 
-In FL Studio's MIDI settings, set your X-Touch's MIDI channel to 102 and extenders to 103, 104, ...
+### Installation
+
+1. This script uses the Mackie Control Universal (MCU) protocol. Your X-Touch and the extenders will need to be set to MCU mode. To do so, check out "*Step 3: Getting started*" in [the official quick-start guide](https://mediadl.musictribe.com/media/PLM/data/docs/P0B1X/X-TOUCH_QSG_WW.pdf).
+
+2. Put [device_XTouch.py](./device_XTouch.py) and [device_XTouch_Ext.py](./device_XTouch_Ext.py) in your FL Studio Scripts folder, in a dedicated subfolder (usually this would be `%UserProfile%\Documents\Image-Line\Data\FL Studio\Settings\Hardware\fltouch`).
+
+3. In FL Studio's MIDI settings *(Options -> Midi settings)*, you'll find your  set your X-Touch's MIDI channel to 102 and extenders to 103, 104, ... and change the controller type to "FLtouch X-Touch" or "FLtouch X-Touch Extender" (depending on if the device is an extender or not).
