@@ -20,4 +20,7 @@ More improvements later...
 
 2. Put [device_XTouch.py](./device_XTouch.py) and [device_XTouch_Ext.py](./device_XTouch_Ext.py) in your FL Studio Scripts folder, in a dedicated subfolder (usually this would be `%UserProfile%\Documents\Image-Line\Data\FL Studio\Settings\Hardware\fltouch`).
 
-3. In FL Studio's MIDI settings *(Options -> Midi settings)*, you'll find your  set your X-Touch's MIDI channel to 102 and extenders to 103, 104, ... and change the controller type to "FLtouch X-Touch" or "FLtouch X-Touch Extender" (depending on if the device is an extender or not).
+3. In FL Studio's MIDI settings *(Options -> Midi settings)*, you'll find your "X-Touch" and "X-Touch-Ext" controllers. Set your X-Touch's MIDI channel to 102 and the extenders to 103, 104, ... and change the controller type to "FLtouch X-Touch" or "FLtouch X-Touch Extender" (depending on if the device is an extender or not).
+
+### Layout
+![afbeelding](https://user-images.githubusercontent.com/3641681/146751933-f87b5be7-c3c2-41ce-8025-19574a23abfa.png)
