@@ -9,6 +9,7 @@ FL Studio MIDI scripts for the Behringer X-Touch + extender(s) (Mackie Control U
 - Make use of the full scribble strip width
 - Meter values are more accurate
 - The clip led works when the signal is clipping
+- Smoothing is disabled by default
 - Minor bugfixes
 
 More improvements later...
