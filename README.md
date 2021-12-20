@@ -7,7 +7,8 @@ FL Studio MIDI scripts for the Behringer X-Touch + extender(s) (Mackie Control U
 - Forces jog dial to use the playlist instead changing the active mixer channel
 - Auto channel selection when touching a fader
 - Make use of the full scribble strip width
-- Meters can now reach to clip
+- Meter values are more accurate
+- The clip led works when the signal is clipping
 - Minor bugfixes
 
 More improvements later...
