@@ -944,7 +944,11 @@ class TMackieCU():
 
 		if self.Page != MackieCUPage_Free:
 			for m in range(0, len(self.ColT) - 1):
-				self.ColT[m].Peak = max(self.ColT[m].Peak, round(mixer.getTrackPeaks(self.ColT[m].TrackNum, midi.PEAK_LR_INV)	* self.MeterMax))
+				currentPeak = mixer.getTrackPeaks(self.ColT[m].TrackNum, midi.PEAK_LR_INV)
+				meterValue = int(currentPeak * self.MeterMax)
+				if (currentPeak > 0.001 and meterValue == 0):
+					meterValue = 1 #if there is any activity, make sure the lowest led burns
+				self.ColT[m].Peak = max(self.ColT[m].Peak, meterValue)
 
 	def OnIdle(self):
 
