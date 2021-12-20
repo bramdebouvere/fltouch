@@ -105,7 +105,7 @@ class TMackieCU():
 
 		self.FirstTrackT[0] = 1
 		self.FirstTrack = 0
-		self.SmoothSpeed = 469
+		self.SmoothSpeed = 0
 		self.Clicking = True
 
 		device.setHasMeters()
