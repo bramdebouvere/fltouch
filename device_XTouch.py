@@ -602,11 +602,10 @@ class TMackieCU():
 		self.LastTimeMsg = TimeMsg
 
 	def SendAssignmentMsg(self, Msg):
-
-		s_ansi = Msg + chr(0) #AnsiString(Msg)
+		s_ansi = Msg[-2:]
 		if device.isAssigned():
 			for m in range(1, 3):
-				device.midiOutMsg(midi.MIDI_CONTROLCHANGE + ((0x4C - m) << 8) + (ord(s_ansi[m]) << 16))
+				device.midiOutMsg(midi.MIDI_CONTROLCHANGE + ((0x4C - m) << 8) + (ord(s_ansi[m-1]) << 16))
 
 	def UpdateMsg(self):
 		self.SendMsg(self.MsgT[1])
