@@ -17,6 +17,8 @@ import midi
 import utils
 import time
 
+import debug
+
 MackieCU_KnobOffOnT = [(midi.MIDI_CONTROLCHANGE + (1 << 6)) << 16, midi.MIDI_CONTROLCHANGE + ((0xB + (2 << 4) + (1 << 6)) << 16)]
 MackieCU_nFreeTracks = 64
 
@@ -260,8 +262,8 @@ class TMackieCU():
 						self.ColT[i].Peak = self.ActivityMax
 						event.data1 = self.ColT[i].BaseEventID + int(self.ColT[i].KnobHeld)
 						event.isIncrement = 1
-						s = chr(0x7E + int(event.outEv < 0))
-						self.OnSendMsg('Free knob ' + str(event.data1) + ': ' + s)
+						s = chr(0x2B + int(event.outEv < 0)*2)
+						self.OnSendMsg('Free knob ' + str(event.data1) + ': ' + s + str(abs(event.outEv)))
 						device.processMIDICC(event)
 						device.hardwareRefreshMixerTrack(self.ColT[i].TrackNum)
 					else:
@@ -273,8 +275,8 @@ class TMackieCU():
 				event.handled = False # for extra CCs in emulators
 
 		elif event.midiId == midi.MIDI_PITCHBEND: # pitch bend (faders)
-
-			if event.midiChan <= 8:
+			
+			if event.midiChan <= 8: #midiChan is the number of the fader (0-8)
 				event.inEv = event.data1 + (event.data2 << 7)
 				event.outEv = (event.inEv << 16) // 16383
 				event.inEv -= 0x2000
@@ -285,8 +287,10 @@ class TMackieCU():
 					device.hardwareRefreshMixerTrack(self.ColT[event.midiChan].TrackNum)
 					event.data1 = self.ColT[event.midiChan].BaseEventID + 7
 					event.midiChan = 0
-					event.midiChanEx = event.midiChanEx & (not 0xF)
-					self.OnSendMsg('Free slider ' + str(event.data1) + ': ' + ui.getHintValue(event.outEv, midi.FromMIDI_Max))
+					self.OnSendMsg('Free slider ' + str(event.data1) + ': ' + ui.getHintValue(event.outEv, 65523))
+					event.status = event.midiId = midi.MIDI_CONTROLCHANGE
+					event.isIncrement = 0
+					event.outEv = int(event.data2 / 127.0 * midi.FromMIDI_Max)
 					device.processMIDICC(event)
 				elif self.ColT[event.midiChan].SliderEventID >= 0:
 					# slider (mixer track volume)
@@ -309,6 +313,7 @@ class TMackieCU():
 						fader_index = event.data1 - 104
 						if mixer.trackNumber != self.ColT[fader_index].TrackNum:
 							mixer.setTrackNumber(self.ColT[fader_index].TrackNum)
+					event.handled = True
 
 				if (event.pmeFlags & midi.PME_System != 0):
 					# F1..F8
