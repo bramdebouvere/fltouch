@@ -1,0 +1,9 @@
+# Mackie CU Buttons
+
+# Pages
+Pan = 0x28
+Sends = 0x29
+Equalizer = 0x2A
+Stereo = 0x2B
+Effects = 0x2C
+Free = 0x2D

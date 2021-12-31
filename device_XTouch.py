@@ -18,6 +18,8 @@ import utils
 import time
 
 import debug
+import mcu_pages
+import mcu_buttons
 
 MackieCU_KnobOffOnT = [(midi.MIDI_CONTROLCHANGE + (1 << 6)) << 16, midi.MIDI_CONTROLCHANGE + ((0xB + (2 << 4) + (1 << 6)) << 16)]
 MackieCU_nFreeTracks = 64
@@ -36,13 +38,6 @@ MackieCUNote_Marker = 0x48
 MackieCUNote_Zoom = 0x64
 MackieCUNote_Move = 0x46
 MackieCUNote_Window = 0x4C
-# Mackie CU pages
-MackieCUPage_Pan = 0
-MackieCUPage_Stereo = 1
-MackieCUPage_Sends = 2
-MackieCUPage_FX = 3
-MackieCUPage_EQ = 4
-MackieCUPage_Free = 5
 
 ExtenderLeft = 0
 ExtenderRight = 1
@@ -257,7 +252,7 @@ class TMackieCU():
 				# knobs
 				elif event.data1 in [0x10, 0x11, 0x12, 0x13, 0x14, 0x15, 0x16, 0x17]:
 					Res = 0.005 + ((abs(event.outEv)-1) / 2000)
-					if self.Page == MackieCUPage_Free:
+					if self.Page == mcu_pages.Free:
 						i = event.data1 - 0x10
 						self.ColT[i].Peak = self.ActivityMax
 						event.data1 = self.ColT[i].BaseEventID + int(self.ColT[i].KnobHeld)
@@ -281,7 +276,7 @@ class TMackieCU():
 				event.outEv = (event.inEv << 16) // 16383
 				event.inEv -= 0x2000
 
-				if self.Page == MackieCUPage_Free:
+				if self.Page == mcu_pages.Free:
 					self.ColT[event.midiChan].Peak = self.ActivityMax
 					self.FreeCtrlT[self.ColT[event.midiChan].TrackNum] = event.data1 + (event.data2 << 7)
 					device.hardwareRefreshMixerTrack(self.ColT[event.midiChan].TrackNum)
@@ -309,7 +304,7 @@ class TMackieCU():
 				if (event.data1 in [104, 105, 106, 107, 108, 109, 110, 111, 112]):
 					self.SliderHoldCount += -1 + (int(event.data2 > 0) * 2)
 					# Auto select channel
-					if event.data1 != 112 and event.data2 > 0 and (self.Page == MackieCUPage_Pan or self.Page == MackieCUPage_Stereo):
+					if event.data1 != 112 and event.data2 > 0 and (self.Page == mcu_pages.Pan or self.Page == mcu_pages.Stereo):
 						fader_index = event.data1 - 104
 						if mixer.trackNumber != self.ColT[fader_index].TrackNum:
 							mixer.setTrackNumber(self.ColT[fader_index].TrackNum)
@@ -383,10 +378,10 @@ class TMackieCU():
 								event.outEv = event.inEv
 								self.Jog(event)
 
-					elif event.data1 in [0x28, 0x29, 0x2A, 0x2B, 0x2C, 0x2D]: # self.Page
+					elif event.data1 in [mcu_buttons.Pan, mcu_buttons.Sends, mcu_buttons.Equalizer, mcu_buttons.Stereo, mcu_buttons.Effects, mcu_buttons.Free]: # self.Page
 						self.SliderHoldCount +=  -1 + (int(event.data2 > 0) * 2)
 						if event.data2 > 0:
-							n = event.data1 - 0x28
+							n = event.data1 - mcu_buttons.Pan
 							self.OnSendMsg(self.MackieCU_PageNameT[n])
 							self.SetPage(n)
 							self.DispatchToReceivers(midi.MIDI_NOTEON + (event.data1 << 8) + (event.data2 << 16))
@@ -456,7 +451,7 @@ class TMackieCU():
 					elif event.data1 == 0x53: # ENTER
 						transport.globalTransport(midi.FPT_Enter + int(self.Shift) * 2, int(event.data2 > 0) * 2, event.pmeFlags)
 					elif event.data1 in [0x20, 0x21, 0x22, 0x23, 0x24, 0x25, 0x26, 0x27]: # knob reset
-						if self.Page == MackieCUPage_Free:
+						if self.Page == mcu_pages.Free:
 							i = event.data1 - 0x20
 							self.ColT[i].KnobHeld = event.data2 > 0
 							if event.data2 > 0:
@@ -470,7 +465,7 @@ class TMackieCU():
 							return
 						elif event.data2 > 0:
 							n = event.data1 - 0x20
-							if self.Page == MackieCUPage_Sends:
+							if self.Page == mcu_pages.Sends:
 								if mixer.setRouteTo(mixer.trackNumber(), self.ColT[n].TrackNum, -1) < 0:
 									self.OnSendMsg('Cannot send to this track')
 								else:
@@ -479,7 +474,7 @@ class TMackieCU():
 								self.SetKnobValue(n, midi.MaxInt)
 
 					elif (event.data1 >= 0) & (event.data1 <= 0x1F): # free hold buttons
-						if self.Page == MackieCUPage_Free:
+						if self.Page == mcu_pages.Free:
 							i = event.data1 % 8
 							self.ColT[i].Peak = self.ActivityMax
 							event.data1 = self.ColT[i].BaseEventID + 3 + event.data1 // 8
@@ -626,7 +621,7 @@ class TMackieCU():
 		s1 = ''
 		for m in range(0, len(self.ColT) - 1):
 			s = ''
-			if self.Page == MackieCUPage_Free:
+			if self.Page == mcu_pages.Free:
 				s = '  ' + utils.Zeros(self.ColT[m].TrackNum + 1, 2, ' ')
 			else:
 				s = mixer.getTrackName(self.ColT[m].TrackNum, 7)
@@ -671,7 +666,7 @@ class TMackieCU():
 		oldPage = self.Page
 		self.Page = Value
 
-		self.FirstTrack = int(self.Page == MackieCUPage_Free)
+		self.FirstTrack = int(self.Page == mcu_pages.Free)
 		receiverCount = device.dispatchReceiverCount()
 		if receiverCount == 0:
 			self.SetFirstTrack(self.FirstTrackT[self.FirstTrack])
@@ -685,7 +680,7 @@ class TMackieCU():
 				for n in range(0, receiverCount):
 					device.dispatch(n, midi.MIDI_NOTEON + (0x7F << 8) + (self.FirstTrackT[self.FirstTrack] + ((n + 1) * 8) << 16))
 
-		if self.Page == MackieCUPage_Free:
+		if self.Page == mcu_pages.Free:
 
 			BaseID = midi.EncodeRemoteControlID(device.getPortNumber(), 0, self.FreeEventID + 7)
 			for n in range(0,  len(self.FreeCtrlT)):
@@ -693,7 +688,7 @@ class TMackieCU():
 				if d >= 0:
 					self.FreeCtrlT[n] = min(round(d * 16384), 16384)
 
-		if (oldPage == MackieCUPage_Free) | (self.Page == MackieCUPage_Free):
+		if (oldPage == mcu_pages.Free) | (self.Page == mcu_pages.Free):
 			self.UpdateMeterMode()
 		self.UpdateColT()
 		self.UpdateLEDs()
@@ -701,12 +696,12 @@ class TMackieCU():
 
 	def UpdateMixer_Sel(self):
 
-		if self.Page !=  MackieCUPage_Free:
+		if self.Page != mcu_pages.Free:
 			if device.isAssigned():
 				for m in range(0, len(self.ColT) - 1):
 					device.midiOutNewMsg(((0x18 + m) << 8) + midi.TranzPort_OffOnT[self.ColT[m].TrackNum == mixer.trackNumber()], self.ColT[m].LastValueIndex + 4)
 
-			if self.Page in [MackieCUPage_Sends, MackieCUPage_FX]:
+			if self.Page in [mcu_pages.Sends, mcu_pages.Effects]:
 				self.UpdateColT()
 
 	def UpdateCol(self, Num):
@@ -718,7 +713,7 @@ class TMackieCU():
 		b = False
 
 		if device.isAssigned():
-			if self.Page == MackieCUPage_Free:
+			if self.Page == mcu_pages.Free:
 				baseID = midi.EncodeRemoteControlID(device.getPortNumber(), 0, self.ColT[Num].BaseEventID)
 				# slider
 				m = self.FreeCtrlT[self.ColT[Num].TrackNum]
@@ -794,7 +789,7 @@ class TMackieCU():
 		CurID = mixer.getTrackPluginId(mixer.trackNumber(), 0)
 
 		for m in range(0, len(self.ColT)):
-			if self.Page == MackieCUPage_Free:
+			if self.Page == mcu_pages.Free:
 				# free controls
 				if m == 8:
 					self.ColT[m].TrackNum = MackieCU_nFreeTracks
@@ -828,15 +823,15 @@ class TMackieCU():
 					self.ColT[m].KnobMode = 1 # parameter, pan, volume, off
 					self.ColT[m].KnobCenter = -1
 
-					if self.Page == MackieCUPage_Pan:
+					if self.Page == mcu_pages.Pan:
 						self.ColT[m].KnobEventID = self.ColT[m].BaseEventID + midi.REC_Mixer_Pan
 						self.ColT[m].KnobResetEventID = self.ColT[m].KnobEventID
 						self.ColT[m].KnobName = mixer.getTrackName( self.ColT[m].TrackNum) + ' - ' + 'Pan'
-					elif self.Page == MackieCUPage_Stereo:
+					elif self.Page == mcu_pages.Stereo:
 						self.ColT[m].KnobEventID = self.ColT[m].BaseEventID + midi.REC_Mixer_SS
 						self.ColT[m].KnobResetEventID = self.ColT[m].KnobEventID
 						self.ColT[m].KnobName = mixer.getTrackName(self.ColT[m].TrackNum) + ' - ' + 'Sep'
-					elif self.Page == MackieCUPage_Sends:
+					elif self.Page == mcu_pages.Sends:
 						self.ColT[m].KnobEventID = CurID + midi.REC_Mixer_Send_First + self.ColT[m].TrackNum
 						s = mixer.getEventIDName(self.ColT[m].KnobEventID)
 						self.ColT[m].KnobName = s
@@ -846,7 +841,7 @@ class TMackieCU():
 							self.ColT[m].KnobMode = 4
 						else:
 							self.ColT[m].KnobMode = 2
-					elif self.Page == MackieCUPage_FX:
+					elif self.Page == mcu_pages.Effects:
 						CurID = mixer.getTrackPluginId(mixer.trackNumber(), m)
 						self.ColT[m].KnobEventID = CurID + midi.REC_Plug_MixLevel
 						s = mixer.getEventIDName(self.ColT[m].KnobEventID)
@@ -861,7 +856,7 @@ class TMackieCU():
 						else:
 							self.ColT[m].KnobMode = 4
 						self.ColT[m].KnobCenter = int(IsValid & IsEnabledAuto)
-					elif self.Page == MackieCUPage_EQ:
+					elif self.Page == mcu_pages.Equalizer:
 						if m < 3:
 							# gain & freq
 							self.ColT[m].SliderEventID = CurID + midi.REC_Mixer_EQ_Gain + m
@@ -898,7 +893,7 @@ class TMackieCU():
 						self.ColT[m].SliderName = self.ColT[m].KnobName
 						self.ColT[m].KnobName = s
 						self.ColT[m].KnobMode = 2
-						if not (self.Page in [MackieCUPage_Sends, MackieCUPage_FX, MackieCUPage_EQ]):
+						if not (self.Page in [mcu_pages.Sends, mcu_pages.Effects, mcu_pages.Equalizer]):
 							self.ColT[m].KnobCenter = -1
 							self.ColT[m].KnobResetValue = round(12800 * midi.FromMIDI_Max / 16000)
 							self.ColT[m].KnobResetEventID = self.ColT[m].KnobEventID
@@ -912,7 +907,7 @@ class TMackieCU():
 
 		if (self.ColT[Num].KnobEventID >= 0) & (self.ColT[Num].KnobMode < 4):
 			if Value == midi.MaxInt:
-				if self.Page == MackieCUPage_FX:
+				if self.Page == mcu_pages.Effects:
 					if self.ColT[Num].KnobPressEventID >= 0:
 
 						Value = channels.incEventValue(self.ColT[Num].KnobPressEventID, 0, midi.EKRes)
@@ -934,7 +929,7 @@ class TMackieCU():
 
 	def SetFirstTrack(self, Value):
 
-		if self.Page == MackieCUPage_Free:
+		if self.Page == mcu_pages.Free:
 			self.FirstTrackT[self.FirstTrack] = (Value + MackieCU_nFreeTracks) % MackieCU_nFreeTracks
 			s = utils.Zeros(self.FirstTrackT[self.FirstTrack] + 1, 2, ' ')
 		else:
@@ -946,7 +941,7 @@ class TMackieCU():
 
 	def OnUpdateMeters(self):
 
-		if self.Page != MackieCUPage_Free:
+		if self.Page != mcu_pages.Free:
 			for m in range(0, len(self.ColT) - 1):
 				currentPeak = mixer.getTrackPeaks(self.ColT[m].TrackNum, midi.PEAK_LR_INV)
 				meterValue = int(currentPeak * self.MeterMax)
@@ -958,7 +953,7 @@ class TMackieCU():
 
 		# refresh meters
 		if device.isAssigned():
-			f = self.Page == MackieCUPage_Free
+			f = self.Page == mcu_pages.Free
 			for m in range(0,  len(self.ColT) - 1):
 				self.ColT[m].Tag = utils.Limited(self.ColT[m].Peak, 0, self.MeterMax)
 				self.ColT[m].Peak = 0
