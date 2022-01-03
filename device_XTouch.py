@@ -153,12 +153,12 @@ class TMackieCU():
 		if flags & midi.HW_Dirty_Mixer_Display:
 			self.UpdateTextDisplay()
 			self.UpdateColT()
-
+		
 		if flags & midi.HW_Dirty_Mixer_Controls:
 			for n in range(0, len(self.ColT)):
 				if self.ColT[n].Dirty:
 					self.UpdateCol(n)
-
+		
 		# LEDs
 		if flags & midi.HW_Dirty_LEDs:
 			self.UpdateLEDs()
@@ -257,7 +257,7 @@ class TMackieCU():
 						self.ColT[i].Peak = self.ActivityMax
 						event.data1 = self.ColT[i].BaseEventID + int(self.ColT[i].KnobHeld)
 						event.isIncrement = 1
-						s = chr(0x2B + int(event.outEv < 0)*2)
+						s = chr(0x2B + int(event.outEv < 0)*2) # + or - sign depending on how you rotate
 						self.OnSendMsg('Free knob ' + str(event.data1) + ': ' + s + str(abs(event.outEv)))
 						device.processMIDICC(event)
 						device.hardwareRefreshMixerTrack(self.ColT[i].TrackNum)
@@ -282,6 +282,7 @@ class TMackieCU():
 					device.hardwareRefreshMixerTrack(self.ColT[event.midiChan].TrackNum)
 					event.data1 = self.ColT[event.midiChan].BaseEventID + 7
 					event.midiChan = 0
+					event.midiChanEx = 0
 					self.OnSendMsg('Free slider ' + str(event.data1) + ': ' + ui.getHintValue(event.outEv, 65523))
 					event.status = event.midiId = midi.MIDI_CONTROLCHANGE
 					event.isIncrement = 0
@@ -309,6 +310,7 @@ class TMackieCU():
 						if mixer.trackNumber != self.ColT[fader_index].TrackNum:
 							mixer.setTrackNumber(self.ColT[fader_index].TrackNum)
 					event.handled = True
+					return
 
 				if (event.pmeFlags & midi.PME_System != 0):
 					# F1..F8
@@ -683,7 +685,7 @@ class TMackieCU():
 		if self.Page == mcu_pages.Free:
 
 			BaseID = midi.EncodeRemoteControlID(device.getPortNumber(), 0, self.FreeEventID + 7)
-			for n in range(0,  len(self.FreeCtrlT)):
+			for n in range(0, len(self.FreeCtrlT)):
 				d = mixer.remoteFindEventValue(BaseID + n * 8, 1)
 				if d >= 0:
 					self.FreeCtrlT[n] = min(round(d * 16384), 16384)
@@ -758,7 +760,7 @@ class TMackieCU():
 						else:
 							data1 = data1 + (self.ColT[Num].KnobMode << 4) + (center << 6)
 					else:
-						Data1 = 0
+						data1 = 0
 
 					device.midiOutNewMsg(midi.MIDI_CONTROLCHANGE + ((0x30 + Num) << 8) + (data1 << 16), self.ColT[Num].LastValueIndex)
 
@@ -773,7 +775,7 @@ class TMackieCU():
 				data1 = data1 >> 7
 				device.midiOutNewMsg(midi.MIDI_PITCHBEND + Num + (data2 << 8) + (data1 << 16), self.ColT[Num].LastValueIndex + 5)
 
-			Dirty = False
+			self.ColT[Num].Dirty = False
 
 	def AlphaTrack_LevelToSlider(self, Value, Max = midi.FromMIDI_Max):
 
