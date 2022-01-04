@@ -607,12 +607,13 @@ class TMackieCU_Ext():
 		device.hardwareRefreshMixerTrack(-1)
 
 	def OnUpdateMeters(self):
-		for m in range(0, len(self.ColT) - 1):
-			currentPeak = mixer.getTrackPeaks(self.ColT[m].TrackNum, midi.PEAK_LR_INV)
-			meterValue = int(currentPeak * self.MeterMax)
-			if (currentPeak > 0.001 and meterValue == 0):
-				meterValue = 1 #if there is any activity, make sure the lowest led burns
-			self.ColT[m].Peak = max(self.ColT[m].Peak, meterValue)
+		if self.Page != mcu_pages.Free:
+			for m in range(0, len(self.ColT) - 1):
+				currentPeak = mixer.getTrackPeaks(self.ColT[m].TrackNum, midi.PEAK_LR_INV)
+				meterValue = int(currentPeak * self.MeterMax)
+				if (currentPeak > 0.001 and meterValue == 0):
+					meterValue = 1 #if there is any activity, make sure the lowest led burns
+				self.ColT[m].Peak = max(self.ColT[m].Peak, meterValue)
 
 	def OnIdle(self):
 
