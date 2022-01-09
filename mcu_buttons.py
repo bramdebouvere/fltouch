@@ -1,4 +1,4 @@
-# Mackie CU Buttons
+# Constants for Mackie CU Button midi values
 
 # Pages
 Pan = 0x28
@@ -7,3 +7,138 @@ Equalizer = 0x2A
 Stereo = 0x2B
 Effects = 0x2C
 Free = 0x2D
+
+# Other
+FaderBankLeft = 0x2E
+FaderBankRight = 0x2F
+FaderChannelLeft = 0x30
+FaderChannelRight = 0x31
+
+Flip = 0x32
+Smooth = 0x33
+NameValue = 0x34
+
+# Navigation 
+Up = 0x60
+Down = 0x61
+Left = 0x62
+Right = 0x63
+Zoom = 0x64
+
+Scrub = 0x65
+
+# F1 - F8
+Cut = 0x36
+Copy = 0x37
+Paste = 0x38
+Insert = 0x39
+Delete = 0x3A
+ItemMenu = 0x3B
+Undo = 0x3C
+UndoRedo = 0x3D
+
+# Transport
+Shift = 0x54
+Edison = 0x55
+Snap = 0x56
+Metronome = 0x57
+CountDown = 0x58
+Mode = 0x59
+SongVSLoop = 0x5A
+
+Rewind = 0x5B
+FastForward = 0x5C
+Stop = 0x5D
+Play = 0x5E
+Record = 0x5F
+
+# Encoder press
+Encoder_1 = 0x20
+Encoder_2 = 0x21
+Encoder_3 = 0x22
+Encoder_4 = 0x23
+Encoder_5 = 0x24
+Encoder_6 = 0x25
+Encoder_7 = 0x26
+Encoder_8 = 0x27
+
+# Record (arm) buttons
+Record_1 = 0x0
+Record_2 = 0x1
+Record_3 = 0x2
+Record_4 = 0x3
+Record_5 = 0x4
+Record_6 = 0x5
+Record_7 = 0x6
+Record_8 = 0x7
+
+# Solo buttons
+Solo_1 = 0x8
+Solo_2 = 0x9
+Solo_3 = 0xA
+Solo_4 = 0xB
+Solo_5 = 0xC
+Solo_6 = 0xD
+Solo_7 = 0xE
+Solo_8 = 0xF
+
+# Mute buttons
+Mute_1 = 0x10
+Mute_2 = 0x11
+Mute_3 = 0x12
+Mute_4 = 0x13
+Mute_5 = 0x14
+Mute_6 = 0x15
+Mute_7 = 0x16
+Mute_8 = 0x17
+
+# Select buttons
+Select_1 = 0x18
+Select_2 = 0x19
+Select_3 = 0x1A
+Select_4 = 0x1B
+Select_5 = 0x1C
+Select_6 = 0x1D
+Select_7 = 0x1E
+Select_8 = 0x1F
+
+# Hold slider
+Slider_1 = 104
+Slider_2 = 105
+Slider_3 = 106
+Slider_4 = 107
+Slider_5 = 108
+Slider_6 = 109
+Slider_7 = 110
+Slider_8 = 111
+Slider_Main = 112
+
+# Jog sources
+Pattern = 0x3E
+Mixer = 0x3F
+Channels = 0x40
+Tempo = 0x41
+Free1 = 0x42
+Free2 = 0x43
+Free3 = 0x44
+Free4 = 0x45
+
+# Track / Markers
+Move = 0x46
+LinkChannel = 0x47
+Marker = 0x48
+AddMarker = 0x49
+
+# Window / Time selection
+Browser = 0x4A
+StepSequencer = 0x4B # (main)
+Window = 0x4C
+In = 0x4D
+Out = 0x4E
+Select = 0x4F # Punch
+
+# Menu
+Save = 0x50
+Menu = 0x51
+Escape = 0x52
+Enter = 0x53

@@ -25,19 +25,6 @@ MackieCU_KnobOffOnT = [(midi.MIDI_CONTROLCHANGE + (1 << 6)) << 16, midi.MIDI_CON
 MackieCU_nFreeTracks = 64
 
 #const
-MackieCUNote_Undo = 0x3C
-MackieCUNote_Pat = 0x3E
-MackieCUNote_Mix = 0x3F
-MackieCUNote_Chan = 0x40
-MackieCUNote_Tempo = 0x41
-MackieCUNote_Free1 = 0x42
-MackieCUNote_Free2 = 0x43
-MackieCUNote_Free3 = 0x44
-MackieCUNote_Free4 = 0x45
-MackieCUNote_Marker = 0x48
-MackieCUNote_Zoom = 0x64
-MackieCUNote_Move = 0x46
-MackieCUNote_Window = 0x4C
 
 ExtenderLeft = 0
 ExtenderRight = 1
@@ -182,9 +169,9 @@ class TMackieCU():
 		# ------ END rd3d2 forcing jog dial to use the playlist
 		if self.JogSource == 0:
 			transport.globalTransport(midi.FPT_Jog + int(self.Shift ^ self.Scrub), event.outEv, event.pmeFlags) # relocate
-		elif self.JogSource == MackieCUNote_Move:
+		elif self.JogSource == mcu_buttons.Move:
 			transport.globalTransport(midi.FPT_MoveJog, event.outEv, event.pmeFlags)
-		elif self.JogSource == MackieCUNote_Marker:
+		elif self.JogSource == mcu_buttons.Marker:
 			if self.Shift:
 				s = 'Marker selection'
 			else:
@@ -194,18 +181,18 @@ class TMackieCU():
 					s = ui.getHintMsg()
 			self.OnSendMsg(self.ArrowsStr + s)
 
-		elif self.JogSource == MackieCUNote_Undo:
+		elif self.JogSource == mcu_buttons.Undo:
 			if event.outEv == 0:
 				s = 'Undo history'
 			elif transport.globalTransport(midi.FPT_UndoJog, event.outEv, event.pmeFlags) == midi.GT_Global:
 				s = ui.GetHintMsg()
 			self.OnSendMsg(self.ArrowsStr + s + ' (level ' + general.getUndoLevelHint() + ')')
 
-		elif self.JogSource == MackieCUNote_Zoom:
+		elif self.JogSource == mcu_buttons.Zoom:
 			if event.outEv != 0:
 				transport.globalTransport(midi.FPT_HZoomJog + int(self.Shift), event.outEv, event.pmeFlags)
 
-		elif self.JogSource == MackieCUNote_Window:
+		elif self.JogSource == mcu_buttons.Window:
 
 			if event.outEv != 0:
 				transport.globalTransport(midi.FPT_WindowJog, event.outEv, event.pmeFlags)
@@ -213,17 +200,17 @@ class TMackieCU():
 			if s != "":
 				self.OnSendMsg(self.ArrowsStr + 'Current window: ' + s)
 
-		elif (self.JogSource == MackieCUNote_Pat) | (self.JogSource == MackieCUNote_Mix) | (self.JogSource == MackieCUNote_Chan):
-			self.TrackSel(self.JogSource - MackieCUNote_Pat, event.outEv)
+		elif (self.JogSource == mcu_buttons.Pattern) | (self.JogSource == mcu_buttons.Mixer) | (mcu_buttons.Channels):
+			self.TrackSel(self.JogSource - mcu_buttons.Pattern, event.outEv)
 
-		elif self.JogSource == MackieCUNote_Tempo:
+		elif self.JogSource == mcu_buttons.Tempo:
 			if event.outEv != 0:
 				channels.processRECEvent(midi.REC_Tempo, channels.incEventValue(midi.REC_Tempo, event.outEv, midi.EKRes), midi.PME_RECFlagsT[int(event.pmeFlags & midi.PME_LiveInput != 0)] - midi.REC_FromMIDI)
 			self.OnSendMsg(self.ArrowsStr + 'Tempo: ' + mixer.getEventIDValueString(midi.REC_Tempo, mixer.getCurrentTempo()))
 
-		elif self.JogSource in [MackieCUNote_Free1, MackieCUNote_Free2, MackieCUNote_Free3, MackieCUNote_Free4]:
+		elif self.JogSource in [mcu_buttons.Free1, mcu_buttons.Free2, mcu_buttons.Free3, mcu_buttons.Free4]:
 			# CC
-			event.data1 = 390 + self.JogSource - MackieCUNote_Free1
+			event.data1 = 390 + self.JogSource - mcu_buttons.Free1
 
 			if event.outEv != 0:
 				event.isIncrement = 1
@@ -302,11 +289,11 @@ class TMackieCU():
 		elif (event.midiId == midi.MIDI_NOTEON) | (event.midiId == midi.MIDI_NOTEOFF):  # NOTE
 			if event.midiId == midi.MIDI_NOTEON:
 				# slider hold
-				if (event.data1 in [104, 105, 106, 107, 108, 109, 110, 111, 112]):
+				if (event.data1 in [mcu_buttons.Slider_1, mcu_buttons.Slider_2, mcu_buttons.Slider_3, mcu_buttons.Slider_4, mcu_buttons.Slider_5, mcu_buttons.Slider_6, mcu_buttons.Slider_7, mcu_buttons.Slider_8, mcu_buttons.Slider_Main]):
 					self.SliderHoldCount += -1 + (int(event.data2 > 0) * 2)
 					# Auto select channel
-					if event.data1 != 112 and event.data2 > 0 and (self.Page == mcu_pages.Pan or self.Page == mcu_pages.Stereo):
-						fader_index = event.data1 - 104
+					if event.data1 != mcu_buttons.Slider_Main and event.data2 > 0 and (self.Page == mcu_pages.Pan or self.Page == mcu_pages.Stereo):
+						fader_index = event.data1 - mcu_buttons.Slider_1
 						if mixer.trackNumber != self.ColT[fader_index].TrackNum:
 							mixer.setTrackNumber(self.ColT[fader_index].TrackNum)
 					event.handled = True
@@ -314,11 +301,11 @@ class TMackieCU():
 
 				if (event.pmeFlags & midi.PME_System != 0):
 					# F1..F8
-					if self.Shift & (event.data1 in [0x36, 0x37, 0x38, 0x39, 0x3A, 0x3B, 0x3C, 0x3D]):
-						transport.globalTransport(midi.FPT_F1 - 0x36 + event.data1, int(event.data2 > 0) * 2, event.pmeFlags)
+					if self.Shift & (event.data1 in [mcu_buttons.Cut, mcu_buttons.Copy, mcu_buttons.Paste, mcu_buttons.Insert, mcu_buttons.Delete, mcu_buttons.ItemMenu, mcu_buttons.Undo, mcu_buttons.UndoRedo]):
+						transport.globalTransport(midi.FPT_F1 - mcu_buttons.Cut + event.data1, int(event.data2 > 0) * 2, event.pmeFlags)
 						event.data1 = 0xFF
 
-					if event.data1 == 0x34: # display mode
+					if event.data1 == mcu_buttons.NameValue: # display mode
 						if event.data2 > 0:
 							if self.Shift:
 								self.ExtenderPos = abs(self.ExtenderPos - 1)
@@ -334,34 +321,34 @@ class TMackieCU():
 					elif event.data1 == 0x35: # time format
 						if event.data2 > 0:
 							ui.setTimeDispMin()
-					elif (event.data1 == 0x2E) | (event.data1 == 0x2F): # mixer bank
+					elif (event.data1 == mcu_buttons.FaderBankLeft) | (event.data1 == mcu_buttons.FaderBankRight): # mixer bank
 						if event.data2 > 0:
-							self.SetFirstTrack(self.FirstTrackT[self.FirstTrack] - 8 + int(event.data1 == 0x2F) * 16)
+							self.SetFirstTrack(self.FirstTrackT[self.FirstTrack] - 8 + int(event.data1 == mcu_buttons.FaderBankRight) * 16)
 							self.DispatchToReceivers(midi.MIDI_NOTEON + (event.data1 << 8) + (event.data2 << 16))
-					elif (event.data1 == 0x30) | (event.data1 == 0x31):
+					elif (event.data1 == mcu_buttons.FaderChannelLeft) | (event.data1 == mcu_buttons.FaderChannelRight):
 						if event.data2 > 0:
-							self.SetFirstTrack(self.FirstTrackT[self.FirstTrack] - 1 + int(event.data1 == 0x31) * 2)
+							self.SetFirstTrack(self.FirstTrackT[self.FirstTrack] - 1 + int(event.data1 == mcu_buttons.FaderChannelRight) * 2)
 							self.DispatchToReceivers(midi.MIDI_NOTEON + (event.data1 << 8) + (event.data2 << 16))
-					elif event.data1 == 0x32: # self.Flip
+					elif event.data1 == mcu_buttons.Flip: # self.Flip
 						if event.data2 > 0:
 							self.Flip = not self.Flip
 							self.DispatchToReceivers(midi.MIDI_NOTEON + (event.data1 << 8) + (event.data2 << 16))
 							self.UpdateColT()
 							self.UpdateLEDs()
-					elif event.data1 == 0x33: # smoothing
+					elif event.data1 == mcu_buttons.Smooth: # smoothing
 						if event.data2 > 0:
 							self.SmoothSpeed = int(self.SmoothSpeed == 0) * 469
 							self.UpdateLEDs()
 							self.OnSendMsg('Control smoothing ' + OffOnStr[int(self.SmoothSpeed > 0)])
-					elif event.data1 == 0x65: # self.Scrub
+					elif event.data1 == mcu_buttons.Scrub: # self.Scrub
 						if event.data2 > 0:
 							self.Scrub = not self.Scrub
 							self.UpdateLEDs()
-							# jog sources
-					elif event.data1 in [MackieCUNote_Undo, MackieCUNote_Pat, MackieCUNote_Mix, MackieCUNote_Chan, MackieCUNote_Tempo, MackieCUNote_Free1, MackieCUNote_Free2, MackieCUNote_Free3, MackieCUNote_Free4, MackieCUNote_Marker, MackieCUNote_Zoom, MackieCUNote_Move, MackieCUNote_Window]:
+					# jog sources
+					elif event.data1 in [mcu_buttons.Undo, mcu_buttons.Pattern, mcu_buttons.Mixer, mcu_buttons.Channels, mcu_buttons.Tempo, mcu_buttons.Free1, mcu_buttons.Free2, mcu_buttons.Free3, mcu_buttons.Free4, mcu_buttons.Marker, mcu_buttons.Zoom, mcu_buttons.Move, mcu_buttons.Window]:
 						# update jog source
 						self.SliderHoldCount +=  -1 + (int(event.data2 > 0) * 2)
-						if event.data1 in [MackieCUNote_Zoom, MackieCUNote_Window]:
+						if event.data1 in [mcu_buttons.Zoom, mcu_buttons.Window]:
 							device.directFeedback(event)
 						if event.data2 == 0:
 							if self.JogSource == event.data1:
@@ -388,17 +375,17 @@ class TMackieCU():
 							self.SetPage(n)
 							self.DispatchToReceivers(midi.MIDI_NOTEON + (event.data1 << 8) + (event.data2 << 16))
 
-					elif event.data1 == 0x54: # self.Shift
+					elif event.data1 == mcu_buttons.Shift: # self.Shift
 						self.Shift = event.data2 > 0
 						device.directFeedback(event)
 
-					elif event.data1 == 0x55: # open audio editor in current mixer track
+					elif event.data1 == mcu_buttons.Edison: # open audio editor in current mixer track
 						device.directFeedback(event)
 						if event.data2 > 0:
 							ui.launchAudioEditor(False, '', mixer.trackNumber(), 'AudioLoggerTrack.fst', '')
 							self.OnSendMsg('Audio editor ready')
 
-					elif event.data1 == 0x57: # metronome/button self.Clicking
+					elif event.data1 == mcu_buttons.Metronome: # metronome/button self.Clicking
 						if event.data2 > 0:
 							if self.Shift:
 								self.Clicking = not self.Clicking
@@ -407,20 +394,20 @@ class TMackieCU():
 							else:
 								transport.globalTransport(midi.FPT_Metronome, 1, event.pmeFlags)
 
-					elif event.data1 == 0x58: # precount
+					elif event.data1 == mcu_buttons.CountDown: # precount
 						if event.data2 > 0:
 							transport.globalTransport(midi.FPT_CountDown, 1, event.pmeFlags)
 
-					elif event.data1 in [0x36, 0x37, 0x38, 0x39, 0x3A]: # cut/copy/paste/insert/delete
-						transport.globalTransport(midi.FPT_Cut + event.data1 - 0x36, int(event.data2 > 0) * 2, event.pmeFlags)
+					elif event.data1 in [mcu_buttons.Cut, mcu_buttons.Copy, mcu_buttons.Paste, mcu_buttons.Insert, mcu_buttons.Delete]: # cut/copy/paste/insert/delete
+						transport.globalTransport(midi.FPT_Cut + event.data1 - mcu_buttons.Cut, int(event.data2 > 0) * 2, event.pmeFlags)
 						if event.data2 > 0:
-							self.OnSendMsg(CutCopyMsgT[midi.FPT_Cut + event.data1 - 0x36 - 50])
+							self.OnSendMsg(CutCopyMsgT[midi.FPT_Cut + event.data1 - mcu_buttons.Cut - 50])
 
-					elif (event.data1 == 0x5B) | (event.data1 == 0x5c) : # << >>
+					elif (event.data1 == mcu_buttons.Rewind) | (event.data1 == mcu_buttons.FastForward) : # << >>
 						if self.Shift:
 							if event.data2 == 0:
 								v2 = 1
-							elif event.data1 == 0x5B:
+							elif event.data1 == mcu_buttons.Rewind:
 								v2 = 0.5
 							else:
 								v2 = 2
@@ -429,32 +416,32 @@ class TMackieCU():
 							transport.globalTransport(midi.FPT_Rewind + int(event.data1 == 0x5C), int(event.data2 > 0) * 2, event.pmeFlags)
 						device.directFeedback(event)
 
-					elif event.data1 == 0x5D: # stop
+					elif event.data1 == mcu_buttons.Stop: # stop
 						transport.globalTransport(midi.FPT_Stop, int(event.data2 > 0) * 2, event.pmeFlags)
-					elif event.data1 == 0x5E: # play
+					elif event.data1 == mcu_buttons.Play: # play
 						transport.globalTransport(midi.FPT_Play, int(event.data2 > 0) * 2, event.pmeFlags)
-					elif event.data1 == 0x5F: # record
+					elif event.data1 == mcu_buttons.Record: # record
 						transport.globalTransport(midi.FPT_Record, int(event.data2 > 0) * 2, event.pmeFlags)
-					elif event.data1 == 0x5A: # song/loop
+					elif event.data1 == mcu_buttons.SongVSLoop: # song/loop
 						transport.globalTransport(midi.FPT_Loop, int(event.data2 > 0) * 2, event.pmeFlags)
-					elif event.data1 == 0x59: # mode
+					elif event.data1 == mcu_buttons.Mode: # mode
 						transport.globalTransport(midi.FPT_Mode, int(event.data2 > 0) * 2, event.pmeFlags)
 						device.directFeedback(event)
 
-					elif event.data1 == 0x56: # snap
+					elif event.data1 == mcu_buttons.Snap: # snap
 						if self.Shift:
 							if event.data2 > 0:
 								transport.globalTransport(midi.FPT_SnapMode, 1, event.pmeFlags)
 						else:
 							transport.globalTransport(midi.FPT_Snap, int(event.data2 > 0) * 2, event.pmeFlags)
 
-					elif event.data1 == 0x52: # ESC
+					elif event.data1 == mcu_buttons.Escape: # ESC
 						transport.globalTransport(midi.FPT_Escape + int(self.Shift) * 2, int(event.data2 > 0) * 2, event.pmeFlags)
-					elif event.data1 == 0x53: # ENTER
+					elif event.data1 == mcu_buttons.Enter: # ENTER
 						transport.globalTransport(midi.FPT_Enter + int(self.Shift) * 2, int(event.data2 > 0) * 2, event.pmeFlags)
-					elif event.data1 in [0x20, 0x21, 0x22, 0x23, 0x24, 0x25, 0x26, 0x27]: # knob reset
+					elif event.data1 in [mcu_buttons.Encoder_1, mcu_buttons.Encoder_2, mcu_buttons.Encoder_3, mcu_buttons.Encoder_4, mcu_buttons.Encoder_5, mcu_buttons.Encoder_6, mcu_buttons.Encoder_7, mcu_buttons.Encoder_8]: # knob reset
 						if self.Page == mcu_pages.Free:
-							i = event.data1 - 0x20
+							i = event.data1 - mcu_buttons.Encoder_1
 							self.ColT[i].KnobHeld = event.data2 > 0
 							if event.data2 > 0:
 								self.ColT[i].Peak = self.ActivityMax
@@ -466,7 +453,7 @@ class TMackieCU():
 							device.hardwareRefreshMixerTrack(self.ColT[i].TrackNum)
 							return
 						elif event.data2 > 0:
-							n = event.data1 - 0x20
+							n = event.data1 - mcu_buttons.Encoder_1
 							if self.Page == mcu_pages.Sends:
 								if mixer.setRouteTo(mixer.trackNumber(), self.ColT[n].TrackNum, -1) < 0:
 									self.OnSendMsg('Cannot send to this track')
@@ -488,46 +475,46 @@ class TMackieCU():
 							return
 
 					if (event.pmeFlags & midi.PME_System_Safe != 0):
-						if event.data1 == 0x47: # link selected channels to current mixer track
+						if event.data1 == mcu_buttons.LinkChannel: # link selected channels from the channel rack to current mixer track
 							if event.data2 > 0:
 								if self.Shift:
 									mixer.linkTrackToChannel(midi.ROUTE_StartingFromThis)
 								else:
 									mixer.linkTrackToChannel(midi.ROUTE_ToThis)
-						elif event.data1 == 0x4A: # focus browser
+						elif event.data1 == mcu_buttons.Browser: # focus browser
 							if event.data2 > 0:
 								ui.showWindow(midi.widBrowser)
 
-						elif event.data1 == 0x4B: # focus step seq
+						elif event.data1 == mcu_buttons.StepSequencer: # focus step seq
 							if event.data2 > 0:
 								ui.showWindow(midi.widChannelRack)
 
-						elif event.data1 == 0x51: # menu
+						elif event.data1 == mcu_buttons.Menu: # menu
 							transport.globalTransport(midi.FPT_Menu, int(event.data2 > 0) * 2, event.pmeFlags)
 							if event.data2 > 0:
 								self.OnSendMsg('Menu')
 
-						elif event.data1 == 0x3B: # tools
+						elif event.data1 == mcu_buttons.ItemMenu: # tools
 							transport.globalTransport(midi.FPT_ItemMenu, int(event.data2 > 0) * 2, event.pmeFlags)
 							if event.data2 > 0:
 								self.OnSendMsg('Tools')
 
-						elif event.data1 == 0x3D: # undo/redo
+						elif event.data1 == mcu_buttons.UndoRedo: # undo/redo
 							if (transport.globalTransport(midi.FPT_Undo, int(event.data2 > 0) * 2, event.pmeFlags) == midi.GT_Global) & (event.data2 > 0):
 								self.OnSendMsg(ui.getHintMsg() + ' (level ' + general.getUndoLevelHint() + ')')
 
-						elif event.data1 in [0x4D, 0x4E, 0x4F]: # punch in/punch out/punch
-							if event.data1 == 0x4F:
+						elif event.data1 in [mcu_buttons.In, mcu_buttons.Out, mcu_buttons.Select]: # punch in/punch out/punch
+							if event.data1 == mcu_buttons.Select:
 								n = midi.FPT_Punch
 							else:
-								n = midi.FPT_PunchIn + event.data1 - 0x4D
-							if event.data1 >= 0x4E:
+								n = midi.FPT_PunchIn + event.data1 - mcu_buttons.In
+							if event.data1 >= mcu_buttons.Out:
 								self.SliderHoldCount +=  -1 + (int(event.data2 > 0) * 2)
-							if not ((event.data1 == 0x4D) & (event.data2 == 0)):
+							if not ((event.data1 == mcu_buttons.In) & (event.data2 == 0)):
 								device.directFeedback(event)
-							if (event.data1 >= 0x4E) & (event.data2 >= int(event.data1 == 0x4E)):
+							if (event.data1 >= mcu_buttons.Out) & (event.data2 >= int(event.data1 == mcu_buttons.Out)):
 								if device.isAssigned():
-									device.midiOutMsg((0x4D << 8) + midi.TranzPort_OffOnT[False])
+									device.midiOutMsg((mcu_buttons.In << 8) + midi.TranzPort_OffOnT[False])
 							if transport.globalTransport(n, int(event.data2 > 0) * 2, event.pmeFlags) == midi.GT_Global:
 								t = -1
 								if n == midi.FPT_Punch:
@@ -538,38 +525,44 @@ class TMackieCU():
 								if t >= 0:
 									self.OnSendMsg(ui.getHintMsg())
 
-						elif event.data1 == 0x49: # marker add
+						elif event.data1 == mcu_buttons.AddMarker: # marker add
 							if (transport.globalTransport(midi.FPT_AddMarker + int(self.Shift), int(event.data2 > 0) * 2, event.pmeFlags) == midi.GT_Global) & (event.data2 > 0):
 								self.OnSendMsg(ui.getHintMsg())
-						elif (event.data1 >= 0x18) & (event.data1 <= 0x1F): # select mixer track
+						
+						# select mixer track buttons
+						elif (event.data1 >= mcu_buttons.Select_1) & (event.data1 <= mcu_buttons.Select_8):
 							if event.data2 > 0:
-								i = event.data1 - 0x18
+								i = event.data1 - mcu_buttons.Select_1
 
 								ui.showWindow(midi.widMixer)
 								mixer.setTrackNumber(self.ColT[i].TrackNum, midi.curfxScrollToMakeVisible | midi.curfxMinimalLatencyUpdate)
-
-						elif (event.data1 >= 0x8) & (event.data1 <= 0xF): # solo
+						
+						# solo buttons
+						elif (event.data1 >= mcu_buttons.Solo_1) & (event.data1 <= mcu_buttons.Solo_8):
 							if event.data2 > 0:
-								i = event.data1 - 0x8
+								i = event.data1 - mcu_buttons.Solo_1
 								self.ColT[i].solomode = midi.fxSoloModeWithDestTracks
 								if self.Shift:
 									Include(self.ColT[i].solomode, midi.fxSoloModeWithSourceTracks)
 								mixer.soloTrack(self.ColT[i].TrackNum, midi.fxSoloToggle, self.ColT[i].solomode)
 								mixer.setTrackNumber(self.ColT[i].TrackNum, midi.curfxScrollToMakeVisible)
 
-						elif (event.data1 >= 0x10) & (event.data1 <= 0x17): # mute
+						# mute buttons
+						elif (event.data1 >= mcu_buttons.Mute_1) & (event.data1 <= mcu_buttons.Mute_8):
 							if event.data2 > 0:
-								mixer.enableTrack(self.ColT[event.data1 - 0x10].TrackNum)
+								mixer.enableTrack(self.ColT[event.data1 - mcu_buttons.Mute_1].TrackNum)
 
-						elif (event.data1 >= 0x0) & (event.data1 <= 0x7): # arm
+						# record (arm) buttons
+						elif (event.data1 >= mcu_buttons.Record_1) & (event.data1 <= mcu_buttons.Record_8):
 							if event.data2 > 0:
 								mixer.armTrack(self.ColT[event.data1].TrackNum)
 								if mixer.isTrackArmed(self.ColT[event.data1].TrackNum):
 									self.OnSendMsg(mixer.getTrackName(self.ColT[event.data1].TrackNum) + ' recording to ' + mixer.getTrackRecordingFileName(self.ColT[event.data1].TrackNum))
 								else:
 									self.OnSendMsg(mixer.getTrackName(self.ColT[event.data1].TrackNum) + ' unarmed')
-
-						elif event.data1 == 0x50: # save/save new
+						
+						# save/save new
+						elif event.data1 == mcu_buttons.Save:
 							transport.globalTransport(midi.FPT_Save + int(self.Shift), int(event.data2 > 0) * 2, event.pmeFlags)
 
 						event.handled = True

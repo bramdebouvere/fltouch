@@ -197,37 +197,37 @@ class TMackieCU_Ext():
 					if event.data1 == 0x7F:
 						self.SetFirstTrack(event.data2)
 				# slider hold
-				if (event.data1 in [104, 105, 106, 107, 108, 109, 110, 111, 112]):
+				if (event.data1 in [mcu_buttons.Slider_1, mcu_buttons.Slider_2, mcu_buttons.Slider_3, mcu_buttons.Slider_4, mcu_buttons.Slider_5, mcu_buttons.Slider_6, mcu_buttons.Slider_7, mcu_buttons.Slider_8, mcu_buttons.Slider_Main]):
 					self.SliderHoldCount += -1 + (int(event.data2 > 0) * 2)
 					# Auto select channel
-					if event.data1 != 112 and event.data2 > 0 and (self.Page == mcu_pages.Pan or self.Page == mcu_pages.Stereo):
-						fader_index = event.data1 - 104
+					if event.data1 != mcu_buttons.Slider_Main and event.data2 > 0 and (self.Page == mcu_pages.Pan or self.Page == mcu_pages.Stereo):
+						fader_index = event.data1 - mcu_buttons.Slider_1
 						if mixer.trackNumber != self.ColT[fader_index].TrackNum:
 							mixer.setTrackNumber(self.ColT[fader_index].TrackNum)
 					event.handled = True
 					return
 
 				if (event.pmeFlags & midi.PME_System != 0):
-					if event.data1 == 0x34: # display mode
+					if event.data1 == mcu_buttons.NameValue: # display mode
 						if event.data2 > 0:
 							pass #don't react, this button (name/value) can do other stuff now
 							#self.MeterMode = (self.MeterMode + 1) % 3
 							#self.OnSendMsg(self.MackieCU_MeterModeNameT[self.MeterMode])
 							#self.UpdateMeterMode()
-					elif (event.data1 == 0x2E) | (event.data1 == 0x2F): # mixer bank
+					elif (event.data1 == mcu_buttons.FaderBankLeft) | (event.data1 == mcu_buttons.FaderBankRight): # mixer bank
 						if event.data2 > 0:
-							self.SetFirstTrack(self.FirstTrackT[self.FirstTrack] - 8 + int(event.data1 == 0x2F) * 16)
-					elif (event.data1 == 0x30) | (event.data1 == 0x31):
+							self.SetFirstTrack(self.FirstTrackT[self.FirstTrack] - 8 + int(event.data1 == mcu_buttons.FaderBankRight) * 16)
+					elif (event.data1 == mcu_buttons.FaderChannelLeft) | (event.data1 == mcu_buttons.FaderChannelRight):
 						if event.data2 > 0:
-							self.SetFirstTrack(self.FirstTrackT[self.FirstTrack] - 1 + int(event.data1 == 0x31) * 2)
-					elif event.data1 == 0x32: # self.Flip
+							self.SetFirstTrack(self.FirstTrackT[self.FirstTrack] - 1 + int(event.data1 == mcu_buttons.FaderChannelRight) * 2)
+					elif event.data1 == mcu_buttons.Flip: # self.Flip
 						if event.data2 > 0:
 							self.Flip = not self.Flip
 							self.UpdateColT()
 							self.UpdateLEDs()
-					elif event.data1 in [0x20, 0x21, 0x22, 0x23, 0x24, 0x25, 0x26, 0x27]: # knob reset
+					elif event.data1 in [mcu_buttons.Encoder_1, mcu_buttons.Encoder_2, mcu_buttons.Encoder_3, mcu_buttons.Encoder_4, mcu_buttons.Encoder_5, mcu_buttons.Encoder_6, mcu_buttons.Encoder_7, mcu_buttons.Encoder_8]: # knob reset
 						if self.Page == mcu_pages.Free:
-							i = event.data1 - 0x20
+							i = event.data1 - mcu_buttons.Encoder_1
 							self.ColT[i].KnobHeld = event.data2 > 0
 							if event.data2 > 0:
 								self.ColT[i].Peak = self.ActivityMax
@@ -239,7 +239,7 @@ class TMackieCU_Ext():
 							device.hardwareRefreshMixerTrack(self.ColT[i].TrackNum)
 							return
 						elif event.data2 > 0:
-							n = event.data1 - 0x20
+							n = event.data1 - mcu_buttons.Encoder_1
 							if self.Page == mcu_pages.Sends:
 								if mixer.setRouteTo(mixer.trackNumber(), self.ColT[n].TrackNum, -1) < 0:
 									self.OnSendMsg('Cannot send to this track')
@@ -269,32 +269,32 @@ class TMackieCU_Ext():
 							#device.dispatch(0, midi.MIDI_NOTEON + (event.data1 << 8) + (event.data2 << 16) )
 
 				if (event.pmeFlags & midi.PME_System_Safe != 0):
-					if event.data1 == 0x47: # link selected channels to current mixer track
+					if event.data1 == mcu_buttons.LinkChannel: # link selected channels to current mixer track
 						if event.data2 > 0:
 							if self.Shift:
 								mixer.linkTrackToChannel(midi.ROUTE_StartingFromThis)
 							else:
 								mixer.linkTrackToChannel(midi.ROUTE_ToThis)
-					elif (event.data1 >= 0x18) & (event.data1 <= 0x1F): # select mixer track
+					elif (event.data1 >= mcu_buttons.Select_1) & (event.data1 <= mcu_buttons.Select_8): # select mixer track
 						if event.data2 > 0:
-							i = event.data1 - 0x18
+							i = event.data1 - mcu_buttons.Select_1
 							ui.showWindow(midi.widMixer)
 							mixer.setTrackNumber(self.ColT[i].TrackNum, midi.curfxScrollToMakeVisible | midi.curfxMinimalLatencyUpdate)
 
-					elif (event.data1 >= 0x8) & (event.data1 <= 0xF): # solo
+					elif (event.data1 >= mcu_buttons.Solo_1) & (event.data1 <= mcu_buttons.Solo_8): # solo
 						if event.data2 > 0:
-							i = event.data1 - 0x8
+							i = event.data1 - mcu_buttons.Solo_1
 							self.ColT[i].solomode = midi.fxSoloModeWithDestTracks
 							if self.Shift:
 								Include(self.ColT[i].solomode, midi.fxSoloModeWithSourceTracks)
 							mixer.soloTrack(self.ColT[i].TrackNum, midi.fxSoloToggle, self.ColT[i].solomode)
 							mixer.setTrackNumber(self.ColT[i].TrackNum, midi.curfxScrollToMakeVisible)
 
-					elif (event.data1 >= 0x10) & (event.data1 <= 0x17): # mute
+					elif (event.data1 >= mcu_buttons.Mute_1) & (event.data1 <= mcu_buttons.Mute_8): # mute
 						if event.data2 > 0:
-							mixer.enableTrack(self.ColT[event.data1 - 0x10].TrackNum)
+							mixer.enableTrack(self.ColT[event.data1 - mcu_buttons.Mute_1].TrackNum)
 
-					elif (event.data1 >= 0x0) & (event.data1 <= 0x7): # arm
+					elif (event.data1 >= mcu_buttons.Record_1) & (event.data1 <= mcu_buttons.Record_8): # arm
 						if event.data2 > 0:
 							mixer.armTrack(self.ColT[event.data1].TrackNum)
 							if mixer.isTrackArmed(self.ColT[event.data1].TrackNum):
