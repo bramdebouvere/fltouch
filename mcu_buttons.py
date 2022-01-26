@@ -8,15 +8,17 @@ Stereo = 0x2B
 Effects = 0x2C
 Free = 0x2D
 
-# Other
+# Banking
 FaderBankLeft = 0x2E
 FaderBankRight = 0x2F
 FaderChannelLeft = 0x30
 FaderChannelRight = 0x31
 
+# Other
 Flip = 0x32
 Smooth = 0x33
 NameValue = 0x34
+TimeFormat = 0x35
 
 # Navigation 
 Up = 0x60
