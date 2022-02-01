@@ -38,7 +38,6 @@ class TMackieCU(mcu_base_class.McuBaseClass):
 
 		self.MackieCU_ExtenderPosT = ('left', 'right')
 
-		self.ArrowsStr = chr(0x7F) + chr(0x7E) + chr(0x32)
 		self.ExtenderPos = mcu_extender_location.Left
 
 	def OnInit(self):
@@ -85,22 +84,23 @@ class TMackieCU(mcu_base_class.McuBaseClass):
 		device.baseTrackSelect(Index, Step)
 		if Index == 0:
 			s = channels.getChannelName(channels.channelNumber())
-			self.OnSendMsg(self.ArrowsStr + 'Channel: ' + s)
+			self.OnSendMsg(mcu_constants.ArrowsStr + 'Channel: ' + s)
 		elif Index == 1:
-			self.OnSendMsg(self.ArrowsStr + 'Mixer track: ' + mixer.getTrackName(mixer.trackNumber()))
+			self.OnSendMsg(mcu_constants.ArrowsStr + 'Mixer track: ' + mixer.getTrackName(mixer.trackNumber()))
 		elif Index == 2:
 			s = patterns.getPatternName(patterns.patternNumber())
-			self.OnSendMsg(self.ArrowsStr + 'Pattern: ' + s)
+			self.OnSendMsg(mcu_constants.ArrowsStr + 'Pattern: ' + s)
 
 	def Jog(self, event):
-		# ------ START rd3d2 forcing jog dial to use the playlist
-		ui.setFocused(midi.widPlaylist)
-		# ------ END rd3d2 forcing jog dial to use the playlist
 		if self.JogSource == 0:
+			ui.showWindow(midi.widPlaylist)
+			ui.setFocused(midi.widPlaylist)
 			transport.globalTransport(midi.FPT_Jog + int(self.Shift ^ self.Scrub), event.outEv, event.pmeFlags) # relocate
 		elif self.JogSource == mcu_buttons.Move:
 			transport.globalTransport(midi.FPT_MoveJog, event.outEv, event.pmeFlags)
 		elif self.JogSource == mcu_buttons.Marker:
+			ui.showWindow(midi.widPlaylist)
+			ui.setFocused(midi.widPlaylist)
 			if self.Shift:
 				s = 'Marker selection'
 			else:
@@ -108,34 +108,42 @@ class TMackieCU(mcu_base_class.McuBaseClass):
 			if event.outEv != 0:
 				if transport.globalTransport(midi.FPT_MarkerJumpJog + int(self.Shift), event.outEv, event.pmeFlags) == midi.GT_Global:
 					s = ui.getHintMsg()
-			self.OnSendMsg(self.ArrowsStr + s)
+			self.OnSendMsg(mcu_constants.ArrowsStr + s)
 
 		elif self.JogSource == mcu_buttons.Undo:
 			if event.outEv == 0:
 				s = 'Undo history'
 			elif transport.globalTransport(midi.FPT_UndoJog, event.outEv, event.pmeFlags) == midi.GT_Global:
-				s = ui.GetHintMsg()
-			self.OnSendMsg(self.ArrowsStr + s + ' (level ' + general.getUndoLevelHint() + ')')
+				s = ui.getHintMsg()
+			self.OnSendMsg(mcu_constants.ArrowsStr + s + ' (level ' + general.getUndoLevelHint() + ')')
 
 		elif self.JogSource == mcu_buttons.Zoom:
 			if event.outEv != 0:
 				transport.globalTransport(midi.FPT_HZoomJog + int(self.Shift), event.outEv, event.pmeFlags)
 
 		elif self.JogSource == mcu_buttons.Window:
-
 			if event.outEv != 0:
 				transport.globalTransport(midi.FPT_WindowJog, event.outEv, event.pmeFlags)
 			s = ui.getFocusedFormCaption()
 			if s != "":
-				self.OnSendMsg(self.ArrowsStr + 'Current window: ' + s)
+				self.OnSendMsg(mcu_constants.ArrowsStr + 'Current window: ' + s)
 
-		elif (self.JogSource == mcu_buttons.Pattern) | (self.JogSource == mcu_buttons.Mixer) | (mcu_buttons.Channels):
+		elif (self.JogSource == mcu_buttons.Pattern) | (self.JogSource == mcu_buttons.Mixer) | (self.JogSource == mcu_buttons.Channels):
 			self.TrackSel(self.JogSource - mcu_buttons.Pattern, event.outEv)
+			if (self.JogSource == mcu_buttons.Pattern):
+				ui.showWindow(midi.widPlaylist)
+				ui.setFocused(midi.widPlaylist)
+			elif (self.JogSource == mcu_buttons.Mixer):
+				ui.showWindow(midi.widMixer)
+				ui.setFocused(midi.widMixer)
+			elif (self.JogSource == mcu_buttons.Channels):
+				ui.showWindow(midi.widChannelRack)
+				ui.setFocused(midi.widChannelRack)
 
 		elif self.JogSource == mcu_buttons.Tempo:
 			if event.outEv != 0:
 				channels.processRECEvent(midi.REC_Tempo, channels.incEventValue(midi.REC_Tempo, event.outEv, midi.EKRes), midi.PME_RECFlagsT[int(event.pmeFlags & midi.PME_LiveInput != 0)] - midi.REC_FromMIDI)
-			self.OnSendMsg(self.ArrowsStr + 'Tempo: ' + mixer.getEventIDValueString(midi.REC_Tempo, mixer.getCurrentTempo()))
+			self.OnSendMsg(mcu_constants.ArrowsStr + 'Tempo: ' + mixer.getEventIDValueString(midi.REC_Tempo, mixer.getCurrentTempo()))
 
 		elif self.JogSource in [mcu_buttons.Free1, mcu_buttons.Free2, mcu_buttons.Free3, mcu_buttons.Free4]:
 			# CC
@@ -143,12 +151,12 @@ class TMackieCU(mcu_base_class.McuBaseClass):
 
 			if event.outEv != 0:
 				event.isIncrement = 1
-				s = chr(0x7E + int(event.outEv < 0))
-				self.OnSendMsg(self.ArrowsStr + 'Free jog ' + str(event.data1) + ': ' + s)
+				s = chr(0x2B + int(event.outEv < 0)*2) # + or - sign depending on how you rotate
+				self.OnSendMsg(mcu_constants.ArrowsStr + 'Free jog ' + str(event.data1) + ': ' + s)
 				device.processMIDICC(event)
 				return
 			else:
-				self.OnSendMsg(self.ArrowsStr + 'Free jog ' + str(event.data1))
+				self.OnSendMsg(mcu_constants.ArrowsStr + 'Free jog ' + str(event.data1))
 
 
 	def OnMidiMsg(self, event):
