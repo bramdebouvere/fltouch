@@ -5,6 +5,7 @@ FL Studio MIDI scripts for the Behringer X-Touch + extender(s) (Mackie Control U
 - Support for multiple extenders
 - Improved knob resolution and acceleration
 - Improved jog wheel with automatic window focus
+- Jog wheel will seek by default
 - Auto channel selection when touching a fader
 - Make use of the full scribble strip width
 - Meter values are more accurate
@@ -12,6 +13,7 @@ FL Studio MIDI scripts for the Behringer X-Touch + extender(s) (Mackie Control U
 - Smoothing is disabled by default
 - Sliders now function in free control mode
 - Changing the tempo using the jog wheel now works
+- Added basic scrubbing functionality, hold shift for more accuracy
 - Various bugfixes and improvements
 
 More improvements later...

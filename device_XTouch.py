@@ -95,7 +95,11 @@ class TMackieCU(mcu_base_class.McuBaseClass):
 		if self.JogSource == 0:
 			ui.showWindow(midi.widPlaylist)
 			ui.setFocused(midi.widPlaylist)
-			transport.globalTransport(midi.FPT_Jog + int(self.Shift ^ self.Scrub), event.outEv, event.pmeFlags) # relocate
+			if (self.Scrub):
+				oldSongPos = transport.getSongPos(midi.SONGLENGTH_ABSTICKS)
+				transport.setSongPos(oldSongPos + event.outEv * (1 + 9 * (not self.Shift)), midi.SONGLENGTH_ABSTICKS)
+			else:
+				transport.globalTransport(midi.FPT_Jog, event.outEv, event.pmeFlags) # relocate
 		elif self.JogSource == mcu_buttons.Move:
 			transport.globalTransport(midi.FPT_MoveJog, event.outEv, event.pmeFlags)
 		elif self.JogSource == mcu_buttons.Marker:
