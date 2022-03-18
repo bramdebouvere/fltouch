@@ -93,13 +93,16 @@ class TMackieCU(mcu_base_class.McuBaseClass):
 
 	def Jog(self, event):
 		if self.JogSource == 0:
-			ui.showWindow(midi.widPlaylist)
-			ui.setFocused(midi.widPlaylist)
-			if (self.Scrub):
-				oldSongPos = transport.getSongPos(midi.SONGLENGTH_ABSTICKS)
-				transport.setSongPos(oldSongPos + event.outEv * (1 + 9 * (not self.Shift)), midi.SONGLENGTH_ABSTICKS)
+			if (ui.getFocused(midi.widBrowser)):
+				transport.globalTransport(midi.FPT_Jog, event.outEv, event.pmeFlags) # go up/down in browser
 			else:
-				transport.globalTransport(midi.FPT_Jog, event.outEv, event.pmeFlags) # relocate
+				ui.showWindow(midi.widPlaylist)
+				ui.setFocused(midi.widPlaylist)
+				if (self.Scrub):
+					oldSongPos = transport.getSongPos(midi.SONGLENGTH_ABSTICKS)
+					transport.setSongPos(oldSongPos + event.outEv * (1 + 9 * (not self.Shift)), midi.SONGLENGTH_ABSTICKS)
+				else:
+					transport.globalTransport(midi.FPT_Jog, event.outEv, event.pmeFlags) # relocate
 		elif self.JogSource == mcu_buttons.Move:
 			transport.globalTransport(midi.FPT_MoveJog, event.outEv, event.pmeFlags)
 		elif self.JogSource == mcu_buttons.Marker:
