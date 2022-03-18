@@ -252,11 +252,7 @@ class TMackieCU(mcu_base_class.McuBaseClass):
 								self.SetPage(self.Page)
 								self.OnSendMsg('Extender on ' + self.MackieCU_ExtenderPosT[self.ExtenderPos])
 							else:
-								pass #don't react, this button (name/value) can be used for something else now
-								#self.MeterMode = (self.MeterMode + 1) % 3
-								#self.OnSendMsg(self.MackieCU_MeterModeNameT[self.MeterMode])
-								#self.UpdateMeterMode()
-								#self.McuDevice.DispatchToReceivers(midi.MIDI_NOTEON + (event.data1 << 8) + (event.data2 << 16))
+								transport.globalTransport(midi.FPT_F2, int(event.data2 > 0) * 2, event.pmeFlags, 8)
 					elif event.data1 == mcu_buttons.TimeFormat: # time format
 						if event.data2 > 0:
 							ui.setTimeDispMin()
