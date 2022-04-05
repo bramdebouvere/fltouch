@@ -29,7 +29,7 @@ More improvements later...
 2. Download all files in this repository *(Code -> Download ZIP)*. From the ZIP archive, copy all the files in the `fltouch-main` folder to your FL Studio Scripts folder, in a dedicated subfolder (usually this would be `%UserProfile%\Documents\Image-Line\Data\FL Studio\Settings\Hardware\fltouch`).
 
 3. In FL Studio's MIDI settings *(Options -> Midi settings)*, you'll find your "X-Touch" and "X-Touch-Ext" controllers. Set your X-Touch's MIDI channel to 102 and the extenders to 103, 104, ... and change the controller type to "FLtouch X-Touch" or "FLtouch X-Touch Extender" (depending on if the device is an extender or not). 
-![FL Studio Midi Settings Screen](https://user-images.githubusercontent.com/3641681/146776383-881f86f8-23a2-447d-92a4-8486697f1908.png)
+![FL Studio Midi Settings Screen](https://user-images.githubusercontent.com/3641681/161856471-97810569-0ed5-4123-968a-68a11d295be2.png)
 
 ### Layout
 ![Controller layout](https://user-images.githubusercontent.com/3641681/159065298-c055e292-a587-477a-b0e6-cb76a467cfd9.png)
