@@ -63,6 +63,7 @@ class McuBaseClass():
                 self.McuDevice.SetTextDisplay('', skipIsAssignedCheck = True)
 
             self.McuDevice.SetTextDisplay('', 1, skipIsAssignedCheck = True)
+            self.McuDevice.SetScreenColors(skipIsAssignedCheck = True)
 
     def OnDirtyMixerTrack(self, SetTrackNum):
         """
@@ -74,7 +75,8 @@ class McuBaseClass():
                 self.Tracks[m].Dirty = True
 
     def UpdateTextDisplay(self):
-        """ Updates the mixer track names """
+        """ Updates the mixer track names and colors """
+        # Update names
         s1 = ''
         for m in range(0, len(self.Tracks) - 1):
             s = ''
@@ -87,6 +89,16 @@ class McuBaseClass():
             s1 = s1 + s
 
         self.McuDevice.SetTextDisplay(s1, 1)
+
+        # Update colors
+        if self.Page == mcu_pages.Free:
+            self.McuDevice.SetScreenColors() # all white
+        else:
+            colorArr = []
+            for m in range(0, len(self.Tracks) - 1):
+                c = mixer.getTrackColor(self.Tracks[m].TrackNum)
+                colorArr.append(c)
+            self.McuDevice.SetScreenColors(colorArr)
 
     def UpdateMeterMode(self):
         self.McuDevice.ClearMeters()

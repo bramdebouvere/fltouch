@@ -4,6 +4,7 @@ import utils
 
 import mcu_device_track
 import mcu_device_time_display
+import mcu_colors
 
 class McuDevice:
     """
@@ -11,8 +12,9 @@ class McuDevice:
     """ 
 
     def __init__(self, isExtender: bool):
-        self.__isExtender = isExtender
+        self.isExtender = isExtender
         self.__productId = 0x15 if isExtender else 0x14 # productID used by MCU protocol
+        self.__lastScreenColors = [0,0,0,0,0,0,0,0]
 
         # create tracks
         self._tracks = [mcu_device_track.McuDeviceTrack(i, self.__productId, i == 8) for i in range(8 if isExtender else 9)]
@@ -76,6 +78,20 @@ class McuDevice:
             sysex = bytearray([0xF0, 0x00, 0x00, 0x66, self.__productId, 0x12, (lastMsgLen + 1) * row]) + bytearray(message.ljust(lastMsgLen + 1, ' ')[:maxLen], 'utf-8')
             sysex.append(0xF7)
             device.midiOutSysex(bytes(sysex))
+
+    def SetScreenColors(self, colorArray = [-10261391,-10261391,-10261391,-10261391,-10261391,-10261391,-10261391,-10261391], skipIsAssignedCheck: bool = False):
+        """ Sets the colors of the screens (all white by default) """
+        if len(colorArray) != 8:
+            return
+        if colorArray == self.__lastScreenColors:
+            return
+        if skipIsAssignedCheck or device.isAssigned():
+            sysex = bytearray([0xF0, 0x00, 0x00, 0x66, self.__productId, 0x72])
+            for color in colorArray:
+                sysex.append(mcu_colors.GetMcuColor(color))
+            sysex.append(0xF7)
+            device.midiOutSysex(bytes(sysex))
+            self.__lastScreenColors = colorArray
 
     def SetAssignmentMessage(self, number= -1, skipIsAssignedCheck: bool = False):
         """ Sets the assignment screen (shows track number, -1 = empty) """
