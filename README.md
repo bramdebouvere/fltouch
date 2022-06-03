@@ -31,6 +31,8 @@ More improvements later...
 3. In FL Studio's MIDI settings *(Options -> Midi settings)*, you'll find your "X-Touch" and "X-Touch-Ext" controllers. Set your X-Touch's MIDI channel to 102 and the extenders to 103, 104, ... and change the controller type to "FLtouch X-Touch" or "FLtouch X-Touch Extender" (depending on if the device is an extender or not). 
 ![FL Studio Midi Settings Screen](https://user-images.githubusercontent.com/3641681/161856471-97810569-0ed5-4123-968a-68a11d295be2.png)
 
+If these instructions are unclear, you can find a more detailed guide by Zizzer Productions [here](https://www.zizzerproductions.com/post/make-behringer-universal-control-surface-work-with-fl-studio).
+
 ### Layout
 ![Controller layout](https://user-images.githubusercontent.com/3641681/159065298-c055e292-a587-477a-b0e6-cb76a467cfd9.png)
 
