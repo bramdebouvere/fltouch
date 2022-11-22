@@ -3,6 +3,7 @@ import midi
 
 import mcu_device_fader_conversion
 
+
 class McuDeviceTrackFader:
     """ Class for controlling a single fader on the Xtouch in MCU mode (Hardware abstraction) """
 
@@ -18,4 +19,5 @@ class McuDeviceTrackFader:
             data1 = mcu_device_fader_conversion.FlFaderToMcuFader(flFaderValue)
             data2 = data1 & 127
             data1 = data1 >> 7
-            device.midiOutNewMsg(midi.MIDI_PITCHBEND + self.__index + (data2 << 8) + (data1 << 16), self.__baseMidiValue + 5)
+            device.midiOutNewMsg(midi.MIDI_PITCHBEND + self.__index +
+                                 (data2 << 8) + (data1 << 16), self.__baseMidiValue + 5)

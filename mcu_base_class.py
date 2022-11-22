@@ -16,20 +16,22 @@ class McuBaseClass():
 
     def __init__(self, device: mcu_device.McuDevice):
         self.MsgT = ["", ""]
-        self.Tracks = [mcu_track.McuTrack() for i in range(0)] # empty array, since "import typing" is not supported
+        # empty array, since "import typing" is not supported
+        self.Tracks = [mcu_track.McuTrack() for i in range(0)]
 
-        self.Shift = False #indicates that the shift button is pressed
+        self.Shift = False  # indicates that the shift button is pressed
         self.MsgDirty = False
 
         self.FirstTrack = 0
         self.FirstTrackT = [0, 0]
 
-        self.FreeCtrlT = [0 for x in range(mcu_constants.FreeTrackCount + 1)]  # 64+1 sliders
+        self.FreeCtrlT = [0 for x in range(
+            mcu_constants.FreeTrackCount + 1)]  # 64+1 sliders
         self.Clicking = False
 
         self.Page = 0
         self.Flip = False
-        
+
         self.SmoothSpeed = 0
 
         self.McuDevice = device
@@ -38,18 +40,19 @@ class McuBaseClass():
         """ Called when the script has been started """
         self.FirstTrackT[0] = 1
         self.FirstTrack = 0
-        self.SmoothSpeed = 0 # TODO: is not required if OnInit is not called more than once, need to check if this is the case
+        # TODO: is not required if OnInit is not called more than once, need to check if this is the case
+        self.SmoothSpeed = 0
         self.Clicking = True
 
         device.setHasMeters()
-        
+
         # set free mode faders to center
         for m in range(0, len(self.FreeCtrlT)):
-            self.FreeCtrlT[m] = 8192 
+            self.FreeCtrlT[m] = 8192
 
         # init hardware
         self.McuDevice.Initialize()
-        self.McuDevice.SetBackLightTimeout(2) # backlight timeout to 2 minutes
+        self.McuDevice.SetBackLightTimeout(2)  # backlight timeout to 2 minutes
         self.McuDevice.SetClicking(self.Clicking)
 
     def OnDeInit(self):
@@ -58,12 +61,13 @@ class McuBaseClass():
 
         if device.isAssigned():
             if ui.isClosing():
-                self.McuDevice.SetTextDisplay(ui.getProgTitle() + ' session closed at ' + time.ctime(time.time()), 0, skipIsAssignedCheck = True)
+                self.McuDevice.SetTextDisplay(ui.getProgTitle(
+                ) + ' session closed at ' + time.ctime(time.time()), 0, skipIsAssignedCheck=True)
             else:
-                self.McuDevice.SetTextDisplay('', skipIsAssignedCheck = True)
+                self.McuDevice.SetTextDisplay('', skipIsAssignedCheck=True)
 
-            self.McuDevice.SetTextDisplay('', 1, skipIsAssignedCheck = True)
-            self.McuDevice.SetScreenColors(skipIsAssignedCheck = True)
+            self.McuDevice.SetTextDisplay('', 1, skipIsAssignedCheck=True)
+            self.McuDevice.SetScreenColors(skipIsAssignedCheck=True)
 
     def OnDirtyMixerTrack(self, SetTrackNum):
         """
@@ -92,7 +96,7 @@ class McuBaseClass():
 
         # Update colors
         if self.Page == mcu_pages.Free:
-            self.McuDevice.SetScreenColors() # all white
+            self.McuDevice.SetScreenColors()  # all white
         else:
             colorArr = []
             for m in range(0, len(self.Tracks) - 1):
@@ -102,7 +106,8 @@ class McuBaseClass():
 
     def UpdateMeterMode(self):
         self.McuDevice.ClearMeters()
-        self.McuDevice.DisableMeters() #TODO: check if it's actually required to disable and then enable again here
+        # TODO: check if it's actually required to disable and then enable again here
+        self.McuDevice.DisableMeters()
 
         # reset stuff
         self.UpdateTextDisplay()
@@ -112,7 +117,8 @@ class McuBaseClass():
         """ Called when peak meters have updated values """
         if self.Page != mcu_pages.Free:
             for track in self.McuDevice.tracksWithMeters:
-                currentPeak = mixer.getTrackPeaks(self.Tracks[track.index].TrackNum, midi.PEAK_LR_INV)
+                currentPeak = mixer.getTrackPeaks(
+                    self.Tracks[track.index].TrackNum, midi.PEAK_LR_INV)
                 track.meter.SetValue(currentPeak)
 
     def OnIdle(self):

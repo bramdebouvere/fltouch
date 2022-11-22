@@ -4,6 +4,7 @@ import midi
 import mcu_device_track_meter
 import mcu_device_track_fader
 
+
 class McuDeviceTrack:
     """ Class for controlling a single track on the Xtouch in MCU mode (Hardware abstraction) """
 
@@ -16,8 +17,10 @@ class McuDeviceTrack:
         self._isMain = isMain
 
         # create track meter instance, the master track does not have a meter
-        self._meter = None if self.isMain else mcu_device_track_meter.McuDeviceTrackMeter(productId, index)
-        self._fader = mcu_device_track_fader.McuDeviceTrackFader(productId, index, isMain, self._baseMidiValue)
+        self._meter = None if self.isMain else mcu_device_track_meter.McuDeviceTrackMeter(
+            productId, index)
+        self._fader = mcu_device_track_fader.McuDeviceTrackFader(
+            productId, index, isMain, self._baseMidiValue)
 
     @property
     def index(self):
