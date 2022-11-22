@@ -20,21 +20,18 @@ import mcu_track
 import mcu_base_class
 import mcu_constants
 
+
 class TMackieCU_Ext(mcu_base_class.McuBaseClass):
     def __init__(self):
         super().__init__(mcu_device.McuDevice(True))
-
         # TODO: this should probably be changed to 8, since there are only 8 faders on an extender
         self.Tracks = [mcu_track.McuTrack() for i in range(9)]
 
     def OnInit(self):
         super().OnInit()
-
         self.UpdateMeterMode()
-
         self.SetPage(self.Page)
-        self.OnSendMsg('Linked to ' + ui.getProgTitle() +
-                       ' (' + ui.getVersion() + ')')
+        self.OnSendMsg(f'Linked to {ui.getProgTitle()} ({ui.getVersion()})')
         print('OnInit ready')
 
     def OnDeInit(self):

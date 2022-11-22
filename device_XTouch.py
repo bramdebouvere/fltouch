@@ -44,8 +44,7 @@ class TMackieCU(mcu_base_class.McuBaseClass):
         self.UpdateMeterMode()
 
         self.SetPage(self.Page)
-        self.OnSendMsg('Linked to ' + ui.getProgTitle() +
-                       ' (' + ui.getVersion() + ')')
+        self.OnSendMsg(f'Linked to {ui.getProgTitle()} ({ui.getVersion()})')
         print('OnInit ready')
 
     def OnDeInit(self):
