@@ -49,3 +49,13 @@ More improvements later...
 ### Layout
 
 ![Controller layout](https://user-images.githubusercontent.com/3641681/159065298-c055e292-a587-477a-b0e6-cb76a467cfd9.png)
+
+## Contribute
+
+To set up a Virtual Environment:
+
+``` bash
+% python -m venv .venv
+% . ./.venv/bin/activate
+% python -m pip install -r requirements.txt
+```
