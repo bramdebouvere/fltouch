@@ -6,9 +6,7 @@ import patterns
 import mixer
 import device
 import transport
-import arrangement
 import general
-import launchMapPages
 import playlist
 import ui
 import channels
@@ -16,7 +14,6 @@ import channels
 import midi
 import utils
 
-import debug
 import mcu_pages
 import mcu_buttons
 import mcu_device

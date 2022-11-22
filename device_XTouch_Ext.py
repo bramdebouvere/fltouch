@@ -3,21 +3,15 @@
 # receiveFrom=FLtouch X-Touch
 # supportedDevices=X-Touch-Ext
 
-import patterns
 import mixer
 import device
 import transport
-import arrangement
-import general
-import launchMapPages
-import playlist
 import ui
 import channels
 
 import midi
 import utils
 
-import debug
 import mcu_pages
 import mcu_buttons
 import mcu_device
@@ -25,7 +19,6 @@ import mcu_device_fader_conversion
 import mcu_track
 import mcu_base_class
 import mcu_constants
-
 
 class TMackieCU_Ext(mcu_base_class.McuBaseClass):
     def __init__(self):

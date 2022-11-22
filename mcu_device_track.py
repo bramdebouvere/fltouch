@@ -1,6 +1,3 @@
-import device
-import midi
-
 import mcu_device_track_meter
 import mcu_device_track_fader
 
