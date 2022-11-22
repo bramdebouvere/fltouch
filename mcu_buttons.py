@@ -20,7 +20,7 @@ Smooth = 0x33
 NameValue = 0x34
 TimeFormat = 0x35
 
-# Navigation 
+# Navigation
 Up = 0x60
 Down = 0x61
 Left = 0x62
@@ -133,11 +133,11 @@ AddMarker = 0x49
 
 # Window / Time selection
 Browser = 0x4A
-StepSequencer = 0x4B # (main)
+StepSequencer = 0x4B  # (main)
 Window = 0x4C
 In = 0x4D
 Out = 0x4E
-Select = 0x4F # Punch
+Select = 0x4F  # Punch
 
 # Menu
 Save = 0x50
