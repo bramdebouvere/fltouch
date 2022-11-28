@@ -1,3 +1,5 @@
+import mcu_knob
+
 class McuTrack:
     """ Represents data for a track on the XTouch """
 
@@ -8,7 +10,7 @@ class McuTrack:
         self.KnobPressEventID = 0
         self.KnobResetEventID = 0
         self.KnobResetValue = 0
-        self.KnobMode = 0 # 0=?, 1=?, 2=?, 3=?, 4=OFF
+        self.KnobMode = mcu_knob.Parameter # 0=Parameter, 1=Pan, 2=Volume, 3=?, 4=OFF
         self.KnobCenter = 0
         self.SliderEventID = 0
         self.SliderName = "" # The name of the slider that you will see on the screen when you slide it

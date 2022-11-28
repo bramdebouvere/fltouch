@@ -4,11 +4,13 @@ import time
 import utils
 import mixer
 import midi
+import transport
 
 import mcu_constants
 import mcu_device
 import mcu_track
 import mcu_pages
+import mcu_knob
 
 
 class McuBaseClass():
@@ -121,3 +123,72 @@ class McuBaseClass():
         if self.MsgDirty:
             self.UpdateMsg()
             self.MsgDirty = False
+
+    def UpdateTrack(self, Num):
+        """ Updates the sliders, buttons & rotary encoders for a specific track """
+        data1 = 0
+        baseID = 0
+        center = 0
+
+        if device.isAssigned():
+            if self.Page == mcu_pages.Free:
+                baseID = midi.EncodeRemoteControlID(device.getPortNumber(), 0, self.Tracks[Num].BaseEventID)
+                # slider
+                m = self.FreeCtrlT[self.Tracks[Num].TrackNum]
+                self.McuDevice.GetTrack(Num).fader.SetLevel(m, True)
+                if Num < 8:
+                    # ring
+                    d = mixer.remoteFindEventValue(baseID + int(self.Tracks[Num].KnobHeld))
+                    if d >= 0:
+                        m = 1 + round(d * 10)
+                    else:
+                        m = int(self.Tracks[Num].KnobHeld) * (11 + (2 << 4))
+                    device.midiOutNewMsg(midi.MIDI_CONTROLCHANGE + ((0x30 + Num) << 8) + (m << 16), self.Tracks[Num].LastValueIndex)
+                    # buttons
+                    buttonActive = False
+                    for buttonIndex in range(0, 4):
+                        d = mixer.remoteFindEventValue(baseID + 3 + buttonIndex)
+                        if d >= 0:
+                            buttonActive = d >= 0.5
+                        else:
+                            buttonActive = False
+
+                        self.McuDevice.GetTrack(Num).buttons.SetButtonByIndex(buttonIndex, buttonActive, True)
+            else:
+                sv = mixer.getEventValue(self.Tracks[Num].SliderEventID)
+
+                if Num < 8:
+                    # V-Pot
+                    center = self.Tracks[Num].KnobCenter
+                    knobMode = self.Tracks[Num].KnobMode
+
+                    if self.Tracks[Num].KnobEventID >= 0:
+                        m = mixer.getEventValue(self.Tracks[Num].KnobEventID, midi.MaxInt, False)
+                        if center < 0:
+                            if self.Tracks[Num].KnobResetEventID == self.Tracks[Num].KnobEventID:
+                                center = int(m !=  self.Tracks[Num].KnobResetValue)
+                            else:
+                                center = int(sv !=  self.Tracks[Num].KnobResetValue)
+
+                        if knobMode == mcu_knob.Parameter or knobMode == mcu_knob.Pan:
+                            data1 = 1 + round(m * (10 / midi.FromMIDI_Max)) + (center << 6) + (knobMode << 4)
+                        elif knobMode == mcu_knob.Volume:
+                            data1 = round(m * (11 / midi.FromMIDI_Max)) + (center << 6) + (knobMode << 4)
+                        elif knobMode == mcu_knob.Off:
+                            data1 = (center << 6)
+                        else:
+                            print('Unsupported knob mode')
+                    else:
+                        data1 = 0
+
+                    device.midiOutNewMsg(midi.MIDI_CONTROLCHANGE + ((0x30 + Num) << 8) + (data1 << 16), self.Tracks[Num].LastValueIndex)
+
+                    # arm, solo, mute
+                    self.McuDevice.GetTrack(Num).buttons.SetArmButton(mixer.isTrackArmed(self.Tracks[Num].TrackNum), transport.isRecording(), True)
+                    self.McuDevice.GetTrack(Num).buttons.SetSoloButton(mixer.isTrackSolo(self.Tracks[Num].TrackNum), True)
+                    self.McuDevice.GetTrack(Num).buttons.SetMuteButton(not mixer.isTrackEnabled(self.Tracks[Num].TrackNum), True)
+
+                # slider
+                self.McuDevice.GetTrack(Num).fader.SetLevelFromFlsFader(sv, True)
+
+            self.Tracks[Num].Dirty = False
