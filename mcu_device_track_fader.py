@@ -17,10 +17,10 @@ class McuDeviceTrackFader:
         paramValue = mcu_device_fader_conversion.FlFaderToMcuFader(flFaderValue)
         self.SetLevel(paramValue, skipIsAssignedCheck)
 
-    def SetLevel(self, flParameterValue: int, skipIsAssignedCheck: bool = False):
+    def SetLevel(self, value: int, skipIsAssignedCheck: bool = False):
         """ Sets the value of the fader on the Xtouch (0 to 16380) """
         if skipIsAssignedCheck or device.isAssigned():
-            data1 = flParameterValue
+            data1 = value
             data2 = data1 & 127
             data1 = data1 >> 7
             device.midiOutNewMsg(midi.MIDI_PITCHBEND + self.__index + (data2 << 8) + (data1 << 16), self.__baseMidiValue + 5)

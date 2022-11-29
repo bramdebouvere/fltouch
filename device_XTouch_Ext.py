@@ -84,7 +84,7 @@ class TMackieCU_Ext(mcu_base_class.McuBaseClass):
                         device.processMIDICC(event)
                         device.hardwareRefreshMixerTrack(self.Tracks[i].TrackNum)
                     else:
-                        self.SetKnobValue(event.data1 - 0x10, event.outEv, Res)
+                        super().SetKnobValue(event.data1 - 0x10, event.outEv, Res)
                         event.handled = True
                 else:
                     event.handled = False # for extra CCs in emulators
@@ -173,7 +173,7 @@ class TMackieCU_Ext(mcu_base_class.McuBaseClass):
                                 else:
                                     mixer.afterRoutingChanged()
                             else:
-                                self.SetKnobValue(n, midi.MaxInt)
+                                super().SetKnobValue(n, midi.MaxInt)
 
                     elif (event.data1 >= 0) & (event.data1 <= 0x1F): # free hold buttons
                         if self.Page == mcu_pages.Free:
@@ -237,8 +237,7 @@ class TMackieCU_Ext(mcu_base_class.McuBaseClass):
         self.McuDevice.SetTextDisplay(self.MsgT[1])
 
     def OnSendMsg(self, Msg):
-        self.MsgT[1] = Msg
-        self.MsgDirty = True
+        super().OnSendMsg(Msg)
 
     def SetPage(self, Value):
 
@@ -368,29 +367,6 @@ class TMackieCU_Ext(mcu_base_class.McuBaseClass):
 
             self.Tracks[m].LastValueIndex = 48 + m * 6
             self.UpdateCol(m)
-
-    def SetKnobValue(self, Num, Value, Res = midi.EKRes):
-        if (self.Tracks[Num].KnobEventID >= 0) & (self.Tracks[Num].KnobMode < 4):
-            if Value == midi.MaxInt:
-                if self.Page == mcu_pages.Effects:
-                    if self.Tracks[Num].KnobPressEventID >= 0:
-
-                        Value = channels.incEventValue(self.Tracks[Num].KnobPressEventID, 0, midi.EKRes)
-                        channels.processRECEvent(self.Tracks[Num].KnobPressEventID, Value, midi.REC_Controller)
-                        s = mixer.getEventIDName(self.Tracks[Num].KnobPressEventID)
-                        self.OnSendMsg(s)
-                    return
-                else:
-                    mixer.automateEvent(self.Tracks[Num].KnobResetEventID, self.Tracks[Num].KnobResetValue, midi.REC_MIDIController, self.SmoothSpeed)
-            else:
-                mixer.automateEvent(self.Tracks[Num].KnobEventID, Value, midi.REC_Controller, self.SmoothSpeed, 1, Res)
-
-            # hint
-            n = mixer.getAutoSmoothEventValue(self.Tracks[Num].KnobEventID)
-            s = mixer.getEventIDValueString(self.Tracks[Num].KnobEventID, n)
-            if s !=  '':
-                s = ': ' + s
-            self.OnSendMsg(self.Tracks[Num].KnobName + s)
 
     def SetFirstTrack(self, Value):
 

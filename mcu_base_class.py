@@ -5,6 +5,8 @@ import utils
 import mixer
 import midi
 import transport
+import general
+import channels
 
 import mcu_constants
 import mcu_device
@@ -192,3 +194,33 @@ class McuBaseClass():
                 self.McuDevice.GetTrack(Num).fader.SetLevelFromFlsFader(sv, True)
 
             self.Tracks[Num].Dirty = False
+
+    def OnSendMsg(self, Msg):
+        self.MsgT[1] = Msg
+        self.MsgDirty = True
+
+    def SetKnobValue(self, trackNumber, midiValue, resolution = midi.EKRes):
+        """ Sets the value of a knob in FL Studio (for all except free page?) (and shows it on the display) """
+        if not (self.Tracks[trackNumber].KnobEventID >= 0) & (self.Tracks[trackNumber].KnobMode != mcu_knob.Off):
+            return
+
+        if midiValue == midi.MaxInt:
+            if self.Page == mcu_pages.Effects:
+                if self.Tracks[trackNumber].KnobPressEventID >= 0:
+                    midiValue = channels.incEventValue(self.Tracks[trackNumber].KnobPressEventID, 0, midi.EKRes)
+                    general.processRECEvent(self.Tracks[trackNumber].KnobPressEventID, midiValue, midi.REC_Controller)
+                    s = mixer.getEventIDName(self.Tracks[trackNumber].KnobPressEventID)
+                    self.OnSendMsg(s)
+                return
+            else:
+                mixer.automateEvent(self.Tracks[trackNumber].KnobResetEventID, self.Tracks[trackNumber].KnobResetValue, midi.REC_MIDIController, self.SmoothSpeed)
+        else:
+            mixer.automateEvent(self.Tracks[trackNumber].KnobEventID, midiValue, midi.REC_Controller, self.SmoothSpeed, 1, resolution)
+
+        # show the value of the knob on the display
+        n = mixer.getAutoSmoothEventValue(self.Tracks[trackNumber].KnobEventID)
+        s = mixer.getEventIDValueString(self.Tracks[trackNumber].KnobEventID, n)
+        if s !=  '':
+            s = ': ' + s
+        self.OnSendMsg(self.Tracks[trackNumber].KnobName + s)
+
