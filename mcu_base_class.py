@@ -22,10 +22,10 @@ class McuBaseClass():
         self.MsgT = ["", ""]
         self.Tracks = [mcu_track.McuTrack() for i in range(0)] # empty array, since "import typing" is not supported
 
-        self.Shift = False #indicates that the shift button is pressed
+        self.Shift = False # indicates that the shift button is pressed
         self.MsgDirty = False
 
-        self.FirstTrack = 0
+        self.FirstTrack = 0 # the count mode for the tracks (0 = normal, 1 = free mode)
         self.FirstTrackT = [0, 0]
 
         self.FreeCtrlT = [0 for x in range(mcu_constants.FreeTrackCount + 1)]  # 64+1 sliders

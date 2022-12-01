@@ -522,25 +522,27 @@ class TMackieCU(mcu_base_class.McuBaseClass):
 
         self.FirstTrack = int(self.Page == mcu_pages.Free)
         receiverCount = device.dispatchReceiverCount()
-        if receiverCount == 0:
-            self.SetFirstTrack(self.FirstTrackT[self.FirstTrack])
-        elif self.Page == oldPage:
-            if self.ExtenderPos == mcu_extender_location.Left:
-                for n in range(0, receiverCount):
-                    device.dispatch(n, midi.MIDI_NOTEON + (0x7F << 8) + (self.FirstTrackT[self.FirstTrack] + (n * 8) << 16))
-                self.SetFirstTrack(self.FirstTrackT[self.FirstTrack] + receiverCount * 8)
-            elif self.ExtenderPos == mcu_extender_location.Right:
+
+        if self.Page != mcu_pages.Free:
+            if receiverCount == 0 or self.Page != oldPage:
                 self.SetFirstTrack(self.FirstTrackT[self.FirstTrack])
-                for n in range(0, receiverCount):
-                    device.dispatch(n, midi.MIDI_NOTEON + (0x7F << 8) + (self.FirstTrackT[self.FirstTrack] + ((n + 1) * 8) << 16))
+            else: # first time
+                if self.ExtenderPos == mcu_extender_location.Left:
+                    for n in range(0, receiverCount):
+                        device.dispatch(n, midi.MIDI_NOTEON + (0x7F << 8) + (self.FirstTrackT[self.FirstTrack] + (n * 8) << 16))
+                    self.SetFirstTrack(self.FirstTrackT[self.FirstTrack] + receiverCount * 8)
+                elif self.ExtenderPos == mcu_extender_location.Right:
+                    self.SetFirstTrack(self.FirstTrackT[self.FirstTrack])
+                    for n in range(0, receiverCount):
+                        device.dispatch(n, midi.MIDI_NOTEON + (0x7F << 8) + (self.FirstTrackT[self.FirstTrack] + ((n + 1) * 8) << 16))
 
         if self.Page == mcu_pages.Free:
-
             BaseID = midi.EncodeRemoteControlID(device.getPortNumber(), 0, mcu_constants.FreeEventID + 7)
             for n in range(0, len(self.FreeCtrlT)):
                 d = mixer.remoteFindEventValue(BaseID + n * 8, 1)
                 if d >= 0:
                     self.FreeCtrlT[n] = min(round(d * 16384), 16384)
+            self.SetFirstTrack(self.FirstTrackT[self.FirstTrack])
 
         if (oldPage == mcu_pages.Free) | (self.Page == mcu_pages.Free):
             self.UpdateMeterMode()
