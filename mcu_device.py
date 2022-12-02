@@ -42,11 +42,8 @@ class McuDevice:
 
     def SetFirstTrackOnExtender(self, extenderIndex, firstTrack):
         """ Dispatches a MIDI message to an extender to let them know their first track """
-        print('inIndex', extenderIndex)
-        print('inFirstTrack', firstTrack)
         if self.isExtender:
             return
-        print('out')
         self.SendMidiToExtender(extenderIndex, midi.MIDI_NOTEON + (0x7F << 8) + (firstTrack << 16))
 
     def SetBackLightTimeout(self, Minutes): 
