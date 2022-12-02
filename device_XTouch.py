@@ -6,9 +6,7 @@ import patterns
 import mixer
 import device
 import transport
-import arrangement
 import general
-import launchMapPages
 import playlist
 import ui
 import channels
@@ -259,15 +257,15 @@ class TMackieCU(mcu_base_class.McuBaseClass):
                     elif (event.data1 == mcu_buttons.FaderBankLeft) | (event.data1 == mcu_buttons.FaderBankRight): # mixer bank
                         if event.data2 > 0:
                             self.SetFirstTrack(self.FirstTrackT[self.FirstTrack] - 8 + int(event.data1 == mcu_buttons.FaderBankRight) * 16)
-                            self.McuDevice.SendMidiToExtender(midi.MIDI_NOTEON + (event.data1 << 8) + (event.data2 << 16))
+                            self.McuDevice.SendMidiToExtenders(midi.MIDI_NOTEON + (event.data1 << 8) + (event.data2 << 16))
                     elif (event.data1 == mcu_buttons.FaderChannelLeft) | (event.data1 == mcu_buttons.FaderChannelRight):
                         if event.data2 > 0:
                             self.SetFirstTrack(self.FirstTrackT[self.FirstTrack] - 1 + int(event.data1 == mcu_buttons.FaderChannelRight) * 2)
-                            self.McuDevice.SendMidiToExtender(midi.MIDI_NOTEON + (event.data1 << 8) + (event.data2 << 16))
+                            self.McuDevice.SendMidiToExtenders(midi.MIDI_NOTEON + (event.data1 << 8) + (event.data2 << 16))
                     elif event.data1 == mcu_buttons.Flip: # self.Flip
                         if event.data2 > 0:
                             self.Flip = not self.Flip
-                            self.McuDevice.SendMidiToExtender(midi.MIDI_NOTEON + (event.data1 << 8) + (event.data2 << 16))
+                            self.McuDevice.SendMidiToExtenders(midi.MIDI_NOTEON + (event.data1 << 8) + (event.data2 << 16))
                             self.UpdateColT()
                             self.UpdateLEDs()
                     elif event.data1 == mcu_buttons.Smooth: # smoothing
@@ -306,8 +304,9 @@ class TMackieCU(mcu_base_class.McuBaseClass):
                         if event.data2 > 0:
                             n = event.data1 - mcu_buttons.Pan
                             self.OnSendMsg(mcu_constants.PageDescriptions[n])
-                            self.SetPage(n)
-                            self.McuDevice.SendMidiToExtender(midi.MIDI_NOTEON + (event.data1 << 8) + (event.data2 << 16))
+                            if self.Page != n:
+                                self.SetPage(n)
+                            self.McuDevice.SendMidiToExtenders(midi.MIDI_NOTEON + (event.data1 << 8) + (event.data2 << 16))
 
                     elif event.data1 == mcu_buttons.Shift: # self.Shift
                         self.Shift = event.data2 > 0
@@ -529,12 +528,12 @@ class TMackieCU(mcu_base_class.McuBaseClass):
             else: # first time
                 if self.ExtenderPos == mcu_extender_location.Left:
                     for n in range(0, receiverCount):
-                        device.dispatch(n, midi.MIDI_NOTEON + (0x7F << 8) + (self.FirstTrackT[self.FirstTrack] + (n * 8) << 16))
+                        self.McuDevice.SetFirstTrackOnExtender(n, self.FirstTrackT[self.FirstTrack] + (n * 8))
                     self.SetFirstTrack(self.FirstTrackT[self.FirstTrack] + receiverCount * 8)
                 elif self.ExtenderPos == mcu_extender_location.Right:
                     self.SetFirstTrack(self.FirstTrackT[self.FirstTrack])
                     for n in range(0, receiverCount):
-                        device.dispatch(n, midi.MIDI_NOTEON + (0x7F << 8) + (self.FirstTrackT[self.FirstTrack] + ((n + 1) * 8) << 16))
+                        self.McuDevice.SetFirstTrackOnExtender(n, self.FirstTrackT[self.FirstTrack] + ((n + 1) * 8))
 
         if self.Page == mcu_pages.Free:
             BaseID = midi.EncodeRemoteControlID(device.getPortNumber(), 0, mcu_constants.FreeEventID + 7)

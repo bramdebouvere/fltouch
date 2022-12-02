@@ -3,16 +3,10 @@
 # receiveFrom=FLtouch X-Touch
 # supportedDevices=X-Touch-Ext
 
-import patterns
 import mixer
 import device
 import transport
-import arrangement
-import general
-import launchMapPages
-import playlist
 import ui
-import channels
 
 import midi
 import utils

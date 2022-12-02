@@ -28,11 +28,26 @@ class McuDevice:
         if device.isAssigned():
             device.midiOutSysex(bytes([0xF0, 0x00, 0x00, 0x66, self.__productId, 0x0C, 1, 0xF7]))
 
-    def SendMidiToExtender(self, message): 
+    def SendMidiToExtenders(self, message): 
         """ Dispatches a MIDI message to all receivers (extenders) """
         receiverCount = device.dispatchReceiverCount()
         for n in range(0, receiverCount):
             device.dispatch(n, message)
+
+    def SendMidiToExtender(self, extenderIndex, message):
+        """ Dispatches a MIDI message to a specific receiver (extender) """
+        receiverCount = device.dispatchReceiverCount()
+        if (extenderIndex >= 0 and extenderIndex < receiverCount):
+            device.dispatch(extenderIndex, message)
+
+    def SetFirstTrackOnExtender(self, extenderIndex, firstTrack):
+        """ Dispatches a MIDI message to an extender to let them know their first track """
+        print('inIndex', extenderIndex)
+        print('inFirstTrack', firstTrack)
+        if self.isExtender:
+            return
+        print('out')
+        self.SendMidiToExtender(extenderIndex, midi.MIDI_NOTEON + (0x7F << 8) + (firstTrack << 16))
 
     def SetBackLightTimeout(self, Minutes): 
         """ Sets the backlight timeout (0 should switch off immediately, but doesn't really work well) """
