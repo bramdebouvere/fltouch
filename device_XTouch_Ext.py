@@ -53,10 +53,6 @@ class TMackieCU_Ext(mcu_base_class.McuBaseClass):
                 if self.Tracks[n].Dirty:
                     self.UpdateTrack(n)
 
-        # LEDs
-        if flags & midi.HW_Dirty_LEDs:
-            self.UpdateLEDs()
-
     def OnMidiMsg(self, event):
         if (event.midiId == midi.MIDI_CONTROLCHANGE):
             if (event.midiChan == 0):
@@ -146,7 +142,6 @@ class TMackieCU_Ext(mcu_base_class.McuBaseClass):
                         if event.data2 > 0:
                             self.Flip = not self.Flip
                             self.UpdateColT()
-                            self.UpdateLEDs()
                     elif event.data1 in [mcu_buttons.Encoder_1, mcu_buttons.Encoder_2, mcu_buttons.Encoder_3, mcu_buttons.Encoder_4, mcu_buttons.Encoder_5, mcu_buttons.Encoder_6, mcu_buttons.Encoder_7, mcu_buttons.Encoder_8]: # knob reset
                         if self.Page == mcu_pages.Free:
                             i = event.data1 - mcu_buttons.Encoder_1
@@ -253,7 +248,6 @@ class TMackieCU_Ext(mcu_base_class.McuBaseClass):
         if (oldPage == mcu_pages.Free) | (self.Page == mcu_pages.Free):
             self.UpdateMeterMode()
         self.UpdateColT()
-        self.UpdateLEDs()
         self.UpdateTextDisplay()
 
     def UpdateMixer_Sel(self):
@@ -262,22 +256,9 @@ class TMackieCU_Ext(mcu_base_class.McuBaseClass):
                 self.McuDevice.GetTrack(m).buttons.SetSelectButton(self.Tracks[m].TrackNum == mixer.trackNumber(), True)
 
     def SetFirstTrack(self, Value):
-
         self.FirstTrackT[self.FirstTrack] = (Value + mixer.trackCount()) % mixer.trackCount()
         self.UpdateColT()
         device.hardwareRefreshMixerTrack(-1)
-
-    def UpdateLEDs(self):
-        if device.isAssigned():
-            isRecordingr = transport.isRecording()
-            b = 0
-            for m in range(0, mixer.trackCount()):
-                if mixer.isTrackArmed(m):
-                    b = 1 + int(isRecordingr)
-                    break
-
-            device.midiOutNewMsg((0x73 << 8) + midi.TranzPort_OffOnBlinkT[b], 16)
-
 
 MackieCU_Ext = TMackieCU_Ext()
 

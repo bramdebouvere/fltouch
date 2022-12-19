@@ -1,68 +1,5 @@
 # Constants for Mackie CU Button midi values
 
-# Pages
-Pan = 0x28
-Sends = 0x29
-Equalizer = 0x2A
-Stereo = 0x2B
-Effects = 0x2C
-Free = 0x2D
-
-# Banking
-FaderBankLeft = 0x2E
-FaderBankRight = 0x2F
-FaderChannelLeft = 0x30
-FaderChannelRight = 0x31
-
-# Other
-Flip = 0x32
-Smooth = 0x33
-NameValue = 0x34
-TimeFormat = 0x35
-
-# Navigation 
-Up = 0x60
-Down = 0x61
-Left = 0x62
-Right = 0x63
-Zoom = 0x64
-
-Scrub = 0x65
-
-# F1 - F8
-Cut = 0x36
-Copy = 0x37
-Paste = 0x38
-Insert = 0x39
-Delete = 0x3A
-ItemMenu = 0x3B
-Undo = 0x3C
-UndoRedo = 0x3D
-
-# Transport
-Shift = 0x54
-Edison = 0x55
-Snap = 0x56
-Metronome = 0x57
-CountDown = 0x58
-Mode = 0x59
-SongVSLoop = 0x5A
-
-Rewind = 0x5B
-FastForward = 0x5C
-Stop = 0x5D
-Play = 0x5E
-Record = 0x5F
-
-# Encoder press
-Encoder_1 = 0x20
-Encoder_2 = 0x21
-Encoder_3 = 0x22
-Encoder_4 = 0x23
-Encoder_5 = 0x24
-Encoder_6 = 0x25
-Encoder_7 = 0x26
-Encoder_8 = 0x27
 
 # Record (arm) buttons
 Record_1 = 0x0
@@ -104,16 +41,45 @@ Select_6 = 0x1D
 Select_7 = 0x1E
 Select_8 = 0x1F
 
-# Hold slider
-Slider_1 = 104
-Slider_2 = 105
-Slider_3 = 106
-Slider_4 = 107
-Slider_5 = 108
-Slider_6 = 109
-Slider_7 = 110
-Slider_8 = 111
-Slider_Main = 112
+# Encoder press
+Encoder_1 = 0x20
+Encoder_2 = 0x21
+Encoder_3 = 0x22
+Encoder_4 = 0x23
+Encoder_5 = 0x24
+Encoder_6 = 0x25
+Encoder_7 = 0x26
+Encoder_8 = 0x27
+
+# Pages
+Pan = 0x28
+Sends = 0x29
+Equalizer = 0x2A
+Stereo = 0x2B
+Effects = 0x2C
+Free = 0x2D
+
+# Banking
+FaderBankLeft = 0x2E
+FaderBankRight = 0x2F
+FaderChannelLeft = 0x30
+FaderChannelRight = 0x31
+
+# Other
+Flip = 0x32
+Smooth = 0x33
+NameValue = 0x34
+TimeFormat = 0x35
+
+# F1 - F8
+Cut = 0x36
+Copy = 0x37
+Paste = 0x38
+Insert = 0x39
+Delete = 0x3A
+ItemMenu = 0x3B
+Undo = 0x3C
+UndoRedo = 0x3D
 
 # Jog sources
 Pattern = 0x3E
@@ -144,3 +110,44 @@ Save = 0x50
 Menu = 0x51
 Escape = 0x52
 Enter = 0x53
+
+# Transport
+Shift = 0x54
+Edison = 0x55
+Snap = 0x56
+Metronome = 0x57
+CountDown = 0x58
+Mode = 0x59
+SongVSLoop = 0x5A
+
+Rewind = 0x5B
+FastForward = 0x5C
+Stop = 0x5D
+Play = 0x5E
+Record = 0x5F
+
+# Navigation 
+Up = 0x60
+Down = 0x61
+Left = 0x62
+Right = 0x63
+Zoom = 0x64
+
+Scrub = 0x65
+
+# Hold slider
+Slider_1 = 0x68
+Slider_2 = 0x69
+Slider_3 = 0x6A
+Slider_4 = 0x6B
+Slider_5 = 0x6C
+Slider_6 = 0x6D
+Slider_7 = 0x6E
+Slider_8 = 0x6F
+Slider_Main = 0x70
+
+# LEDs
+Smpte_Led = 0x71
+Beats_Led = 0x72
+Rude_Solo_Led = 0x73
+Relay_Click = 0x76

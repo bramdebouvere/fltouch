@@ -74,7 +74,7 @@ class TMackieCU(mcu_base_class.McuBaseClass):
         
         # LEDs
         if flags & midi.HW_Dirty_LEDs:
-            self.UpdateLEDs()
+            self.UpdateMasterSectionLEDs()
 
     def TrackSel(self, Index, Step):
 
@@ -267,16 +267,16 @@ class TMackieCU(mcu_base_class.McuBaseClass):
                             self.Flip = not self.Flip
                             self.McuDevice.SendMidiToExtenders(midi.MIDI_NOTEON + (event.data1 << 8) + (event.data2 << 16))
                             self.UpdateColT()
-                            self.UpdateLEDs()
+                            self.UpdateMasterSectionLEDs()
                     elif event.data1 == mcu_buttons.Smooth: # smoothing
                         if event.data2 > 0:
                             self.SmoothSpeed = int(self.SmoothSpeed == 0) * 469
-                            self.UpdateLEDs()
+                            self.UpdateMasterSectionLEDs()
                             self.OnSendMsg('Control smoothing ' + mcu_constants.OffOnStr[int(self.SmoothSpeed > 0)])
                     elif event.data1 == mcu_buttons.Scrub: # self.Scrub
                         if event.data2 > 0:
                             self.Scrub = not self.Scrub
-                            self.UpdateLEDs()
+                            self.UpdateMasterSectionLEDs()
                     # jog sources
                     elif event.data1 in [mcu_buttons.Undo, mcu_buttons.Pattern, mcu_buttons.Mixer, mcu_buttons.Channels, mcu_buttons.Tempo, mcu_buttons.Free1, mcu_buttons.Free2, mcu_buttons.Free3, mcu_buttons.Free4, mcu_buttons.Marker, mcu_buttons.Zoom, mcu_buttons.Move, mcu_buttons.Window]:
                         # update jog source
@@ -546,7 +546,7 @@ class TMackieCU(mcu_base_class.McuBaseClass):
         if (oldPage == mcu_pages.Free) | (self.Page == mcu_pages.Free):
             self.UpdateMeterMode()
         self.UpdateColT()
-        self.UpdateLEDs()
+        self.UpdateMasterSectionLEDs()
         self.UpdateTextDisplay()
 
     def UpdateMixer_Sel(self):
@@ -595,30 +595,34 @@ class TMackieCU(mcu_base_class.McuBaseClass):
 
         self.McuDevice.TimeDisplay.SetMessage(s)
 
-    def UpdateLEDs(self):
+
+    def UpdateMasterSectionLEDs(self):
+        """
+        Updates the LEDs on the Master Section
+        """
 
         if device.isAssigned():
             # stop
-            device.midiOutNewMsg((0x5D << 8) + midi.TranzPort_OffOnT[transport.isPlaying() == midi.PM_Stopped], 0)
+            device.midiOutNewMsg((mcu_buttons.Stop << 8) + midi.TranzPort_OffOnT[transport.isPlaying() == midi.PM_Stopped], 0)
             # loop
-            device.midiOutNewMsg((0x5A << 8) + midi.TranzPort_OffOnT[transport.getLoopMode() == midi.SM_Pat], 1)
+            device.midiOutNewMsg((mcu_buttons.SongVSLoop << 8) + midi.TranzPort_OffOnT[transport.getLoopMode() == midi.SM_Pat], 1)
             # record
             isRecording = transport.isRecording()
-            device.midiOutNewMsg((0x5F << 8) + midi.TranzPort_OffOnT[isRecording], 2)
+            device.midiOutNewMsg((mcu_buttons.Record << 8) + midi.TranzPort_OffOnT[isRecording], 2)
             # SMPTE/BEATS
-            device.midiOutNewMsg((0x71 << 8) + midi.TranzPort_OffOnT[ui.getTimeDispMin()], 3)
-            device.midiOutNewMsg((0x72 << 8) + midi.TranzPort_OffOnT[not ui.getTimeDispMin()], 4)
+            device.midiOutNewMsg((mcu_buttons.Smpte_Led << 8) + midi.TranzPort_OffOnT[ui.getTimeDispMin()], 3)
+            device.midiOutNewMsg((mcu_buttons.Beats_Led << 8) + midi.TranzPort_OffOnT[not ui.getTimeDispMin()], 4)
             # self.Page
             for m in range(0,  6):
-                device.midiOutNewMsg(((0x28 + m) << 8) + midi.TranzPort_OffOnT[m == self.Page], 5 + m)
+                device.midiOutNewMsg(((mcu_buttons.Pan + m) << 8) + midi.TranzPort_OffOnT[m == self.Page], 5 + m)
             # changed flag
-            device.midiOutNewMsg((0x50 << 8) + midi.TranzPort_OffOnT[general.getChangedFlag() > 0], 11)
+            device.midiOutNewMsg((mcu_buttons.Save << 8) + midi.TranzPort_OffOnT[general.getChangedFlag() > 0], 11)
             # metronome
-            device.midiOutNewMsg((0x57 << 8) + midi.TranzPort_OffOnT[general.getUseMetronome()], 12)
+            device.midiOutNewMsg((mcu_buttons.Metronome << 8) + midi.TranzPort_OffOnT[general.getUseMetronome()], 12)
             # rec precount
-            device.midiOutNewMsg((0x58 << 8) + midi.TranzPort_OffOnT[general.getPrecount()], 13)
+            device.midiOutNewMsg((mcu_buttons.CountDown << 8) + midi.TranzPort_OffOnT[general.getPrecount()], 13)
             # self.Scrub
-            device.midiOutNewMsg((0x65 << 8) + midi.TranzPort_OffOnT[self.Scrub], 15)
+            device.midiOutNewMsg((mcu_buttons.Scrub << 8) + midi.TranzPort_OffOnT[self.Scrub], 15)
             # use RUDE SOLO to show if any track is armed for recording
             b = 0
             for m in range(0,  mixer.trackCount()):
@@ -626,16 +630,16 @@ class TMackieCU(mcu_base_class.McuBaseClass):
                     b = 1 + int(isRecording)
                     break
 
-            device.midiOutNewMsg((0x73 << 8) + midi.TranzPort_OffOnBlinkT[b], 16)
+            device.midiOutNewMsg((mcu_buttons.Rude_Solo_Led << 8) + midi.TranzPort_OffOnBlinkT[b], 16)
             # smoothing
-            device.midiOutNewMsg((0x33 << 8) + midi.TranzPort_OffOnT[self.SmoothSpeed > 0], 17)
+            device.midiOutNewMsg((mcu_buttons.Smooth << 8) + midi.TranzPort_OffOnT[self.SmoothSpeed > 0], 17)
             # self.Flip
-            device.midiOutNewMsg((0x32 << 8) + midi.TranzPort_OffOnT[self.Flip], 18)
+            device.midiOutNewMsg((mcu_buttons.Flip << 8) + midi.TranzPort_OffOnT[self.Flip], 18)
             # snap
-            device.midiOutNewMsg((0x56 << 8) + midi.TranzPort_OffOnT[ui.getSnapMode() !=  3], 19)
+            device.midiOutNewMsg((mcu_buttons.Snap << 8) + midi.TranzPort_OffOnT[ui.getSnapMode() !=  3], 19)
             # focused windows
-            device.midiOutNewMsg((0x4A << 8) + midi.TranzPort_OffOnT[ui.getFocused(midi.widBrowser)], 20)
-            device.midiOutNewMsg((0x4B << 8) + midi.TranzPort_OffOnT[ui.getFocused(midi.widChannelRack)], 21)
+            device.midiOutNewMsg((mcu_buttons.Browser << 8) + midi.TranzPort_OffOnT[ui.getFocused(midi.widBrowser)], 20)
+            device.midiOutNewMsg((mcu_buttons.StepSequencer << 8) + midi.TranzPort_OffOnT[ui.getFocused(midi.widChannelRack)], 21)
 
 
     def SetJogSource(self, Value):
