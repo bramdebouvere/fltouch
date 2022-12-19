@@ -1,5 +1,5 @@
 # name=FLtouch X-Touch
-# url=https://github.com/bramdebouvere/fltouch
+# url=https://forum.image-line.com/viewtopic.php?f=1994&t=269919
 # supportedDevices=X-Touch
 
 import patterns
@@ -70,7 +70,7 @@ class TMackieCU(mcu_base_class.McuBaseClass):
         if flags & midi.HW_Dirty_Mixer_Controls:
             for n in range(0, len(self.Tracks)):
                 if self.Tracks[n].Dirty:
-                    self.UpdateCol(n)
+                    self.UpdateTrack(n)
         
         # LEDs
         if flags & midi.HW_Dirty_LEDs:
@@ -90,7 +90,7 @@ class TMackieCU(mcu_base_class.McuBaseClass):
             self.OnSendMsg(mcu_constants.ArrowsStr + 'Pattern: ' + s)
 
     def Jog(self, event):
-        if self.JogSource == 0:
+        if self.JogSource == 0: # default
             if (ui.getFocused(midi.widBrowser)):
                 transport.globalTransport(midi.FPT_Jog, event.outEv, event.pmeFlags) # go up/down in browser
             else:
@@ -559,126 +559,6 @@ class TMackieCU(mcu_base_class.McuBaseClass):
             if self.Page in [mcu_pages.Sends, mcu_pages.Effects]:
                 self.UpdateColT()
 
-    def UpdateCol(self, Num):
-        super().UpdateTrack(Num)
-
-    def UpdateColT(self):
-        f = self.FirstTrackT[self.FirstTrack]
-        CurID = mixer.getTrackPluginId(mixer.trackNumber(), 0)
-
-        for m in range(0, len(self.Tracks)):
-            if self.Page == mcu_pages.Free:
-                # free controls
-                if m == 8:
-                    self.Tracks[m].TrackNum = mcu_constants.FreeTrackCount
-                else:
-                    self.Tracks[m].TrackNum = (f + m) % mcu_constants.FreeTrackCount
-
-                self.Tracks[m].KnobName = 'Knob ' + str(self.Tracks[m].TrackNum + 1)
-                self.Tracks[m].SliderName = 'Slider ' + str(self.Tracks[m].TrackNum + 1)
-
-                self.Tracks[m].BaseEventID = mcu_constants.FreeEventID + self.Tracks[m].TrackNum * 8 # first virtual CC
-            else:
-                self.Tracks[m].KnobPressEventID = -1
-
-                # mixer
-                if m == 8:
-                    self.Tracks[m].TrackNum = -2
-                    self.Tracks[m].BaseEventID = midi.REC_MainVol
-                    self.Tracks[m].SliderEventID = self.Tracks[m].BaseEventID
-                    self.Tracks[m].SliderName = 'Master Vol'
-                else:
-                    self.Tracks[m].TrackNum = midi.TrackNum_Master + ((f + m) % mixer.trackCount())
-                    self.Tracks[m].BaseEventID = mixer.getTrackPluginId(self.Tracks[m].TrackNum, 0)
-                    self.Tracks[m].SliderEventID = self.Tracks[m].BaseEventID + midi.REC_Mixer_Vol
-                    s = mixer.getTrackName(self.Tracks[m].TrackNum)
-                    self.Tracks[m].SliderName = s + ' - Vol'
-
-                    self.Tracks[m].KnobEventID = -1
-                    self.Tracks[m].KnobResetEventID = -1
-                    self.Tracks[m].KnobResetValue = midi.FromMIDI_Max >> 1
-                    self.Tracks[m].KnobName = ''
-                    self.Tracks[m].KnobMode = 1 # parameter, pan, volume, off
-                    self.Tracks[m].KnobCenter = -1
-
-                    if self.Page == mcu_pages.Pan:
-                        self.Tracks[m].KnobEventID = self.Tracks[m].BaseEventID + midi.REC_Mixer_Pan
-                        self.Tracks[m].KnobResetEventID = self.Tracks[m].KnobEventID
-                        self.Tracks[m].KnobName = mixer.getTrackName( self.Tracks[m].TrackNum) + ' - ' + 'Pan'
-                    elif self.Page == mcu_pages.Stereo:
-                        self.Tracks[m].KnobEventID = self.Tracks[m].BaseEventID + midi.REC_Mixer_SS
-                        self.Tracks[m].KnobResetEventID = self.Tracks[m].KnobEventID
-                        self.Tracks[m].KnobName = mixer.getTrackName(self.Tracks[m].TrackNum) + ' - ' + 'Sep'
-                    elif self.Page == mcu_pages.Sends:
-                        self.Tracks[m].KnobEventID = CurID + midi.REC_Mixer_Send_First + self.Tracks[m].TrackNum
-                        s = mixer.getEventIDName(self.Tracks[m].KnobEventID)
-                        self.Tracks[m].KnobName = s
-                        self.Tracks[m].KnobResetValue = round(12800 * midi.FromMIDI_Max / 16000)
-                        self.Tracks[m].KnobCenter = mixer.getRouteSendActive(mixer.trackNumber(),self.Tracks[m].TrackNum)
-                        if self.Tracks[m].KnobCenter == 0:
-                            self.Tracks[m].KnobMode = 4
-                        else:
-                            self.Tracks[m].KnobMode = 2
-                    elif self.Page == mcu_pages.Effects:
-                        CurID = mixer.getTrackPluginId(mixer.trackNumber(), m)
-                        self.Tracks[m].KnobEventID = CurID + midi.REC_Plug_MixLevel
-                        s = mixer.getEventIDName(self.Tracks[m].KnobEventID)
-                        self.Tracks[m].KnobName = s
-                        self.Tracks[m].KnobResetValue = midi.FromMIDI_Max
-
-                        IsValid = mixer.isTrackPluginValid(mixer.trackNumber(), m)
-                        IsEnabledAuto = mixer.isTrackAutomationEnabled(mixer.trackNumber(), m)
-                        if IsValid:
-                            self.Tracks[m].KnobMode = 2
-                            self.Tracks[m].KnobPressEventID = CurID + midi.REC_Plug_Mute
-                        else:
-                            self.Tracks[m].KnobMode = 4
-                        self.Tracks[m].KnobCenter = int(IsValid & IsEnabledAuto)
-                    elif self.Page == mcu_pages.Equalizer:
-                        if m < 3:
-                            # gain & freq
-                            self.Tracks[m].SliderEventID = CurID + midi.REC_Mixer_EQ_Gain + m
-                            self.Tracks[m].KnobResetEventID = self.Tracks[m].SliderEventID
-                            s = mixer.getEventIDName(self.Tracks[m].SliderEventID)
-                            self.Tracks[m].SliderName = s
-                            self.Tracks[m].KnobEventID = CurID + midi.REC_Mixer_EQ_Freq + m
-                            s = mixer.getEventIDName(self.Tracks[m].KnobEventID)
-                            self.Tracks[m].KnobName = s
-                            self.Tracks[m].KnobResetValue = midi.FromMIDI_Max >> 1
-                            self.Tracks[m].KnobCenter = -2
-                            self.Tracks[m].KnobMode = 0
-                        else:
-                            if m < 6:
-                                # Q
-                                self.Tracks[m].SliderEventID = CurID + midi.REC_Mixer_EQ_Q + m - 3
-                                self.Tracks[m].KnobResetEventID = self.Tracks[m].SliderEventID
-                                s = mixer.getEventIDName(self.Tracks[m].SliderEventID)
-                                self.Tracks[m].SliderName = s
-                                self.Tracks[m].KnobEventID = self.Tracks[m].SliderEventID
-                                self.Tracks[m].KnobName = self.Tracks[m].SliderName
-                                self.Tracks[m].KnobResetValue = 17500
-                                self.Tracks[m].KnobCenter = -1
-                                self.Tracks[m].KnobMode = 2
-                            else:
-                                self.Tracks[m].SliderEventID = -1
-                                self.Tracks[m].KnobEventID = -1
-                                self.Tracks[m].KnobMode = 4
-
-                    # self.Flip knob & slider
-                    if self.Flip:
-                        self.Tracks[m].KnobEventID, self.Tracks[m].SliderEventID = utils.SwapInt(self.Tracks[m].KnobEventID, self.Tracks[m].SliderEventID)
-                        s = self.Tracks[m].SliderName
-                        self.Tracks[m].SliderName = self.Tracks[m].KnobName
-                        self.Tracks[m].KnobName = s
-                        self.Tracks[m].KnobMode = 2
-                        if not (self.Page in [mcu_pages.Sends, mcu_pages.Effects, mcu_pages.Equalizer]):
-                            self.Tracks[m].KnobCenter = -1
-                            self.Tracks[m].KnobResetValue = round(12800 * midi.FromMIDI_Max / 16000)
-                            self.Tracks[m].KnobResetEventID = self.Tracks[m].KnobEventID
-
-            self.Tracks[m].LastValueIndex = 48 + m * 6
-            self.UpdateCol(m)
-
     def SetFirstTrack(self, Value):
 
         if self.Page == mcu_pages.Free:
@@ -759,6 +639,7 @@ class TMackieCU(mcu_base_class.McuBaseClass):
 
 
     def SetJogSource(self, Value):
+        """ 0 = default, other = button value """
         self.JogSource = Value
 
     def OnWaitingForInput(self):

@@ -1,9 +1,7 @@
-import device
-import midi
-
 import mcu_device_track_meter
 import mcu_device_track_fader
 import mcu_device_track_buttons
+import mcu_device_track_encoder_knob
 
 class McuDeviceTrack:
     """ Class for controlling a single track on the Xtouch in MCU mode (Hardware abstraction) """
@@ -19,7 +17,8 @@ class McuDeviceTrack:
         # create track meter instance, the master track does not have a meter
         self._meter = None if self.isMain else mcu_device_track_meter.McuDeviceTrackMeter(productId, index)
         self._fader = mcu_device_track_fader.McuDeviceTrackFader(productId, index, isMain, self._baseMidiValue)
-        self._buttons = mcu_device_track_buttons.McuDeviceTrackButtons(productId, index, self.baseMidiValue)
+        self._buttons = None if self.isMain else mcu_device_track_buttons.McuDeviceTrackButtons(productId, index, self.baseMidiValue)
+        self._knob = None if self.isMain else mcu_device_track_encoder_knob.McuDeviceTrackEncoderKnob(index, self.baseMidiValue)
 
     @property
     def index(self):
@@ -54,3 +53,8 @@ class McuDeviceTrack:
     def productId(self):
         """ Returns the productId of the MCU device """
         return self._productId
+    
+    @property
+    def knob(self):
+        """ Returns an instance of the encoder knob for this track (None if Main track) """
+        return self._knob

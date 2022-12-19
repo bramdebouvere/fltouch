@@ -1,4 +1,4 @@
-import mcu_knob
+import mcu_knob_mode
 
 class McuTrack:
     """ Represents data for a track on the XTouch """
@@ -10,11 +10,10 @@ class McuTrack:
         self.KnobPressEventID = 0
         self.KnobResetEventID = 0
         self.KnobResetValue = 0
-        self.KnobMode = mcu_knob.Parameter # 0=Parameter, 1=Pan, 2=Volume, 3=?, 4=OFF
+        self.KnobMode = mcu_knob_mode.SingleDot
         self.KnobCenter = 0
+        self.KnobHeld = False
+        self.KnobName = "" # The name of the knob that you will see on the screen when you turn it
         self.SliderEventID = 0
         self.SliderName = "" # The name of the slider that you will see on the screen when you slide it
-        self.KnobName = "" # The name of the knob that you will see on the screen when you turn it
-        self.LastValueIndex = 0
         self.Dirty = False # Indicates that the mixer track has changed in FL studio
-        self.KnobHeld = False
