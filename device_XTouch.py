@@ -279,6 +279,9 @@ class TMackieCU(mcu_base_class.McuBaseClass):
                             self.UpdateMasterSectionLEDs()
                     # jog sources
                     elif event.data1 in [mcu_buttons.Undo, mcu_buttons.Pattern, mcu_buttons.Mixer, mcu_buttons.Channels, mcu_buttons.Tempo, mcu_buttons.Free1, mcu_buttons.Free2, mcu_buttons.Free3, mcu_buttons.Free4, mcu_buttons.Marker, mcu_buttons.Zoom, mcu_buttons.Move, mcu_buttons.Window]:
+                        # extra function to select browser menu item with zoom button
+                        if event.data1 == mcu_buttons.Zoom and ui.getFocused(midi.widBrowser):
+                            ui.selectBrowserMenuItem()
                         # update jog source
                         if event.data1 in [mcu_buttons.Zoom, mcu_buttons.Window]:
                             device.directFeedback(event)
