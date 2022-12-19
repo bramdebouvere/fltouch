@@ -249,8 +249,6 @@ class McuBaseClass():
         if self.McuDevice.isExtender and Num >= 8:
             return
 
-        baseID = 0
-
         if device.isAssigned():
             if self.Page == mcu_pages.Free:
                 baseID = midi.EncodeRemoteControlID(device.getPortNumber(), 0, self.Tracks[Num].BaseEventID)

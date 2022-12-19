@@ -603,44 +603,44 @@ class TMackieCU(mcu_base_class.McuBaseClass):
 
         if device.isAssigned():
             # stop
-            device.midiOutNewMsg((mcu_buttons.Stop << 8) + midi.TranzPort_OffOnT[transport.isPlaying() == midi.PM_Stopped], 0)
+            self.McuDevice.SetButton(mcu_buttons.Stop, midi.TranzPort_OffOnT[transport.isPlaying() == midi.PM_Stopped], 0, skipIsAssignedCheck=True)
             # loop
-            device.midiOutNewMsg((mcu_buttons.SongVSLoop << 8) + midi.TranzPort_OffOnT[transport.getLoopMode() == midi.SM_Pat], 1)
+            self.McuDevice.SetButton(mcu_buttons.SongVSLoop, midi.TranzPort_OffOnT[transport.getLoopMode() == midi.SM_Pat], 1, skipIsAssignedCheck=True)
             # record
             isRecording = transport.isRecording()
-            device.midiOutNewMsg((mcu_buttons.Record << 8) + midi.TranzPort_OffOnT[isRecording], 2)
+            self.McuDevice.SetButton(mcu_buttons.Record, midi.TranzPort_OffOnT[isRecording], 2, skipIsAssignedCheck=True)
             # SMPTE/BEATS
-            device.midiOutNewMsg((mcu_buttons.Smpte_Led << 8) + midi.TranzPort_OffOnT[ui.getTimeDispMin()], 3)
-            device.midiOutNewMsg((mcu_buttons.Beats_Led << 8) + midi.TranzPort_OffOnT[not ui.getTimeDispMin()], 4)
+            isTimeDisp = ui.getTimeDispMin()
+            self.McuDevice.SetButton(mcu_buttons.Smpte_Led, midi.TranzPort_OffOnT[isTimeDisp], 3, skipIsAssignedCheck=True)
+            self.McuDevice.SetButton(mcu_buttons.Beats_Led, midi.TranzPort_OffOnT[not isTimeDisp], 4, skipIsAssignedCheck=True)
             # self.Page
-            for m in range(0,  6):
-                device.midiOutNewMsg(((mcu_buttons.Pan + m) << 8) + midi.TranzPort_OffOnT[m == self.Page], 5 + m)
+            for i in range(0,  6):
+                self.McuDevice.SetButton(mcu_buttons.Pan + i, midi.TranzPort_OffOnT[i == self.Page], 5 + i, skipIsAssignedCheck=True)
             # changed flag
-            device.midiOutNewMsg((mcu_buttons.Save << 8) + midi.TranzPort_OffOnT[general.getChangedFlag() > 0], 11)
+            self.McuDevice.SetButton(mcu_buttons.Save, midi.TranzPort_OffOnT[general.getChangedFlag() > 0], 11, skipIsAssignedCheck=True)
             # metronome
-            device.midiOutNewMsg((mcu_buttons.Metronome << 8) + midi.TranzPort_OffOnT[general.getUseMetronome()], 12)
+            self.McuDevice.SetButton(mcu_buttons.Metronome, midi.TranzPort_OffOnT[general.getUseMetronome()], 12, skipIsAssignedCheck=True)
             # rec precount
-            device.midiOutNewMsg((mcu_buttons.CountDown << 8) + midi.TranzPort_OffOnT[general.getPrecount()], 13)
+            self.McuDevice.SetButton(mcu_buttons.CountDown, midi.TranzPort_OffOnT[general.getPrecount()], 13, skipIsAssignedCheck=True)
             # self.Scrub
-            device.midiOutNewMsg((mcu_buttons.Scrub << 8) + midi.TranzPort_OffOnT[self.Scrub], 15)
+            self.McuDevice.SetButton(mcu_buttons.Scrub, midi.TranzPort_OffOnT[self.Scrub], 15, skipIsAssignedCheck=True)
             # use RUDE SOLO to show if any track is armed for recording
-            b = 0
+            b = 0 # 0 = off, 1 = on, 2 = blinking
             for m in range(0,  mixer.trackCount()):
                 if mixer.isTrackArmed(m):
                     b = 1 + int(isRecording)
                     break
-
-            device.midiOutNewMsg((mcu_buttons.Rude_Solo_Led << 8) + midi.TranzPort_OffOnBlinkT[b], 16)
+            self.McuDevice.SetButton(mcu_buttons.Rude_Solo_Led, midi.TranzPort_OffOnBlinkT[b], 16, skipIsAssignedCheck=True)
+            
             # smoothing
-            device.midiOutNewMsg((mcu_buttons.Smooth << 8) + midi.TranzPort_OffOnT[self.SmoothSpeed > 0], 17)
+            self.McuDevice.SetButton(mcu_buttons.Smooth, midi.TranzPort_OffOnT[self.SmoothSpeed > 0], 17, skipIsAssignedCheck=True)
             # self.Flip
-            device.midiOutNewMsg((mcu_buttons.Flip << 8) + midi.TranzPort_OffOnT[self.Flip], 18)
+            self.McuDevice.SetButton(mcu_buttons.Flip, midi.TranzPort_OffOnT[self.Flip], 18, skipIsAssignedCheck=True)
             # snap
-            device.midiOutNewMsg((mcu_buttons.Snap << 8) + midi.TranzPort_OffOnT[ui.getSnapMode() !=  3], 19)
+            self.McuDevice.SetButton(mcu_buttons.Snap, midi.TranzPort_OffOnT[ui.getSnapMode() != 3], 19, skipIsAssignedCheck=True)
             # focused windows
-            device.midiOutNewMsg((mcu_buttons.Browser << 8) + midi.TranzPort_OffOnT[ui.getFocused(midi.widBrowser)], 20)
-            device.midiOutNewMsg((mcu_buttons.StepSequencer << 8) + midi.TranzPort_OffOnT[ui.getFocused(midi.widChannelRack)], 21)
-
+            self.McuDevice.SetButton(mcu_buttons.Browser, midi.TranzPort_OffOnT[ui.getFocused(midi.widBrowser)], 20, skipIsAssignedCheck=True)
+            self.McuDevice.SetButton(mcu_buttons.StepSequencer, midi.TranzPort_OffOnT[ui.getFocused(midi.widChannelRack)], 21, skipIsAssignedCheck=True)
 
     def SetJogSource(self, Value):
         """ 0 = default, other = button value """

@@ -118,6 +118,11 @@ class McuDevice:
             device.midiOutMsg(midi.MIDI_CONTROLCHANGE + ((0x4B) << 8) + (ord(message[0]) << 16))
             device.midiOutMsg(midi.MIDI_CONTROLCHANGE + ((0x4A) << 8) + (ord(message[1]) << 16))
 
+    def SetButton(self, button: int, active: int, index:int, skipIsAssignedCheck: bool = False):
+        """ Take a button and turn it on or off """
+        if skipIsAssignedCheck or device.isAssigned():
+            device.midiOutNewMsg((button << 8) + active, index)
+
     def __SetMetersActive(self, active: bool, skipIsAssignedCheck: bool = False):
         """ Enables or disables all meters """
         if skipIsAssignedCheck or device.isAssigned():
