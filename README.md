@@ -49,3 +49,7 @@ More improvements later...
 ### Layout
 
 ![Controller layout](https://user-images.githubusercontent.com/3641681/159065298-c055e292-a587-477a-b0e6-cb76a467cfd9.png)
+
+## Video
+
+[![Using the Behringer X-Touch with FL Studio](https://img.youtube.com/vi/yJk2arJgTCM/0.jpg)](https://www.youtube.com/watch?v=yJk2arJgTCM)
