@@ -87,7 +87,7 @@ class McuDevice:
             lastMsgLen = 0x37
             maxLen = 56 # The screens can only show 56 characters in total
 
-            sysex = bytearray([0xF0, 0x00, 0x00, 0x66, self.__productId, 0x12, (lastMsgLen + 1) * row]) + bytearray(message.ljust(lastMsgLen + 1, ' ')[:maxLen], 'utf-8')
+            sysex = bytearray([0xF0, 0x00, 0x00, 0x66, self.__productId, 0x12, (lastMsgLen + 1) * row]) + bytearray(message.ljust(lastMsgLen + 1, ' ')[:maxLen], 'ascii')
             sysex.append(0xF7)
             device.midiOutSysex(bytes(sysex))
 

@@ -19,6 +19,7 @@ import mcu_device_fader_conversion
 import mcu_track
 import mcu_base_class
 import mcu_constants
+import tracknames
 
 class TMackieCU_Ext(mcu_base_class.McuBaseClass):
     def __init__(self):
@@ -212,9 +213,9 @@ class TMackieCU_Ext(mcu_base_class.McuBaseClass):
                         if event.data2 > 0:
                             mixer.armTrack(self.Tracks[event.data1].TrackNum)
                             if mixer.isTrackArmed(self.Tracks[event.data1].TrackNum):
-                                self.OnSendMsg(mixer.getTrackName(self.Tracks[event.data1].TrackNum) + ' recording to ' + mixer.getTrackRecordingFileName(self.Tracks[event.data1].TrackNum))
+                                self.OnSendMsg(tracknames.GetAsciiSafeTrackName(self.Tracks[event.data1].TrackNum) + ' recording to ' + mixer.getTrackRecordingFileName(self.Tracks[event.data1].TrackNum))
                             else:
-                                self.OnSendMsg(mixer.getTrackName(self.Tracks[event.data1].TrackNum) + ' unarmed')
+                                self.OnSendMsg(tracknames.GetAsciiSafeTrackName(self.Tracks[event.data1].TrackNum) + ' unarmed')
 
                     event.handled = True
                 else:

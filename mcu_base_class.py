@@ -13,7 +13,7 @@ import mcu_device
 import mcu_track
 import mcu_pages
 import mcu_knob_mode
-
+import tracknames
 
 class McuBaseClass():
     """ Shared base class for both the extender and the main mackie unit """
@@ -87,7 +87,7 @@ class McuBaseClass():
             if self.Page == mcu_pages.Free:
                 s = '  ' + utils.Zeros(self.Tracks[m].TrackNum + 1, 2, ' ')
             else:
-                s = mixer.getTrackName(self.Tracks[m].TrackNum, 7)
+                s = tracknames.GetAsciiSafeTrackName(self.Tracks[m].TrackNum, 7)
             for n in range(1, 7 - len(s) + 1):
                 s = s + ' '
             s1 = s1 + s
@@ -155,7 +155,7 @@ class McuBaseClass():
                     self.Tracks[i].TrackNum = midi.TrackNum_Master + ((firstTrackNum + i) % mixer.trackCount())
                     self.Tracks[i].BaseEventID = mixer.getTrackPluginId(self.Tracks[i].TrackNum, 0)
                     self.Tracks[i].SliderEventID = self.Tracks[i].BaseEventID + midi.REC_Mixer_Vol
-                    s = mixer.getTrackName(self.Tracks[i].TrackNum)
+                    s = tracknames.GetAsciiSafeTrackName(self.Tracks[i].TrackNum)
                     self.Tracks[i].SliderName = s + ' - Vol'
 
                     self.Tracks[i].KnobEventID = -1
@@ -168,11 +168,11 @@ class McuBaseClass():
                     if self.Page == mcu_pages.Pan:
                         self.Tracks[i].KnobEventID = self.Tracks[i].BaseEventID + midi.REC_Mixer_Pan
                         self.Tracks[i].KnobResetEventID = self.Tracks[i].KnobEventID
-                        self.Tracks[i].KnobName = mixer.getTrackName( self.Tracks[i].TrackNum) + ' - ' + 'Pan'
+                        self.Tracks[i].KnobName = tracknames.GetAsciiSafeTrackName(self.Tracks[i].TrackNum) + ' - ' + 'Pan'
                     elif self.Page == mcu_pages.Stereo:
                         self.Tracks[i].KnobEventID = self.Tracks[i].BaseEventID + midi.REC_Mixer_SS
                         self.Tracks[i].KnobResetEventID = self.Tracks[i].KnobEventID
-                        self.Tracks[i].KnobName = mixer.getTrackName(self.Tracks[i].TrackNum) + ' - ' + 'Sep'
+                        self.Tracks[i].KnobName = tracknames.GetAsciiSafeTrackName(self.Tracks[i].TrackNum) + ' - ' + 'Sep'
                     elif self.Page == mcu_pages.Sends:
                         self.Tracks[i].KnobEventID = CurID + midi.REC_Mixer_Send_First + self.Tracks[i].TrackNum
                         s = mixer.getEventIDName(self.Tracks[i].KnobEventID)

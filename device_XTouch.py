@@ -23,6 +23,7 @@ import mcu_track
 import mcu_extender_location
 import mcu_base_class
 import mcu_constants
+import tracknames
 
 class TMackieCU(mcu_base_class.McuBaseClass):
     def __init__(self):
@@ -84,7 +85,7 @@ class TMackieCU(mcu_base_class.McuBaseClass):
             s = channels.getChannelName(channels.channelNumber())
             self.OnSendMsg(mcu_constants.ArrowsStr + 'Channel: ' + s)
         elif Index == 1:
-            self.OnSendMsg(mcu_constants.ArrowsStr + 'Mixer track: ' + mixer.getTrackName(mixer.trackNumber()))
+            self.OnSendMsg(mcu_constants.ArrowsStr + 'Mixer track: ' + tracknames.GetAsciiSafeTrackName(mixer.trackNumber()))
         elif Index == 2:
             s = patterns.getPatternName(patterns.patternNumber())
             self.OnSendMsg(mcu_constants.ArrowsStr + 'Pattern: ' + s)
@@ -490,9 +491,9 @@ class TMackieCU(mcu_base_class.McuBaseClass):
                             if event.data2 > 0:
                                 mixer.armTrack(self.Tracks[event.data1].TrackNum)
                                 if mixer.isTrackArmed(self.Tracks[event.data1].TrackNum):
-                                    self.OnSendMsg(mixer.getTrackName(self.Tracks[event.data1].TrackNum) + ' recording to ' + mixer.getTrackRecordingFileName(self.Tracks[event.data1].TrackNum))
+                                    self.OnSendMsg(tracknames.GetAsciiSafeTrackName(self.Tracks[event.data1].TrackNum) + ' recording to ' + mixer.getTrackRecordingFileName(self.Tracks[event.data1].TrackNum))
                                 else:
-                                    self.OnSendMsg(mixer.getTrackName(self.Tracks[event.data1].TrackNum) + ' unarmed')
+                                    self.OnSendMsg(tracknames.GetAsciiSafeTrackName(self.Tracks[event.data1].TrackNum) + ' unarmed')
                         
                         # save/save new
                         elif event.data1 == mcu_buttons.Save:
