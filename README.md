@@ -48,7 +48,9 @@ More improvements later...
 
 ### Layout
 
-![Controller layout](https://user-images.githubusercontent.com/3641681/159065298-c055e292-a587-477a-b0e6-cb76a467cfd9.png)
+You can print an overlay for this controller, courtesy of Bobby-Funk. The image must be printed 15.7956cm / 6.21875 inches wide in an A4 size.
+
+<img width="1194" alt="271434055-cf50ff29-7763-49e1-a738-79fe292ccb69" src="https://github.com/bramdebouvere/fltouch/assets/3641681/375d51c0-6e41-424d-98f3-13a54432b747">
 
 ## Video
 
