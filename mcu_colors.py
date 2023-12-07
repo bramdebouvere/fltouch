@@ -26,16 +26,17 @@ def GetMcuColor(intValue):
         (242, 255, ScreenColorRed)
     ]
 
+    if c_hsv[2] > 30 and c_hsv[1] > 40:
+        # Find color based on hue value
+        for start, end, color in color_ranges:
+            if start <= c_hsv[0] <= end:
+                return color
+
     # Check for special cases
     if c_hsv[2] < 30:
         return ScreenColorBlack
     if c_hsv[2] > 138 or c_hsv[1] < 40:
         return ScreenColorWhite
-
-    # Find color based on hue value
-    for start, end, color in color_ranges:
-        if start <= c_hsv[0] <= end:
-            return color
 
     return ScreenColorWhite
 
