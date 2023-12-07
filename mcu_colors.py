@@ -4,36 +4,38 @@ ScreenColorRed = 0x01
 ScreenColorGreen = 0x02
 ScreenColorYellow = 0x03
 ScreenColorBlue = 0x04
-ScreenColorPink = 0x05
+ScreenColorPurple = 0x05
 ScreenColorCyan = 0x06
 ScreenColorWhite = 0x07
 
-# derived from the color conversion code by djnaoki-mrn (https://github.com/djnaoki-mrn/)
 def GetMcuColor(intValue):
     """ Get the MCU Screen Color code from an Int value (FL Studio Color Value) """
     c_hsv = IntToHsv(intValue)
     
     if c_hsv[0] < 0:
-        c_hsv = (c_hsv[0] * -1,c_hsv[1],c_hsv[2])
-    
-    if c_hsv[2] > 30 and c_hsv[1] > 40:
-        if (c_hsv[0] >= 0 and c_hsv[0] < 28) or (c_hsv[0] > 242 and c_hsv[0] <= 255): # red
-            return ScreenColorRed
-        if (c_hsv[0] > 28 and c_hsv[0] < 53): # yellow
-            return ScreenColorYellow
-        if (c_hsv[0] > 50 and c_hsv[0] < 117): # green
-            return ScreenColorGreen
-        if (c_hsv[0] > 118 and c_hsv[0] < 140): # cyan
-            return ScreenColorCyan
-        if (c_hsv[0] > 141 and c_hsv[0] < 190): # blue
-            return ScreenColorBlue
-        if (c_hsv[0] > 191 and c_hsv[0] < 241): # pink
-            return ScreenColorPink
-            
+        c_hsv = (c_hsv[0] * -1, c_hsv[1], c_hsv[2])
+
+    # Define color mapping table
+    color_ranges = [
+        (0, 28, ScreenColorRed),
+        (29, 50, ScreenColorYellow),
+        (51, 117, ScreenColorGreen),
+        (118, 140, ScreenColorCyan),
+        (141, 190, ScreenColorBlue),
+        (191, 241, ScreenColorPurple)
+    ]
+
+    # Check for special cases
     if c_hsv[2] < 30:
         return ScreenColorBlack
     if c_hsv[2] > 138 or c_hsv[1] < 40:
         return ScreenColorWhite
+
+    # Find color based on hue value
+    for start, end, color in color_ranges:
+        if start <= c_hsv[0] <= end:
+            return color
+
     return ScreenColorWhite
 
 def IntToHsv(intValue):
@@ -47,28 +49,56 @@ def IntToRGB(intValue):
     red = (intValue >> 16) & 255
     return (red, green, blue)
 
-def RgbToHsv(RGB):
-    """ Converts an integer RGB tuple (value range from 0 to 255) to an HSV tuple """
-    # Unpack the tuple for readability
-    R, G, B = RGB
-    # Compute the H value by finding the maximum of the RGB values
-    RGB_Max = max(RGB)
-    RGB_Min = min(RGB)
-    # Compute the value
-    V = RGB_Max
-    if V == 0:
-        H = S = 0
-        return (H,S,V)
-    # Compute the saturation value
-    S = 255 * (RGB_Max - RGB_Min) // V
-    if S == 0:
-        H = 0
-        return (H, S, V)
-    # Compute the Hue
-    if RGB_Max == R:
-        H = 0 + 43*(G - B)//(RGB_Max - RGB_Min)
-    elif RGB_Max == G:
-        H = 85 + 43*(B - R)//(RGB_Max - RGB_Min)
-    else: # RGB_MAX == B
-        H = 171 + 43*(R - G)//(RGB_Max - RGB_Min)
+    """
+    Converts an RGB color value to HSV.
+
+    This function transforms a color value from the RGB (Red, Green, Blue) color space 
+    to the HSV (Hue, Saturation, Value) color space. The input RGB values are 
+    expected to be in the range of 0 to 255. The function normalizes these values to 
+    the range 0-1 for internal calculations and then scales the resulting HSV values 
+    back to the 0-255 range.
+
+    Parameters:
+    rgb (tuple): A tuple of three integers representing the Red, Green, and Blue 
+                 components of the color. Each value should be in the range 0-255.
+
+    Returns:
+    tuple: A tuple of three integers representing the Hue, Saturation, and Value 
+           components of the color in the HSV color space. Hue is scaled to fit 
+           within 0-255 (originally it is defined in degrees from 0-360), and 
+           both Saturation and Value are in the range 0-255.
+
+    The Hue (H) calculation is done based on which RGB component is the maximum.
+    If there's no dominant color (i.e., all RGB values are equal), Hue is set to zero.
+    Saturation (S) is computed as the ratio of the difference between the maximum and
+    minimum RGB values to the maximum RGB value. If the maximum RGB value is zero,
+    Saturation is set to zero to avoid division by zero. Value (V) is simply the maximum
+    of the RGB components.
+    """
+def RgbToHsv(rgb):
+    """ Converts an RGB tuple (value range from 0 to 255) to an HSV tuple """
+    R, G, B = rgb
+    R, G, B = R / 255.0, G / 255.0, B / 255.0
+
+    max_rgb = max(R, G, B)
+    min_rgb = min(R, G, B)
+    delta = max_rgb - min_rgb
+
+    V = max_rgb  # Value
+    S = 0 if max_rgb == 0 else delta / max_rgb  # Saturation
+
+    if delta == 0:
+        H = 0  # Hue
+    elif max_rgb == R:
+        H = 60 * (((G - B) / delta) % 6)
+    elif max_rgb == G:
+        H = 60 * (((B - R) / delta) + 2)
+    elif max_rgb == B:
+        H = 60 * (((R - G) / delta) + 4)
+
+    # Scaling H, S, and V to the 0-255 range
+    H = int(H / 360 * 255)
+    S = int(S * 255)
+    V = int(V * 255)
+
     return (H, S, V)
