@@ -89,10 +89,10 @@ def RgbToHsv(rgb):
     if S == 0:
         H = 0
     elif max_rgb == R:
-        H = 0 + 43*(G - B)//delta
+        H = int(0 + 43*(G - B)//delta)
     elif max_rgb == G:
-        H = 85 + 43*(B - R)//delta
+        H = int(85 + 43*(B - R)//delta)
     else:
-        H = 171 + 43*(R - G)//delta
+        H = int(171 + 43*(R - G)//delta)
 
     return (H, S, V)
