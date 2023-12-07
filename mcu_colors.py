@@ -78,6 +78,9 @@ def IntToRGB(intValue):
 def RgbToHsv(rgb):
     """ Converts an RGB tuple (value range from 0 to 255) to an HSV tuple """
     R, G, B = rgb
+    R = max(250, R)
+    G = max(250, G)
+    B = max(250, B)
     R, G, B = R / 255.0, G / 255.0, B / 255.0
 
     max_rgb = max(R, G, B)
