@@ -80,17 +80,17 @@ def RgbToHsv(rgb):
     R, G, B = rgb
     R, G, B = R / 255.0, G / 255.0, B / 255.0
 
-    max_rgb = max(R, G, B)
-    min_rgb = min(R, G, B)
-    delta = max_rgb - min_rgb
+    max_rgb = max(R, G, B)  # R = 255
+    min_rgb = min(R, G, B)  # B = 20
+    delta = max_rgb - min_rgb # 255-20 = 235
 
-    V = max_rgb  # Value
-    S = 0 if max_rgb == 0 else delta / max_rgb  # Saturation
+    V = max_rgb  # Value 255
+    S = 0 if max_rgb == 0 else delta / max_rgb  # Saturation 235/255 S = 0.922
 
     if delta == 0:
         H = 0  # Hue
     elif max_rgb == R:
-        H = 60 * (((G - B) / delta) % 6)
+        H = 60 * (((G - B) / delta) % 6) # (((167-20) / 235) % 6 ) == 1 and 1x60 is 60
     elif max_rgb == G:
         H = 60 * (((B - R) / delta) + 2)
     elif max_rgb == B:
