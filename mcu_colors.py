@@ -79,8 +79,8 @@ def RgbToHsv(rgb):
     """ Converts an RGB tuple (value range from 0 to 255) to an HSV tuple """
     R, G, B = rgb
 
-    max_rgb = max(R, G, B)  # R = 255
-    min_rgb = min(R, G, B)  # B = 20
+    max_rgb = max(rgb)  # R = 255
+    min_rgb = min(rgb)  # B = 20
     delta = int(max_rgb - min_rgb) # 255-20 = 235
 
     V = max_rgb  # Value 255
@@ -92,7 +92,7 @@ def RgbToHsv(rgb):
         H = 0 + 43*(G - B)//delta
     elif max_rgb == G:
         H = 85 + 43*(B - R)//delta
-    elif max_rgb == B:
+    else:
         H = 171 + 43*(R - G)//delta
 
     return (H, S, V)
