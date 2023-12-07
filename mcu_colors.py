@@ -22,7 +22,8 @@ def GetMcuColor(intValue):
         (51, 117, ScreenColorGreen),
         (118, 140, ScreenColorCyan),
         (141, 190, ScreenColorBlue),
-        (191, 241, ScreenColorPurple)
+        (191, 241, ScreenColorPurple),
+        (242, 255, ScreenColorRed)
     ]
 
     # Check for special cases
