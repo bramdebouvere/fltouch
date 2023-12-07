@@ -8,14 +8,18 @@ ScreenColorPurple = 0x05
 ScreenColorCyan = 0x06
 ScreenColorWhite = 0x07
 
+Hue = 0
+Saturation = 1
+Value = 2
+
 def GetMcuColor(intValue):
     """ Get the MCU Screen Color code from an Int value (FL Studio Color Value) """
     c_hsv = IntToHsv(intValue)
     
-    if c_hsv[0] < 0:
-        thue = c_hsv[0]*-1
+    if c_hsv[Hue] < 0:
+        thue = c_hsv[Hue]*-1
         thue = (255-thue)
-        c_hsv = (thue, c_hsv[1], c_hsv[2])
+        c_hsv = (thue, c_hsv[Saturation], c_hsv[Value])
 
     # Define color mapping table
     color_ranges = [
@@ -28,16 +32,16 @@ def GetMcuColor(intValue):
         (237, 255, ScreenColorRed)
     ]
 
-    if c_hsv[2] > 30 and c_hsv[1] > 40:
+    if c_hsv[Value] > 30 and c_hsv[Saturation] > 40:
         # Find color based on hue value
         for start, end, color in color_ranges:
-            if start <= c_hsv[0] <= end:
+            if start <= c_hsv[Hue] <= end:
                 return color
 
     # Check for special cases
-    if c_hsv[2] < 30:
+    if c_hsv[Value] < 30:
         return ScreenColorBlack
-    if c_hsv[2] > 138 or c_hsv[1] < 40:
+    if c_hsv[Value] > 138 or c_hsv[Saturation] < 40:
         return ScreenColorWhite
 
     return ScreenColorWhite
