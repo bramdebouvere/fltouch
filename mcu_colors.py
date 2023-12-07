@@ -13,7 +13,9 @@ def GetMcuColor(intValue):
     c_hsv = IntToHsv(intValue)
     
     if c_hsv[0] < 0:
-        c_hsv = (c_hsv[0] * -1, c_hsv[1], c_hsv[2])
+        thue = c_hsv[0]*-1
+        thue = (255-thue)
+        c_hsv = (thue, c_hsv[1], c_hsv[2])
 
     # Define color mapping table
     color_ranges = [
@@ -22,8 +24,8 @@ def GetMcuColor(intValue):
         (51, 117, ScreenColorGreen),
         (118, 140, ScreenColorCyan),
         (141, 190, ScreenColorBlue),
-        (191, 241, ScreenColorPurple),
-        (242, 255, ScreenColorRed)
+        (191, 236, ScreenColorPurple),
+        (237, 255, ScreenColorRed)
     ]
 
     if c_hsv[2] > 30 and c_hsv[1] > 40:
