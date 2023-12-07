@@ -84,10 +84,10 @@ def RgbToHsv(rgb):
     delta = int(max_rgb - min_rgb) # 255-20 = 235
 
     V = max_rgb  # Value 255
-    H = S = 0 if V == 0 else 255 * delta // V  # Saturation 235/255 S = 0.922
+    S = 0 if V == 0 else (255 * delta) // V  # Saturation 235/255 S = 0.922
 
     if S == 0:
-        H = 0  # Hue
+        H = 0
     elif max_rgb == R:
         H = 0 + 43*(G - B)//delta
     elif max_rgb == G:
