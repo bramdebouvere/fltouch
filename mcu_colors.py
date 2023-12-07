@@ -75,33 +75,33 @@ def IntToRGB(intValue):
     Saturation is set to zero to avoid division by zero. Value (V) is simply the maximum
     of the RGB components.
     """
-def RgbToHsv(rgb):
-    """ Converts an RGB tuple (value range from 0 to 255) to an HSV tuple """
-    R, G, B = rgb
-    R = max(250, R)
-    G = max(250, G)
-    B = max(250, B)
-    R, G, B = R / 255.0, G / 255.0, B / 255.0
+def RgbToHsv(RGB):
+    r,g,b = RGB
 
-    max_rgb = max(R, G, B)
-    min_rgb = min(R, G, B)
-    delta = max_rgb - min_rgb
+    maxc = max(r, g, b)
+    minc = min(r, g, b)
 
-    V = max_rgb  # Value
-    S = 0 if max_rgb == 0 else delta / max_rgb  # Saturation
+    # HSV: Hue, Saturation, Value
+    # H: position in the spectrum
+    # S: color saturation ("purity")
+    # V: color brightness
+    
+    v = maxc
+    if minc == maxc:
+        return 0.0, 0.0, v
 
-    if delta == 0:
-        H = 0  # Hue
-    elif max_rgb == R:
-        H = 60 * (((G - B) / delta) % 6)
-    elif max_rgb == G:
-        H = 60 * (((B - R) / delta) + 2)
-    elif max_rgb == B:
-        H = 60 * (((R - G) / delta) + 4)
+    s = (maxc-minc) / maxc
+    rc = (maxc-r) / (maxc-minc)
+    gc = (maxc-g) / (maxc-minc)
+    bc = (maxc-b) / (maxc-minc)
+    
+    if r == maxc:
+        h = bc-gc
+    elif g == maxc:
+        h = 2.0+rc-bc
+    else:
+        h = 4.0+gc-rc
 
-    # Scaling H, S, and V to the 0-255 range
-    H = int(H / 360 * 255)
-    S = int(S * 255)
-    V = int(V * 255)
-
-    return (H, S, V)
+    h = (h/6.0) % 1.0
+    
+    return h, s, v
