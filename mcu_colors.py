@@ -44,6 +44,13 @@ def IntToHsv(intValue):
     """ Convert an FL Studio Color Value (Int) to HSV """
     return(RgbToHsv(IntToRGB(intValue)))
 
+def IntToRGB(intValue):
+    """ Convert an FL Studio Color Value (Int) to RGB """
+    blue = intValue & 255
+    green = (intValue >> 8) & 255
+    red = (intValue >> 16) & 255
+    return (red, green, blue)
+
 def RgbToHsv(rgb):
     R, G, B = rgb
     R, G, B = R / 255.0, G / 255.0, B / 255.0
