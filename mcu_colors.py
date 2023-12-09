@@ -22,8 +22,8 @@ def GetMcuColor(intValue):
         (70, 119, ScreenColorGreen),
         (120, 149, ScreenColorCyan),
         (150, 199, ScreenColorBlue),
-        (200, 350, ScreenColorPurple),
-        (351, 399, ScreenColorRed)
+        (200, 309, ScreenColorPurple),
+        (310, 399, ScreenColorRed)
     ]
 
     if c_hsv[Value] > 30 and c_hsv[Saturation] > 40:
