@@ -15,13 +15,13 @@ Value = 2
 def GetMcuColor(intValue):
     """ Get the MCU Screen Color code from an Int value (FL Studio Color Value) """
     c_hsv = IntToHsv(intValue)
-    
+
     # Define color mapping table
     color_ranges = [
-        (0, 79, ScreenColorYellow),
-        (80, 119, ScreenColorGreen),
+        (0, 69, ScreenColorYellow),
+        (70, 119, ScreenColorGreen),
         (120, 149, ScreenColorCyan),
-        (150, 169, ScreenColorBlue),
+        (150, 199, ScreenColorBlue),
         (200, 350, ScreenColorPurple),
         (351, 399, ScreenColorRed)
     ]
