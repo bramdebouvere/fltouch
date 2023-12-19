@@ -19,9 +19,9 @@ class TestGetMcuColor(unittest.TestCase):
 
     def test_custom_color(self):
         # Add a test for a custom RGB color
-        self.assertEqual(GetMcuColor(RgbToInt((int(229), int(229), int(21)))), ScreenColorYellow)  # yellow
+        self.assertEqual(GetMcuColor(RgbToInt((int(143), int(159), int(53)))), ScreenColorYellow)  # yellow
         self.assertEqual(GetMcuColor(RgbToInt((int(26), int(255), int(55)))), ScreenColorGreen)  # green
-        self.assertEqual(GetMcuColor(RgbToInt((int(94), int(154), int(174)))), ScreenColorCyan)  # cyan
+        self.assertEqual(GetMcuColor(RgbToInt((int(53), int(156), int(159)))), ScreenColorCyan)  # cyan
         self.assertEqual(GetMcuColor(RgbToInt((int(13), int(64), int(148)))), ScreenColorBlue) # blue
         self.assertEqual(GetMcuColor(RgbToInt((int(109), int(22), int(98)))), ScreenColorPurple)  # purple
         self.assertEqual(GetMcuColor(RgbToInt((int(255), int(20), int(32)))), ScreenColorRed)  # red
