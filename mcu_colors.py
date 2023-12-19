@@ -18,12 +18,13 @@ def GetMcuColor(intValue):
 
     # Define color mapping table
     color_ranges = [
-        (0, 69, ScreenColorYellow),
-        (70, 119, ScreenColorGreen),
-        (120, 149, ScreenColorCyan),
-        (150, 199, ScreenColorBlue),
-        (200, 309, ScreenColorPurple),
-        (310, 399, ScreenColorRed)
+        (0, 22, ScreenColorRed),
+        (23, 55, ScreenColorYellow),
+        (56, 100, ScreenColorGreen),
+        (101, 130, ScreenColorCyan),
+        (131, 180, ScreenColorBlue),
+        (181, 319, ScreenColorPurple),
+        (320, 399, ScreenColorRed)
     ]
 
     if c_hsv[Value] > 30 and c_hsv[Saturation] > 40:
@@ -63,7 +64,7 @@ def RgbToHsv(rgb):
     S = 0 if max_rgb == 0 else (delta / max_rgb)  # Saturation
 
     if delta == 0:
-         H = 0  # Hue
+        H = 0  # Hue
     elif max_rgb == R:
         H = 60 * (((G - B) / delta) % 6)
     elif max_rgb == G:
