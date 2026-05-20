@@ -1,4 +1,4 @@
-# Mackie CU pages
+# Mackie CU modes
 
 Pan = 0
 Stereo = 1

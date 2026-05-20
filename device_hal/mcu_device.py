@@ -2,9 +2,10 @@ import device
 import midi
 import utils
 
-import mcu_device_track
-import mcu_device_time_display
-import mcu_colors
+from device_hal import mcu_buttons
+from device_hal.mcu_device_track import McuDeviceTrack
+from device_hal.mcu_device_time_display import McuDeviceTimeDisplay
+from device_hal.mcu_colors import GetMcuColor
 
 class McuDevice:
     """
@@ -17,10 +18,10 @@ class McuDevice:
         self.__lastScreenColors = [0,0,0,0,0,0,0,0]
 
         # create tracks
-        self._tracks = [mcu_device_track.McuDeviceTrack(i, self.__productId, i == 8) for i in range(8 if isExtender else 9)]
+        self._tracks = [McuDeviceTrack(i, self.__productId, i == 8) for i in range(8 if isExtender else 9)]
 
         if not isExtender:
-            self.TimeDisplay = mcu_device_time_display.McuDeviceTimeDisplay()
+            self.TimeDisplay = McuDeviceTimeDisplay()
 
 
     def Initialize(self):
@@ -44,9 +45,9 @@ class McuDevice:
         """ Dispatches a MIDI message to an extender to let them know their first track """
         if self.isExtender:
             return
-        self.SendMidiToExtender(extenderIndex, midi.MIDI_NOTEON + (0x7F << 8) + (firstTrack << 16))
+        self.SendMidiToExtender(extenderIndex, midi.MIDI_NOTEON + (mcu_buttons.SetFirstTrackOnExtender << 8) + (firstTrack << 16))
 
-    def SendButtonToExtenders(self, button):
+    def SendButtonPressToExtenders(self, button):
         """ Dispatches a MIDI message to all extenders, letting them know that a button was pressed """
         if self.isExtender:
             return
@@ -81,6 +82,7 @@ class McuDevice:
         """ Clear peak indicators """
         if device.isAssigned():
             for track in self.tracksWithMeters:
+                assert track.meter is not None
                 track.meter.SetValue(0, True)
 
     def GetTrack(self, index):
@@ -106,7 +108,7 @@ class McuDevice:
         if skipIsAssignedCheck or device.isAssigned():
             sysex = bytearray([0xF0, 0x00, 0x00, 0x66, self.__productId, 0x72])
             for color in colorArray:
-                sysex.append(mcu_colors.GetMcuColor(color))
+                sysex.append(GetMcuColor(color))
             sysex.append(0xF7)
             device.midiOutSysex(bytes(sysex))
             self.__lastScreenColors = colorArray
@@ -133,7 +135,8 @@ class McuDevice:
         """ Enables or disables all meters """
         if skipIsAssignedCheck or device.isAssigned():
             for track in self.tracksWithMeters:
-                track.meter.SetActive(active, True)
+                if track.meter is not None:
+                    track.meter.SetActive(active, True)
 
     @property
     def tracks(self):

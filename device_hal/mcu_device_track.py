@@ -1,7 +1,7 @@
-import mcu_device_track_meter
-import mcu_device_track_fader
-import mcu_device_track_buttons
-import mcu_device_track_encoder_knob
+from device_hal.mcu_device_track_meter import McuDeviceTrackMeter
+from device_hal.mcu_device_track_fader import McuDeviceTrackFader
+from device_hal.mcu_device_track_buttons import McuDeviceTrackButtons
+from device_hal.mcu_device_track_encoder_knob import McuDeviceTrackEncoderKnob
 
 class McuDeviceTrack:
     """ Class for controlling a single track on the Xtouch in MCU mode (Hardware abstraction) """
@@ -15,10 +15,10 @@ class McuDeviceTrack:
         self._isMain = isMain
 
         # create track meter instance, the master track does not have a meter
-        self._meter = None if self.isMain else mcu_device_track_meter.McuDeviceTrackMeter(productId, index)
-        self._fader = mcu_device_track_fader.McuDeviceTrackFader(productId, index, isMain, self._baseMidiValue)
-        self._buttons = None if self.isMain else mcu_device_track_buttons.McuDeviceTrackButtons(productId, index, self.baseMidiValue)
-        self._knob = None if self.isMain else mcu_device_track_encoder_knob.McuDeviceTrackEncoderKnob(index, self.baseMidiValue)
+        self._meter = None if self.isMain else McuDeviceTrackMeter(productId, index)
+        self._fader = McuDeviceTrackFader(productId, index, isMain, self._baseMidiValue)
+        self._buttons = None if self.isMain else McuDeviceTrackButtons(productId, index, self.baseMidiValue)
+        self._knob = None if self.isMain else McuDeviceTrackEncoderKnob(index, self.baseMidiValue)
 
     @property
     def index(self):

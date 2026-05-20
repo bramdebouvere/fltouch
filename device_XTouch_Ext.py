@@ -11,43 +11,34 @@ import ui
 import midi
 import utils
 
-import debug
-import mcu_pages
-import mcu_buttons
-import mcu_device
-import mcu_device_fader_conversion
-import mcu_track
+import constants.mcu_modes as mcu_modes
+import device_hal.mcu_buttons as mcu_buttons
+from device_hal import mcu_device_fader_conversion
+from device_hal.mcu_device import McuDevice
+import mcu_track as mcu_track
 import mcu_base_class
-import mcu_constants
-import tracknames
+import constants.mcu_constants as mcu_constants
+import utilities.transliteration as transliteration
 
 class TMackieCU_Ext(mcu_base_class.McuBaseClass):
     def __init__(self):
-        super().__init__(mcu_device.McuDevice(True))
+        super().__init__(McuDevice(True))
 
         self.Tracks = [mcu_track.McuTrack() for i in range(9)] # TODO: this should probably be changed to 8, since there are only 8 faders on an extender
 
     def OnInit(self):
         super().OnInit()
 
-        self.UpdateMeterMode()
-
-        self.SetPage(self.Page)
-        self.OnSendMsg('Linked to ' + ui.getProgTitle() + ' (' + ui.getVersion() + ')')
-        print('OnInit ready')
-
     def OnDeInit(self):
         super().OnDeInit()
         print('OnDeInit ready')
 
     def OnRefresh(self, flags):
+        super().OnRefresh(flags)
+        return # this code is now disabled, only kept for reference purposes (we are in a refactor and this will be removed later)
 
         if flags & midi.HW_Dirty_Mixer_Sel:
             self.UpdateMixer_Sel()
-
-        if flags & midi.HW_Dirty_Mixer_Display:
-            self.UpdateTextDisplay()
-            self.UpdateColT()
 
         if flags & midi.HW_Dirty_Mixer_Controls:
             for n in range(0, len(self.Tracks)):
@@ -55,6 +46,9 @@ class TMackieCU_Ext(mcu_base_class.McuBaseClass):
                     self.UpdateTrack(n)
 
     def OnMidiMsg(self, event):
+        super().OnMidiMsg(event)
+        return # MIDI handling should not be done here anymore, the code below is for reference for refactoring into behaviors
+
         if (event.midiId == midi.MIDI_CONTROLCHANGE):
             if (event.midiChan == 0):
                 event.inEv = event.data2
@@ -66,7 +60,7 @@ class TMackieCU_Ext(mcu_base_class.McuBaseClass):
                 # knobs
                 if event.data1 in [0x10, 0x11, 0x12, 0x13, 0x14, 0x15, 0x16, 0x17]:
                     Res = 0.005 + ((abs(event.outEv)-1) / 2000)
-                    if self.Page == mcu_pages.Free:
+                    if self.Mode == mcu_modes.Free:
                         i = event.data1 - 0x10
                         event.data1 = self.Tracks[i].BaseEventID + int(self.Tracks[i].KnobHeld)
                         event.isIncrement = 1
@@ -89,7 +83,7 @@ class TMackieCU_Ext(mcu_base_class.McuBaseClass):
                 event.outEv = (event.inEv << 16) // 16383
                 event.inEv -= 0x2000
 
-                if self.Page == mcu_pages.Free:
+                if self.Mode == mcu_modes.Free:
                     self.FreeCtrlT[self.Tracks[event.midiChan].TrackNum] = event.data1 + (event.data2 << 7)
                     device.hardwareRefreshMixerTrack(self.Tracks[event.midiChan].TrackNum)
                     event.data1 = self.Tracks[event.midiChan].BaseEventID + 7
@@ -119,7 +113,7 @@ class TMackieCU_Ext(mcu_base_class.McuBaseClass):
                 # slider hold
                 if (event.data1 in [mcu_buttons.Slider_1, mcu_buttons.Slider_2, mcu_buttons.Slider_3, mcu_buttons.Slider_4, mcu_buttons.Slider_5, mcu_buttons.Slider_6, mcu_buttons.Slider_7, mcu_buttons.Slider_8, mcu_buttons.Slider_Main]):
                     # Auto select channel
-                    if event.data1 != mcu_buttons.Slider_Main and event.data2 > 0 and (self.Page == mcu_pages.Pan or self.Page == mcu_pages.Stereo):
+                    if event.data1 != mcu_buttons.Slider_Main and event.data2 > 0 and (self.Mode == mcu_modes.Pan or self.Mode == mcu_modes.Stereo):
                         fader_index = event.data1 - mcu_buttons.Slider_1
                         if mixer.trackNumber != self.Tracks[fader_index].TrackNum:
                             mixer.setTrackNumber(self.Tracks[fader_index].TrackNum)
@@ -144,7 +138,7 @@ class TMackieCU_Ext(mcu_base_class.McuBaseClass):
                             self.Flip = not self.Flip
                             self.UpdateColT()
                     elif event.data1 in [mcu_buttons.Encoder_1, mcu_buttons.Encoder_2, mcu_buttons.Encoder_3, mcu_buttons.Encoder_4, mcu_buttons.Encoder_5, mcu_buttons.Encoder_6, mcu_buttons.Encoder_7, mcu_buttons.Encoder_8]: # knob reset
-                        if self.Page == mcu_pages.Free:
+                        if self.Mode == mcu_modes.Free:
                             i = event.data1 - mcu_buttons.Encoder_1
                             self.Tracks[i].KnobHeld = event.data2 > 0
                             if event.data2 > 0:
@@ -157,7 +151,7 @@ class TMackieCU_Ext(mcu_base_class.McuBaseClass):
                             return
                         elif event.data2 > 0:
                             n = event.data1 - mcu_buttons.Encoder_1
-                            if self.Page == mcu_pages.Sends:
+                            if self.Mode == mcu_modes.Sends:
                                 if mixer.setRouteTo(mixer.trackNumber(), self.Tracks[n].TrackNum, -1) < 0:
                                     self.OnSendMsg('Cannot send to this track')
                                 else:
@@ -166,7 +160,7 @@ class TMackieCU_Ext(mcu_base_class.McuBaseClass):
                                 super().SetKnobValue(n, midi.MaxInt)
 
                     elif (event.data1 >= 0) & (event.data1 <= 0x1F): # free hold buttons
-                        if self.Page == mcu_pages.Free:
+                        if self.Mode == mcu_modes.Free:
                             i = event.data1 % 8
                             event.data1 = self.Tracks[i].BaseEventID + 3 + event.data1 // 8
                             event.inEv = event.data2
@@ -176,11 +170,11 @@ class TMackieCU_Ext(mcu_base_class.McuBaseClass):
                             device.hardwareRefreshMixerTrack(self.Tracks[i].TrackNum)
                             return
 
-                    elif event.data1 in [mcu_buttons.Pan, mcu_buttons.Sends, mcu_buttons.Equalizer, mcu_buttons.Stereo, mcu_buttons.Effects, mcu_buttons.Free]: # self.Page
+                    elif event.data1 in [mcu_buttons.Pan, mcu_buttons.Sends, mcu_buttons.Equalizer, mcu_buttons.Stereo, mcu_buttons.Effects, mcu_buttons.Free]: # self.Mode
                         if event.data2 > 0:
                             n = event.data1 - mcu_buttons.Pan
-                            self.OnSendMsg(mcu_constants.PageDescriptions[n])
-                            self.SetPage(n)
+                            self.OnSendMsg(mcu_constants.ModeDescriptions[n])
+                            self.SetMode(n)
                             #device.dispatch(0, midi.MIDI_NOTEON + (event.data1 << 8) + (event.data2 << 16) )
 
                 if (event.pmeFlags & midi.PME_System_Safe != 0):
@@ -199,10 +193,7 @@ class TMackieCU_Ext(mcu_base_class.McuBaseClass):
                     elif (event.data1 >= mcu_buttons.Solo_1) & (event.data1 <= mcu_buttons.Solo_8): # solo
                         if event.data2 > 0:
                             i = event.data1 - mcu_buttons.Solo_1
-                            self.Tracks[i].solomode = midi.fxSoloModeWithDestTracks
-                            if self.Shift:
-                                pass #function does not exist: Include(self.Tracks[i].solomode, midi.fxSoloModeWithSourceTracks)
-                            mixer.soloTrack(self.Tracks[i].TrackNum, midi.fxSoloToggle, self.Tracks[i].solomode)
+                            mixer.soloTrack(self.Tracks[i].TrackNum, midi.fxSoloToggle, midi.fxSoloModeWithSourceTracks if self.Shift else midi.fxSoloModeWithDestTracks)
                             mixer.setTrackNumber(self.Tracks[i].TrackNum, midi.curfxScrollToMakeVisible)
 
                     elif (event.data1 >= mcu_buttons.Mute_1) & (event.data1 <= mcu_buttons.Mute_8): # mute
@@ -213,9 +204,9 @@ class TMackieCU_Ext(mcu_base_class.McuBaseClass):
                         if event.data2 > 0:
                             mixer.armTrack(self.Tracks[event.data1].TrackNum)
                             if mixer.isTrackArmed(self.Tracks[event.data1].TrackNum):
-                                self.OnSendMsg(tracknames.GetAsciiSafeTrackName(self.Tracks[event.data1].TrackNum) + ' recording to ' + mixer.getTrackRecordingFileName(self.Tracks[event.data1].TrackNum))
+                                self.OnSendMsg(transliteration.GetAsciiSafeTrackName(self.Tracks[event.data1].TrackNum) + ' recording to ' + mixer.getTrackRecordingFileName(self.Tracks[event.data1].TrackNum))
                             else:
-                                self.OnSendMsg(tracknames.GetAsciiSafeTrackName(self.Tracks[event.data1].TrackNum) + ' unarmed')
+                                self.OnSendMsg(transliteration.GetAsciiSafeTrackName(self.Tracks[event.data1].TrackNum) + ' unarmed')
 
                     event.handled = True
                 else:
@@ -223,22 +214,19 @@ class TMackieCU_Ext(mcu_base_class.McuBaseClass):
             else:
                 event.handled = False
 
-    def UpdateMsg(self):
-        self.McuDevice.SetTextDisplay(self.MsgT[1])
+    def OnSendMsg(self, Msg: str, duration: int = 2000):
+        super().OnSendMsg(Msg, duration)
+    """
+    def SetMode(self, Value):
 
-    def OnSendMsg(self, Msg):
-        super().OnSendMsg(Msg)
+        oldPage = self.Mode
+        self.Mode = Value
 
-    def SetPage(self, Value):
-
-        oldPage = self.Page
-        self.Page = Value
-
-        self.FirstTrack = int(self.Page == mcu_pages.Free)
-        #if self.Page == oldPage:
+        self.FirstTrack = int(self.Mode == mcu_modes.Free)
+        #if self.Mode == oldPage:
         self.SetFirstTrack(self.FirstTrackT[self.FirstTrack])
 
-        if self.Page == mcu_pages.Free:
+        if self.Mode == mcu_modes.Free:
 
             BaseID = midi.EncodeRemoteControlID(device.getPortNumber(), 0, mcu_constants.FreeEventID + 7)
             for n in range(0, len(self.FreeCtrlT)):
@@ -246,20 +234,18 @@ class TMackieCU_Ext(mcu_base_class.McuBaseClass):
                 if d >= 0:
                     self.FreeCtrlT[n] = min(round(d * 16384), 16384)
 
-        if (oldPage == mcu_pages.Free) | (self.Page == mcu_pages.Free):
+        if (oldPage == mcu_modes.Free) | (self.Mode == mcu_modes.Free):
             self.UpdateMeterMode()
         self.UpdateColT()
         self.UpdateTextDisplay()
-
+    """
     def UpdateMixer_Sel(self):
         if device.isAssigned():
             for m in range(0, len(self.Tracks) - 1):
-                self.McuDevice.GetTrack(m).buttons.SetSelectButton(self.Tracks[m].TrackNum == mixer.trackNumber(), True)
+                track = self.McuDevice.GetTrack(m)
+                assert track.buttons is not None
+                track.buttons.SetSelectButton(self.Tracks[m].TrackNum == mixer.trackNumber(), True)
 
-    def SetFirstTrack(self, Value):
-        self.FirstTrackT[self.FirstTrack] = (Value + mixer.trackCount()) % mixer.trackCount()
-        self.UpdateColT()
-        device.hardwareRefreshMixerTrack(-1)
 
 MackieCU_Ext = TMackieCU_Ext()
 

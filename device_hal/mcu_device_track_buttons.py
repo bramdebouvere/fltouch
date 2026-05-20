@@ -1,7 +1,7 @@
 import device
 import midi
 
-import mcu_buttons
+import device_hal.mcu_buttons as mcu_buttons
 
 class McuDeviceTrackButtons:
     """ Class for controlling track buttons on the Xtouch in MCU mode (Hardware abstraction) """

@@ -1,7 +1,7 @@
 import device
 import midi
 
-import mcu_knob_mode
+from device_hal import mcu_knob_mode
 
 class McuDeviceTrackEncoderKnob:
     """ Class for controlling the encoder knob on the Xtouch in MCU mode (Hardware abstraction) """
@@ -14,6 +14,8 @@ class McuDeviceTrackEncoderKnob:
         """
         Sets a value (0-11) and a knob mode on the rotary encoder 
         See https://drive.google.com/file/d/1Tn85UbcrIjd7vpjRnOx9p6jgWucofnh3/view , page 112, for more info about the knob modes
+        showCenter: True = center led on, False = center led off
+        value: 0 = all leds in ring off, 1-5 = left side leds, 6 = center led, 7-11 = right side leds
         """
 
         trackBits = 0x30 + self.__trackIndex

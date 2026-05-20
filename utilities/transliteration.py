@@ -126,7 +126,15 @@ TransliterateMap = {
 
 def GetAsciiSafeTrackName(index: int, maxLength: int = 0) -> str:
     ''' Gets an ASCII compatible track name value '''
-    unicodeTrackName = mixer.getTrackName(index, maxLength)
+
+    # First try with shortened track name, shortened by FL Studio to fit the screen
+    unicodeTrackName = mixer.getTrackName(index, maxLength) # type: ignore - 2nd parameter is not documented, but it does work
+    charsToTransliterate = GetAmountOfCharactersToTransliterate(unicodeTrackName)
+    if charsToTransliterate == 0:
+        return unicodeTrackName
+    
+    # If some characters need transliteration, take the full track name so we can fill the screen
+    unicodeTrackName = mixer.getTrackName(index)
     transliterated = TransliterateToAscii(unicodeTrackName)
     if maxLength > 0:
         transliterated = transliterated[:maxLength]
@@ -145,3 +153,12 @@ def TransliterateToAscii(unicodeValue):
             transchar = ''
         converted += transchar
     return converted
+
+def GetAmountOfCharactersToTransliterate(unicodeValue):
+    ''' Gets the amount of characters that would need to be transliterated to convert the value to ascii '''
+    count = 0
+    for char in unicodeValue:
+        if char in TransliterateMap or not (32 <= ord(char) < 127):
+            count += 1
+    return count
+

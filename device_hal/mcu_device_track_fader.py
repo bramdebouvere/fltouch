@@ -1,7 +1,7 @@
 import device
 import midi
 
-import mcu_device_fader_conversion
+from device_hal.mcu_device_fader_conversion import FlFaderToMcuFader
 
 class McuDeviceTrackFader:
     """ Class for controlling a single fader on the Xtouch in MCU mode (Hardware abstraction) """
@@ -11,14 +11,22 @@ class McuDeviceTrackFader:
         self.__index = index
         self.__isMain = isMain
         self.__baseMidiValue = baseMidiValue
+        self.__lastLevel = -1 # store the last set level to avoid sending redundant MIDI messages (-1 means no level has been set yet)
 
     def SetLevelFromFlsFader(self, flFaderValue: int, skipIsAssignedCheck: bool = False):
         """ Sets the value of the fader on the Xtouch using a FL Studio Fader value """
-        paramValue = mcu_device_fader_conversion.FlFaderToMcuFader(flFaderValue)
+        paramValue = FlFaderToMcuFader(flFaderValue)
         self.SetLevel(paramValue, skipIsAssignedCheck)
-
+        
     def SetLevel(self, value: int, skipIsAssignedCheck: bool = False):
         """ Sets the value of the fader on the Xtouch (0 to 16380) """
+
+        # If the value hasn't changed, don't send a new MIDI message
+        if value == self.__lastLevel:
+            return
+        self.__lastLevel = value
+
+        # Send the MIDI message
         if skipIsAssignedCheck or device.isAssigned():
             data1 = value
             data2 = data1 & 127

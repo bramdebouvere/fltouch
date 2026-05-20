@@ -151,3 +151,6 @@ Smpte_Led = 0x71
 Beats_Led = 0x72
 Rude_Solo_Led = 0x73
 Relay_Click = 0x76
+
+# Midi events for communication to extenders (not actual physical buttons)
+SetFirstTrackOnExtender = 0x7F # + extender index, value = first track index for that extender

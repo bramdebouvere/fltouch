@@ -1,5 +1,5 @@
 import unittest
-from mcu_colors import GetMcuColor,ScreenColorBlack,ScreenColorRed,ScreenColorGreen,ScreenColorYellow,ScreenColorBlue,ScreenColorPurple,ScreenColorCyan,ScreenColorWhite 
+from device_hal.mcu_colors import GetMcuColor,ScreenColorBlack,ScreenColorRed,ScreenColorGreen,ScreenColorYellow,ScreenColorBlue,ScreenColorPurple,ScreenColorCyan,ScreenColorWhite 
 
 # test specific code to pack rgb back into int
 def RgbToInt(rgb):

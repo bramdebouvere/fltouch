@@ -1,32 +1,22 @@
-import device
-import ui
-import time
-import utils
-import mixer
-import midi
-import transport
-import general
-import channels
+from device_hal.mcu_device import McuDevice
 
-import mcu_constants
-import mcu_device
-import mcu_track
-import mcu_pages
-import mcu_knob_mode
-import tracknames
+from utilities.fl_class_import import FlMidiMsg
 
-class McuBaseClass():
-    """ Shared base class for both the extender and the main mackie unit """
+class McuBaseBehavior():
+    """
+    Shared base class for behavior scripts for both the extender and the main mackie unit.
+    To use this class, you need to create a class that inherits from this class and override the methods you want to use.
+    """
 
-    def __init__(self, device: mcu_device.McuDevice):
+    def __init__(self, device: McuDevice):
+        self.McuDevice = device
+
+    def OnEnable(self):
+        """ Called when the behavior has been enabled """
         pass
 
-    def OnInit(self):
-        """ Called when the script has been started """
-        pass
-
-    def OnDeInit(self):
-        """ Called before the script will be stopped """
+    def OnDisable(self):
+        """ Called before the behavior will be disabled """
         pass
 
     def OnDirtyMixerTrack(self, SetTrackNum):
@@ -38,12 +28,13 @@ class McuBaseClass():
 
     def OnUpdateMeters(self):
         """ Called when peak meters have updated values """
-
-    def OnIdle(self):
-        """ Called from time to time. Can be used to do some small tasks, mostly UI related """
         pass
 
-    def OnSendTempMsg(Msg, Duration = 1000):
+    def OnIdle(self):
+        """ Called from time to time. Can be used to do some small tasks, mostly UI related. For example: update activity meters. """
+        pass
+
+    def OnSendTempMsg(self, msg: str, duration = 2000):
         """ Called when hint message (to be displayed on controller display) is sent to the controller. The duration of message is in ms. """
         pass
 
@@ -61,7 +52,7 @@ class McuBaseClass():
             HW_Dirty_RemoteLinkValues 	512 	remote link (linked controls) value is changed
             HW_Dirty_Patterns 	        1024 	pattern changes
             HW_Dirty_Tracks 	        2048 	track changes
-            HW_Dirty_ControlValues 	    4096 	plugin cotrol value changes
+            HW_Dirty_ControlValues 	    4096 	plugin control value changes
             HW_Dirty_Colors 	        8192 	plugin colors changes
             HW_Dirty_Names 	            16384 	plugin names changes
             HW_Dirty_ChannelRackGroup 	32768 	Channel rack group changes
@@ -69,35 +60,27 @@ class McuBaseClass():
         """
         pass
 
-    def OnMidiMsg(self):
+    def OnMidiMsg(self, event: FlMidiMsg):
         """ Called for all MIDI messages. """
         pass
 
-    def OnSysEx(self):
+    def OnSysEx(self, event: FlMidiMsg):
         """ Called for all SysEx messages. """
-        pass
-
-    def OnIdle(self):
-        """ Called from time to time. Can be used to do some small tasks, mostly UI related. For example: update activity meters. """
         pass
 
     def OnFirstConnect(self):
         """ Called when device is connected for the first time (ever) """
         pass
 
-    def OnProjectLoad(self, status):
+    def OnProjectLoad(self, status: int):
         """ Called when project is loaded """
         pass
 
-    def OnDirtyMixerTrack(self, SetTrackNum):
-        """ Called on mixer track(s) change, 'index' indicates track index of track that changed or -1 when all tracks changed
-            collect info about 'dirty' tracks here but do not handle track(s) refresh, wait for OnRefresh event with HW_Dirty_Mixer_Controls flag"""
-        pass
-
-    def OnUpdateBeatIndicator(self, Value):
+    def OnUpdateBeatIndicator(self, value: int):
         """ Called when the beat indicator has changes - "value" can be off = 0, bar = 1 (on), beat = 2 (on) """
         pass
 
-    def OnUpdateMeters(self):
-        """ Called when peak meters needs to be updated """
+    def OnWaitingForInput(self):
+        """ Called when FL studio is in waiting mode """
         pass
+
