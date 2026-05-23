@@ -1,9 +1,6 @@
 import device
 import midi
 import mixer
-import playlist
-import ui
-import utils
 
 from constants import mcu_extender_location
 from device_hal import mcu_buttons
@@ -147,18 +144,16 @@ class TrackBankingManager:
         """
         Handle fader bank buttons: FaderBankLeft (-8), FaderBankRight (+8), FaderChannelLeft (-1), FaderChannelRight (+1)
         """
-        trackOffset = (device.dispatchReceiverCount() * self.TrackCount) if self.ExtenderPos == mcu_extender_location.Left else 0
-
         index: int
 
         if button == mcu_buttons.FaderBankLeft:
-            index = self.FirstTrack - self.TrackCount - trackOffset
+            index = self.GetFirstTrack() - self.TrackCount
         elif button == mcu_buttons.FaderBankRight:
-            index = self.FirstTrack + self.TrackCount - trackOffset
+            index = self.GetFirstTrack() + self.TrackCount
         elif button == mcu_buttons.FaderChannelLeft:
-            index = self.FirstTrack - 1 - trackOffset
+            index = self.GetFirstTrack() - 1
         elif button == mcu_buttons.FaderChannelRight:
-            index = self.FirstTrack + 1 - trackOffset
+            index = self.GetFirstTrack() + 1
 
         maxTrackCount = self.GetVirtualTrackCount()
         if index < 0:
@@ -167,6 +162,11 @@ class TrackBankingManager:
             index = maxTrackCount - 1
 
         self.SetFirstTrackIndex(index)
+
+    def GetFirstTrack(self):
+        """ Returns the index of the first virtual track that is currently set to be displayed on any hardware unit including extenders. """
+        trackOffset = (device.dispatchReceiverCount() * self.TrackCount) if self.ExtenderPos == mcu_extender_location.Left else 0
+        return self.FirstTrack - trackOffset
 
     def GetVirtualTrackCount(self):
         """ Returns the amount of virtual tracks that exist in the software. For example, if there are 9 mixer tracks in your FL Studio project, this will be 9. """

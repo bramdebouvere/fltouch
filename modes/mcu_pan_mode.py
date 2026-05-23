@@ -8,6 +8,7 @@ from behaviors.mixer_rec_button_behavior import MixerRecButtonBehavior
 from behaviors.mixer_select_button_behavior import MixerSelectButtonBehavior
 from behaviors.mixer_solo_button_behavior import MixerSoloButtonBehavior
 from behaviors.track_banking_behavior import TrackBankingBehavior
+from behaviors.mixer_show_bank_in_fl_behavior import MixerShowBankInFLBehavior
 from utilities.track_banking_manager import TrackBankingManager
 from device_hal.mcu_device import McuDevice
 from modes.mcu_base_mode import McuBaseMode
@@ -27,7 +28,8 @@ class McuPanMode(McuBaseMode):
             MixerRecButtonBehavior(device, trackBankingManager, screenBehavior),
             MixerSoloButtonBehavior(device, trackBankingManager),
             MixerMuteButtonBehavior(device, trackBankingManager),
-            MixerEncoderPanBehavior(device, trackBankingManager)
+            MixerEncoderPanBehavior(device, trackBankingManager),
+            MixerShowBankInFLBehavior(device, trackBankingManager),
         ], trackBankingManager)
 
     def OnEnable(self):
