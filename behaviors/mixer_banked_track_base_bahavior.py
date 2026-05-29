@@ -28,7 +28,9 @@ class MixerBankedTrackBaseBehavior(McuBaseBehavior):
     def OnEnable(self):
         super().OnEnable()
         self.TrackBanking.AddTrackChangeSubscriber(self.OnTrackBankChange)
-        self.OnRefresh(self.__refreshFlagToCheck)  # Refresh controls when enabling to ensure they are in sync with the current track bank
+        # Mark for changes so Update will run after enabling this behavior, so changes are reflected immediately
+        self.__needsChanges = True
+        self.OnRefresh(self.__refreshFlagToCheck)
 
     def OnDisable(self):
         self.TrackBanking.RemoveTrackChangeSubscriber(self.OnTrackBankChange)

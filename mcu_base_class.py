@@ -413,14 +413,14 @@ class McuBaseClass():
             if event.data1 in [mcu_buttons.Pan, mcu_buttons.Sends, mcu_buttons.Equalizer, mcu_buttons.Stereo, mcu_buttons.Effects, mcu_buttons.Free]:
                 if event.data2 > 0:
                     n = event.data1 - mcu_buttons.Pan
-                    self.OnSendMsg(mcu_constants.ModeDescriptions[n])
                     event.handled = True
                     if self.Mode != n:
                         print('Switching to mode: ' + mcu_constants.ModeShortDescriptions[n])
                         self.EnableMode(self.modes[n])
+                        self.OnSendMsg(mcu_constants.ModeDescriptions[n])
                     if not self.McuDevice.isExtender:
                         self.McuDevice.SendButtonPressToExtenders(event.data1) # this is how mode changes are communicated to the extenders as well, by sending a "fake" button press for the mode button that was pressed
-                    return
+                    return event
 
         # handle MIDI message in behaviors and mode
         for behavior in self.PermanentBehaviors:

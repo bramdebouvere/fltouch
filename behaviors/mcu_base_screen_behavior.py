@@ -52,7 +52,7 @@ class McuBaseScreenBehavior(McuBaseBehavior):
     def RenderTrackNumbers(self, row: int):
         """Render track numbers on the screen based on the current track bank."""
 
-        tracks = self.__trackBanking.GetTrackIndexes();
+        tracks = self.__trackBanking.GetTrackIndexes()
         text = ''
         for track in tracks:
             text += f'{track:^{ScribbleStripWidth}}' # center the track number within the space on the scribble strip screen
@@ -82,7 +82,7 @@ class McuBaseScreenBehavior(McuBaseBehavior):
 
     def RenderTrackWhite(self):
         """Set all screen sections to white (default)."""
-        self.McuDevice.SetScreenColors();
+        self.McuDevice.SetScreenColors()
 
     def RenderMessage(self, message: str, row: int, duration: int = 2000, callback: Callable[[int], None] | None = None):
         """

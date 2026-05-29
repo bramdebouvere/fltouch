@@ -469,7 +469,7 @@ class TMackieCU(mcu_base_class.McuBaseClass):
                             if event.data2 > 0:
                                 i = event.data1 - mcu_buttons.Select_1
 
-                                ui.showWindow(midi.widMixer)
+                                ui.showWindow(midi.widMixer) #TODO: implement this in the new version of the code
                                 mixer.setTrackNumber(self.Tracks[i].TrackNum, midi.curfxScrollToMakeVisible | midi.curfxMinimalLatencyUpdate)
                         
                         # solo buttons
