@@ -2,34 +2,21 @@ import midi
 import mixer
 
 from behaviors.mcu_base_behavior import McuBaseBehavior
+from behaviors.mixer_banked_track_base_bahavior import MixerBankedTrackBaseBehavior
 from device_hal import mcu_buttons
 from utilities.track_banking_manager import TrackBankingManager
 from device_hal.mcu_device import McuDevice
 
 
-class MixerSelectButtonBehavior(McuBaseBehavior):
+class MixerSelectButtonBehavior(MixerBankedTrackBaseBehavior):
     """Behavior for handling select button presses and updating select button LEDs based on track selection."""
 
     def __init__(self, mcuDevice: McuDevice, trackBankingManager: TrackBankingManager):
-        super().__init__(mcuDevice)
-        self.__trackBanking = trackBankingManager
+        super().__init__(mcuDevice, trackBankingManager, midi.HW_Dirty_Mixer_Sel)
 
-    def OnEnable(self):
-        super().OnEnable()
-        self.__trackBanking.AddTrackChangeSubscriber(self._onTrackBankChange)
-
-    def OnDisable(self):
-        self.__trackBanking.RemoveTrackChangeSubscriber(self._onTrackBankChange)
-        super().OnDisable()
-
-    def _onTrackBankChange(self, newFirstTrack):
-        """Called when track banking changes, update select buttons."""
+    def Update(self):
+        """ Called by base class when track banking changes or when tracks are marked dirty, updates select buttons. """
         self._updateSelectButtons()
-
-    def OnRefresh(self, flags):
-        # Update select button LEDs when mixer selection changes
-        if flags & midi.HW_Dirty_Mixer_Sel:
-            self._updateSelectButtons()
 
     def OnMidiMsg(self, event):
         """Handle select button presses to select tracks in FL Studio mixer."""
@@ -39,11 +26,11 @@ class MixerSelectButtonBehavior(McuBaseBehavior):
                                mcu_buttons.Select_5, mcu_buttons.Select_6, mcu_buttons.Select_7, mcu_buttons.Select_8]:
                 # Calculate which track index was pressed
                 select_button_index = event.data1 - mcu_buttons.Select_1
-                virtualTrackIndex = self.__trackBanking.GetTrackIndex(select_button_index)
+                virtualTrackIndex = self.TrackBanking.GetTrackIndex(select_button_index)
                 
                 assert virtualTrackIndex != -1, "Invalid track index for select button press"
                 # Only select if the track exists in FL Studio
-                if self.__trackBanking.VirtualTrackExists(virtualTrackIndex):
+                if self.TrackBanking.VirtualTrackExists(virtualTrackIndex):
                     mixer.setTrackNumber(midi.TrackNum_Master + virtualTrackIndex)
                 
                 event.handled = True
@@ -52,13 +39,13 @@ class MixerSelectButtonBehavior(McuBaseBehavior):
     def _updateSelectButtons(self):
         """Update all select button LEDs to reflect current track selection."""
         currentTrackNum = mixer.trackNumber()
-        virtualTrackIndexes = self.__trackBanking.GetTrackIndexes()
+        virtualTrackIndexes = self.TrackBanking.GetTrackIndexes()
         
         for virtualIndex in virtualTrackIndexes:
-            track = self.__trackBanking.GetHardwareTrack(virtualIndex)
+            track = self.TrackBanking.GetHardwareTrack(virtualIndex)
             if track is not None and track.buttons is not None:
                 # Determine if this track is selected
                 isSelected = False
-                if (self.__trackBanking.VirtualTrackExists(virtualIndex)):
+                if (self.TrackBanking.VirtualTrackExists(virtualIndex)):
                     isSelected = (midi.TrackNum_Master + virtualIndex) == currentTrackNum
                 track.buttons.SetSelectButton(isSelected)

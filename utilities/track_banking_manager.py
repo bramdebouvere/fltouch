@@ -115,7 +115,8 @@ class TrackBankingManager:
 
     def GetTrackIndex(self, hardwareTrackIndex: int):
         """
-        Returns the virtual track index for a given hardware track index. For example, if the first track index is 5 and you ask for hardware track index 2, this will return 7.
+        Returns the virtual track index for a given hardware track index. For example, if the first virtual 
+        track index is 5 and you ask for hardware track index 2, this will return 7.
         Note that it's not because an index is returned, that it will also exist in the software.
 
         :param hardwareTrackIndex: The index of the track on the hardware (0-7)

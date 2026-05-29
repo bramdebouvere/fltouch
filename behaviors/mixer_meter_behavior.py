@@ -10,7 +10,7 @@ class MixerMeterBehavior(McuBaseBehavior):
 
     def __init__(self, mcuDevice: McuDevice, trackBankingManager: TrackBankingManager):
         super().__init__(mcuDevice)
-        self.trackBanking = trackBankingManager
+        self.__trackBanking = trackBankingManager
 
     def OnEnable(self):
         super().OnEnable()
@@ -24,14 +24,14 @@ class MixerMeterBehavior(McuBaseBehavior):
     def OnUpdateMeters(self):
         """ Called when the peak meters have updated values in FL Studio and the hardware meters should be updated to reflect this change """
         super().OnUpdateMeters()
-        trackIndexes = self.trackBanking.GetTrackIndexes()
+        trackIndexes = self.__trackBanking.GetTrackIndexes()
         for index in trackIndexes:
             currentPeak = 0
             # Only show a value for meters for tracks that exist in FL Studio, otherwise the meter should be empty (0)
-            if self.trackBanking.VirtualTrackExists(index):
+            if self.__trackBanking.VirtualTrackExists(index):
                 # Get track peak (what's displayed on the meter) from FL Studio
                 currentPeak = mixer.getTrackPeaks(index, midi.PEAK_LR_INV)
-            track = self.trackBanking.GetHardwareTrack(index)
+            track = self.__trackBanking.GetHardwareTrack(index)
             
             assert track is not None and track.meter is not None
             track.meter.SetValue(currentPeak)

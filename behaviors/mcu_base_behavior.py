@@ -62,7 +62,7 @@ class McuBaseBehavior():
 
     def OnMidiMsg(self, event: FlMidiMsg):
         """ Called for all MIDI messages. """
-        pass
+        return event
 
     def OnSysEx(self, event: FlMidiMsg):
         """ Called for all SysEx messages. """

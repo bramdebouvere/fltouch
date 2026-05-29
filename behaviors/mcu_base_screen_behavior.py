@@ -1,14 +1,11 @@
 import time
 
-import midi
 import mixer
-import transport
 
 from typing import Callable
 
 from behaviors.mcu_base_behavior import McuBaseBehavior
 from constants.mcu_constants import ScribbleStripWidth
-from device_hal import mcu_buttons
 from device_hal.mcu_colors import GetMcuColor, ScreenColorBlack
 from utilities.track_banking_manager import TrackBankingManager
 from utilities.transliteration import GetAsciiSafeTrackName
@@ -47,7 +44,6 @@ class McuBaseScreenBehavior(McuBaseBehavior):
         super().OnIdle()
 
     def _onTrackBankChange(self, newFirstTrack):
-        """Called when track banking changes, update REC buttons."""
         pass
 
     def OnRefresh(self, flags):

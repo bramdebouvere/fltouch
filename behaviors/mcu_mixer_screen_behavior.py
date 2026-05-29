@@ -1,9 +1,6 @@
 import midi
-import mixer
-import transport
 
 from behaviors.mcu_base_screen_behavior import McuBaseScreenBehavior
-from device_hal import mcu_buttons
 from utilities.track_banking_manager import TrackBankingManager
 from device_hal.mcu_device import McuDevice
 
@@ -36,10 +33,6 @@ class McuMixerScreenBehavior(McuBaseScreenBehavior):
         self.__messageToRender = msg
         self.__messageDuration = duration
         return super().OnSendTempMsg(msg, duration)
-
-    def _onTrackBankChange(self, newFirstTrack):
-        """Called when track banking changes, update REC buttons."""
-        pass
 
     def OnRefresh(self, flags):
         super().OnRefresh(flags)
