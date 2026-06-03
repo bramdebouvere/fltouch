@@ -14,6 +14,16 @@ class TimeDisplayBehavior(McuBaseBehavior):
     def __init__(self, device: McuDevice):
         super().__init__(device)
 
+    def OnMidiMsg(self, event):
+        if event.midiId == midi.MIDI_NOTEON and event.data2 > 0:
+            if event.data1 == mcu_buttons.TimeFormat:
+                # Toggle time display mode between SMPTE/Min and Beats
+                ui.setTimeDispMin()
+                device.directFeedback(event)
+                event.handled = True
+                return event
+        return super().OnMidiMsg(event)
+
     def OnIdle(self):
         self.UpdateTimeDisplay()
 
