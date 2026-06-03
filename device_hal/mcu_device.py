@@ -127,7 +127,13 @@ class McuDevice:
             device.midiOutMsg(midi.MIDI_CONTROLCHANGE + ((0x4A) << 8) + (ord(message[1]) << 16))
 
     def SetButton(self, button: int, active: int, index:int, skipIsAssignedCheck: bool = False):
-        """ Take a button and turn it on or off """
+        """Send a button LED update.
+
+        For normal button LEDs, `active` is typically one of the
+        midi.TranzPort_OffOnT values.
+        For low-level note-on style LEDs (like the play sync indicator),
+        `active` may include `midi.MIDI_NOTEON` plus a velocity in the high bits.
+        """
         if skipIsAssignedCheck or device.isAssigned():
             device.midiOutNewMsg((button << 8) + active, index)
 

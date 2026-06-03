@@ -27,7 +27,8 @@ import constants.mcu_constants as mcu_constants
 import utilities.transliteration as transliteration
 
 from behaviors.time_display_behavior import TimeDisplayBehavior
-from utilities.track_banking_manager import TrackBankingManager
+from behaviors.transport_buttons_behavior import TransportButtonsBehavior
+from behaviors.master_transport_section_buttons_behavior import MasterTransportSectionButtonsBehavior
 
 class TMackieCU(mcu_base_class.McuBaseClass):
     def __init__(self):
@@ -35,6 +36,8 @@ class TMackieCU(mcu_base_class.McuBaseClass):
 
         self.PermanentBehaviors.append(TimeDisplayBehavior(self.McuDevice))
         self.PermanentBehaviors.append(MixerMainFaderBehavior(self.McuDevice))
+        self.PermanentBehaviors.append(MasterTransportSectionButtonsBehavior(self.McuDevice))
+        self.PermanentBehaviors.append(TransportButtonsBehavior(self.McuDevice))
 
         self.JogSource = 0
 

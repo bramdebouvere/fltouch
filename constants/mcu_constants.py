@@ -8,3 +8,4 @@ ModeShortDescriptions = ('Pan', 'Stereo', 'Sends', 'Effects', 'EQ', 'Free', 'Unu
 ModeDescriptions = ('Panning                                (press to reset)', 'Stereo separation                      (press to reset)',  'Sends for selected track              (press to enable)', 'Effects for selected track            (press to enable)', 'EQ for selected track                  (press to reset)',  'Lotsa free controls')
 OffOnStr = ('off', 'on')
 ArrowsStr = chr(0x3E) + chr(0x20) #ASCII for "> "
+SyncLedVelocity = 0x7F
