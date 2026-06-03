@@ -61,7 +61,9 @@ class McuDevice:
 
     def SetClicking(self, enabled: bool):
         """ Sets clicking for transport buttons """
-        # This is code from the original script, but I don't know what the clicking actually means in this case (if you do, please let me know)
+        # According to https://support.apple.com/en-ng/guide/logicpro/ctls718de3eb/mac ,
+        # Enabling or disabling clicking turns on or off the audible click sound when you press one of the transport buttons.
+        # However, in practice this doesn't seem to do anything on the Xtouch, but it might do something on other MCU devices, so I'm leaving it in for now
         if device.isAssigned():
             device.midiOutSysex(bytes([0xF0, 0x00, 0x00, 0x66, self.__productId, 0x0A, int(enabled), 0xF7]))
 
