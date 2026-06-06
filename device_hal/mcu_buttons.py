@@ -51,12 +51,12 @@ Encoder_6 = 0x25
 Encoder_7 = 0x26
 Encoder_8 = 0x27
 
-# Pages
+# Pages (for some reason, these indexes are not in the correct order of the actual hardware buttons)
 Pan = 0x28
-Sends = 0x29
-Equalizer = 0x2A
-Stereo = 0x2B
-Effects = 0x2C
+Stereo = 0x2A
+Effects = 0x2B
+Sends = 0x2C
+Equalizer = 0x29
 Free = 0x2D
 
 # Banking

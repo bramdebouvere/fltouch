@@ -1,7 +1,9 @@
 
 from behaviors.track_banking_behavior import TrackBankingBehavior
+from behaviors.mode_buttons_behavior import ModeButtonsBehavior
 from utilities.track_banking_manager import TrackBankingManager
 from device_hal.mcu_device import McuDevice
+from device_hal import mcu_buttons
 from modes.mcu_base_mode import McuBaseMode
 from utilities.fl_class_import import FlMidiMsg
 
@@ -10,6 +12,7 @@ class McuEQMode(McuBaseMode):
 
     def __init__(self, device: McuDevice, trackBankingManager: TrackBankingManager):
         super().__init__(device, [
+            ModeButtonsBehavior(device, mcu_buttons.Equalizer),
             TrackBankingBehavior(device, trackBankingManager)
         ], trackBankingManager)
 

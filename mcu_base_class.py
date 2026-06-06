@@ -412,12 +412,13 @@ class McuBaseClass():
         if event.midiId == midi.MIDI_NOTEON:
             if event.data1 in [mcu_buttons.Pan, mcu_buttons.Sends, mcu_buttons.Equalizer, mcu_buttons.Stereo, mcu_buttons.Effects, mcu_buttons.Free]:
                 if event.data2 > 0:
-                    n = event.data1 - mcu_buttons.Pan
+                    # Because the midi index of the buttons is not in the correct order on the hardware, we need to map the button to the correct mode index
+                    modeIndex = mcu_modes.ButtonModeMapping[event.data1]
                     event.handled = True
-                    if self.Mode != n:
-                        print('Switching to mode: ' + mcu_constants.ModeShortDescriptions[n])
-                        self.EnableMode(self.modes[n])
-                        self.OnSendMsg(mcu_constants.ModeDescriptions[n])
+                    if self.Mode != self.modes[modeIndex]:
+                        print('Switching to mode: ' + mcu_constants.ModeShortDescriptions[modeIndex])
+                        self.EnableMode(self.modes[modeIndex])
+                        self.OnSendMsg(mcu_constants.ModeDescriptions[modeIndex])
                     if not self.McuDevice.isExtender:
                         self.McuDevice.SendButtonPressToExtenders(event.data1) # this is how mode changes are communicated to the extenders as well, by sending a "fake" button press for the mode button that was pressed
                     return event

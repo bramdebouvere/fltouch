@@ -9,8 +9,10 @@ from behaviors.mixer_select_button_behavior import MixerSelectButtonBehavior
 from behaviors.mixer_solo_button_behavior import MixerSoloButtonBehavior
 from behaviors.track_banking_behavior import TrackBankingBehavior
 from behaviors.mixer_show_bank_in_fl_behavior import MixerShowBankInFLBehavior
+from behaviors.mode_buttons_behavior import ModeButtonsBehavior
 from utilities.track_banking_manager import TrackBankingManager
 from device_hal.mcu_device import McuDevice
+from device_hal import mcu_buttons
 from modes.mcu_base_mode import McuBaseMode
 from utilities.fl_class_import import FlMidiMsg
 
@@ -21,6 +23,7 @@ class McuPanMode(McuBaseMode):
         screenBehavior = McuMixerScreenBehavior(device, trackBankingManager)
         super().__init__(device, [
             screenBehavior,
+            ModeButtonsBehavior(device, mcu_buttons.Pan),
             TrackBankingBehavior(device, trackBankingManager),
             MixerFaderBehavior(device, trackBankingManager),
             MixerMeterBehavior(device, trackBankingManager),

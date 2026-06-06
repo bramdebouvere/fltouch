@@ -1,14 +1,18 @@
 
 from utilities.track_banking_manager import TrackBankingManager
 from device_hal.mcu_device import McuDevice
+from device_hal import mcu_buttons
 from modes.mcu_base_mode import McuBaseMode
 from utilities.fl_class_import import FlMidiMsg
+from behaviors.mode_buttons_behavior import ModeButtonsBehavior
 
 
 class McuUnusedMode(McuBaseMode):
 
     def __init__(self, device: McuDevice, trackBankingManager: TrackBankingManager):
-        super().__init__(device, [], trackBankingManager)
+        super().__init__(device, [
+            ModeButtonsBehavior(device, mcu_buttons.Free)
+        ], trackBankingManager)
 
     def OnEnable(self):
         super().OnEnable()
