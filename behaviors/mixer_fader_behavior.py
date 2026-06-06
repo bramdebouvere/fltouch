@@ -59,7 +59,7 @@ class MixerFaderBehavior(MixerBankedTrackBaseBehavior):
     def __handleFaderTouchEvent(self, event: FlMidiMsg):
         """ Handle fader touch events to select the corresponding track in FL Studio. """
         fader_index = event.data1 - mcu_buttons.Slider_1
-        if fader_index < 8:
+        if fader_index < self.TrackBanking.TrackCount:
             virtualIndex = self.TrackBanking.GetTrackIndex(fader_index)
             if self.TrackBanking.VirtualTrackExists(virtualIndex):
                 mixer.setTrackNumber(midi.TrackNum_Master + virtualIndex)
@@ -70,7 +70,7 @@ class MixerFaderBehavior(MixerBankedTrackBaseBehavior):
     
     def __isFaderSlideEvent(self, event: FlMidiMsg):
         """ Detect if the MIDI event corresponds to a fader slide event on the MCU. """
-        return event.midiId == midi.MIDI_PITCHBEND and event.midiChan <= 8
+        return event.midiId == midi.MIDI_PITCHBEND and event.midiChan < (self.TrackBanking.TrackCount + 1)
     
     def __handleFaderSlideEvent(self, event: FlMidiMsg):
         """ Handle hw fader slide events to control the associated track in FL Studio. """
@@ -79,7 +79,7 @@ class MixerFaderBehavior(MixerBankedTrackBaseBehavior):
         event.inEv -= 0x2000
 
         flFaderValue = McuFaderToFlFader(event.inEv + 0x2000)
-        if event.midiChan < 8:
+        if event.midiChan < self.TrackBanking.TrackCount:
             # Fader 1-8
             virtualIndex = self.TrackBanking.GetTrackIndex(event.midiChan)
             if not self.TrackBanking.VirtualTrackExists(virtualIndex):

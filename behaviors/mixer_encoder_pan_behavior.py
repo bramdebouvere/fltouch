@@ -80,7 +80,7 @@ class MixerEncoderPanBehavior(MixerBankedTrackBaseBehavior):
             else:
                 event.outEv = event.inEv
 
-            if encoderIndex < 8:
+            if encoderIndex < self.TrackBanking.TrackCount:
                 virtualIndex = self.TrackBanking.GetTrackIndex(encoderIndex)
                 if not self.TrackBanking.VirtualTrackExists(virtualIndex):
                     return super().OnMidiMsg(event)

@@ -122,7 +122,7 @@ class TrackBankingManager:
         :param hardwareTrackIndex: The index of the track on the hardware (0-7)
         :return: The corresponding virtual track index, or -1 if the hardware track index is out of range
         """
-        if (hardwareTrackIndex >= 8):
+        if (hardwareTrackIndex >= self.TrackCount):
             return -1
         return self.FirstTrack + hardwareTrackIndex
 
