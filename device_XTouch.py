@@ -91,7 +91,7 @@ class TMackieCU(mcu_base_class.McuBaseClass):
             self.UpdateMasterSectionLEDs()
 
     def TrackSel(self, Index, Step):
-
+        return # this code is now disabled, only kept for reference purposes (we are in a refactor and this will be removed later)
         Index = 2 - Index
         device.baseTrackSelect(Index, Step)
         if Index == 0:
@@ -104,6 +104,7 @@ class TMackieCU(mcu_base_class.McuBaseClass):
             self.OnSendMsg(mcu_constants.ArrowsStr + 'Pattern: ' + s)
 
     def Jog(self, event):
+        return # this code is now disabled, only kept for reference purposes (we are in a refactor and this will be removed later)
         if self.JogSource == 0: # default
             if (ui.getFocused(midi.widBrowser)):
                 transport.globalTransport(midi.FPT_Jog, event.outEv, event.pmeFlags) # go up/down in browser
@@ -590,6 +591,7 @@ class TMackieCU(mcu_base_class.McuBaseClass):
         """
         Updates the LEDs on the Master Section
         """
+        return # this code is now disabled, only kept for reference purposes (we are in a refactor and this will be removed later)
 
         if device.isAssigned():
             # stop
@@ -624,9 +626,7 @@ class TMackieCU(mcu_base_class.McuBaseClass):
             self.McuDevice.SetButton(mcu_buttons.Flip, midi.TranzPort_OffOnT[self.Flip], 18, skipIsAssignedCheck=True)
             # snap
             self.McuDevice.SetButton(mcu_buttons.Snap, midi.TranzPort_OffOnT[ui.getSnapMode() != 3], 19, skipIsAssignedCheck=True)
-            # focused windows
-            self.McuDevice.SetButton(mcu_buttons.Browser, midi.TranzPort_OffOnT[ui.getFocused(midi.widBrowser)], 20, skipIsAssignedCheck=True)
-            self.McuDevice.SetButton(mcu_buttons.StepSequencer, midi.TranzPort_OffOnT[ui.getFocused(midi.widChannelRack)], 21, skipIsAssignedCheck=True)
+
 
     def SetJogSource(self, Value):
         """ 0 = default, other = button value """
