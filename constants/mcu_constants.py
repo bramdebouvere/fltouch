@@ -16,3 +16,4 @@ ModeDescriptions = (
 OffOnStr = ('off', 'on')
 ArrowsStr = chr(0x3E) + chr(0x20) #ASCII for "> "
 SyncLedVelocity = 0x7F
+JogCC = 0x3C

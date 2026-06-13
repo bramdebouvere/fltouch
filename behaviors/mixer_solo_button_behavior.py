@@ -32,8 +32,7 @@ class MixerSoloButtonBehavior(MixerBankedTrackBaseBehavior):
                 # Only solo if the track exists in FL Studio
                 if self.TrackBanking.VirtualTrackExists(virtualTrackIndex):
                     mixer.soloTrack(midi.TrackNum_Master + virtualTrackIndex, midi.fxSoloToggle, midi.fxSoloModeWithSourceTracks | midi.fxSoloModeWithDestTracks)
-                # TODO: allow multiple solo tracks with shift; solo should be based on SHIFT value: midi.fxSoloModeWithSourceTracks if self.Shift else midi.fxSoloModeWithDestTracks
-                
+
                 event.handled = True
                 return event
 

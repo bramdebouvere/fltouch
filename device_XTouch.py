@@ -15,7 +15,13 @@ import midi
 import utils
 
 
+from behaviors.arrow_zoom_buttons_behavior import ArrowZoomButtonsBehavior
+from behaviors.function_buttons_behavior import FunctionButtonsBehavior
+from behaviors.jog_sources_buttons_behavior import JogSourcesButtonsBehavior
 from behaviors.mixer_main_fader_behavior import MixerMainFaderBehavior
+from behaviors.system_buttons_behavior import SystemButtonsBehavior
+from behaviors.track_marker_buttons_behavior import TrackMarkerBehavior
+from behaviors.window_time_buttons_behavior import WindowTimeButtonsBehavior
 import constants.mcu_modes as mcu_modes
 import device_hal.mcu_buttons as mcu_buttons
 from device_hal.mcu_device import McuDevice 
@@ -38,6 +44,12 @@ class TMackieCU(mcu_base_class.McuBaseClass):
         self.PermanentBehaviors.append(MixerMainFaderBehavior(self.McuDevice))
         self.PermanentBehaviors.append(MasterTransportSectionButtonsBehavior(self.McuDevice))
         self.PermanentBehaviors.append(TransportButtonsBehavior(self.McuDevice))
+        self.PermanentBehaviors.append(WindowTimeButtonsBehavior(self.McuDevice))
+        self.PermanentBehaviors.append(SystemButtonsBehavior(self.McuDevice))
+        self.PermanentBehaviors.append(TrackMarkerBehavior(self.McuDevice))
+        self.PermanentBehaviors.append(JogSourcesButtonsBehavior(self.McuDevice))
+        self.PermanentBehaviors.append(FunctionButtonsBehavior(self.McuDevice))
+        self.PermanentBehaviors.append(ArrowZoomButtonsBehavior(self.McuDevice))
 
         self.JogSource = 0
 

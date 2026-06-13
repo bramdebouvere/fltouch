@@ -8,7 +8,7 @@ from behaviors.mcu_base_behavior import McuBaseBehavior
 from constants.mcu_constants import ScribbleStripWidth
 from device_hal.mcu_colors import GetMcuColor, ScreenColorBlack
 from utilities.track_banking_manager import TrackBankingManager
-from utilities.transliteration import GetAsciiSafeTrackName
+from utilities.transliteration import GetAsciiSafeTrackName, TransliterateToAscii
 from device_hal.mcu_device import McuDevice
 
 class McuBaseScreenBehavior(McuBaseBehavior):
@@ -97,7 +97,8 @@ class McuBaseScreenBehavior(McuBaseBehavior):
             self.__callback = None
 
         # Display the message
-        self.McuDevice.SetTextDisplay(message, row, skipIsAssignedCheck=True)
+        transliterated = TransliterateToAscii(message) # The screens can only display ASCII characters, so we need to transliterate any non-ASCII characters in the message
+        self.McuDevice.SetTextDisplay(transliterated, row, skipIsAssignedCheck=True)
 
         # If a callback is provided, schedule it to be called when the message expires
         # (for example for removing the message from the screen again)

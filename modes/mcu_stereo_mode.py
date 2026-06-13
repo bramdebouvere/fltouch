@@ -1,4 +1,5 @@
 
+from behaviors.jogwheel_behavior import JogWheelBehavior
 from behaviors.mcu_mixer_screen_behavior import McuMixerScreenBehavior
 from behaviors.mixer_fader_behavior import MixerFaderBehavior
 from behaviors.mixer_meter_behavior import MixerMeterBehavior
@@ -32,6 +33,7 @@ class McuStereoMode(McuBaseMode):
             MixerMuteButtonBehavior(device, trackBankingManager),
             MixerShowBankInFLBehavior(device, trackBankingManager),
             MixerEncoderStereoBehavior(device, trackBankingManager),
+            JogWheelBehavior(device, screenBehavior)
         ], trackBankingManager)
 
     def OnEnable(self):

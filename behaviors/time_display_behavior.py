@@ -47,7 +47,7 @@ class TimeDisplayBehavior(McuBaseBehavior):
             else:
                 n = abs(playlist.getVisTimeBar())
                 h, m = utils.DivModU(n, 60)
-                s = utils.Zeros_Strict((h * 100 + m) * utils.SignOf(playlist.getVisTimeBar()), 5, ' ') #todo sign of...
+                s = utils.Zeros_Strict((h * 100 + m) * utils.SignOf(playlist.getVisTimeBar()), 5, ' ')
 
             s = s + utils.Zeros_Strict(abs(playlist.getVisTimeStep()), 2) + utils.Zeros_Strict(playlist.getVisTimeTick(), 2) + ' '
         else:

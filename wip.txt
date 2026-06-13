@@ -18,4 +18,3 @@ reflect linked values on the control surface:
 
 TODO:
 - move encoder update code to new file
-- remove smoothing code (the only thing it does right now is cause delays)
