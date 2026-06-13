@@ -30,7 +30,7 @@ class MixerSoloButtonBehavior(MixerBankedTrackBaseBehavior):
                 
                 assert virtualTrackIndex != -1, "Invalid track index for SOLO button press"
                 # Only solo if the track exists in FL Studio
-                if self.TrackBanking.VirtualTrackExists(virtualTrackIndex):
+                if self.TrackBanking.VirtualTrackExists(virtualTrackIndex) and event.pmeFlags & midi.PME_System_Safe:
                     mixer.soloTrack(midi.TrackNum_Master + virtualTrackIndex, midi.fxSoloToggle, midi.fxSoloModeWithSourceTracks | midi.fxSoloModeWithDestTracks)
 
                 event.handled = True

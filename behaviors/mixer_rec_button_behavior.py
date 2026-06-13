@@ -32,7 +32,7 @@ class MixerRecButtonBehavior(MixerBankedTrackBaseBehavior):
                 
                 assert virtualTrackIndex != -1, "Invalid track index for REC button press"
                 # Only arm if the track exists in FL Studio
-                if self.TrackBanking.VirtualTrackExists(virtualTrackIndex):
+                if self.TrackBanking.VirtualTrackExists(virtualTrackIndex) and event.pmeFlags & midi.PME_System_Safe:
                     mixer.armTrack(midi.TrackNum_Master + virtualTrackIndex)
                     if mixer.isTrackArmed(midi.TrackNum_Master + virtualTrackIndex):
                         self.__screenBehavior.OnSendTempMsg(transliteration.GetAsciiSafeTrackName(midi.TrackNum_Master + virtualTrackIndex) + ' recording')

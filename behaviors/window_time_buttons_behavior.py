@@ -26,7 +26,7 @@ class WindowTimeButtonsBehavior(McuBaseBehavior):
             btn = event.data1
 
             if btn == mcu_buttons.Browser:
-                if event.data2 > 0:
+                if event.data2 > 0 and event.pmeFlags & midi.PME_System_Safe:
                     ui.showWindow(midi.widBrowser)
                     ui.setFocused(midi.widBrowser)
                 self.McuDevice.SetButton(
@@ -36,7 +36,7 @@ class WindowTimeButtonsBehavior(McuBaseBehavior):
                 )
 
             elif btn == mcu_buttons.StepSequencer:
-                if event.data2 > 0:
+                if event.data2 > 0 and event.pmeFlags & midi.PME_System_Safe:
                     # does not always seem to work, I think it's a bug in FL Studio.
                     # I reported it here: https://forum.image-line.com/viewtopic.php?p=2061850#p2061850
                     ui.showWindow(midi.widChannelRack)

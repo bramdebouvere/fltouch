@@ -38,7 +38,7 @@ class TrackMarkerBehavior(McuBaseBehavior):
                     )
 
             elif btn == mcu_buttons.LinkChannel:
-                if event.data2 > 0:
+                if event.data2 > 0 and event.pmeFlags & midi.PME_System_Safe:
                     if ButtonManager.ShiftPressed:
                         mixer.linkTrackToChannel(midi.ROUTE_StartingFromThis)
                     else:

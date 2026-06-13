@@ -36,7 +36,7 @@ class MixerMuteButtonBehavior(MixerBankedTrackBaseBehavior):
                 
                 assert virtualTrackIndex != -1, "Invalid track index for MUTE button press"
                 # Only mute if the track exists in FL Studio
-                if self.TrackBanking.VirtualTrackExists(virtualTrackIndex):
+                if self.TrackBanking.VirtualTrackExists(virtualTrackIndex) and event.pmeFlags & midi.PME_System_Safe:
                     mixer.muteTrack(midi.TrackNum_Master + virtualTrackIndex)
                 
                 event.handled = True

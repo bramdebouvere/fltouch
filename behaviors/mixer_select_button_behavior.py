@@ -30,7 +30,7 @@ class MixerSelectButtonBehavior(MixerBankedTrackBaseBehavior):
                 
                 assert virtualTrackIndex != -1, "Invalid track index for select button press"
                 # Only select if the track exists in FL Studio
-                if self.TrackBanking.VirtualTrackExists(virtualTrackIndex):
+                if self.TrackBanking.VirtualTrackExists(virtualTrackIndex) and event.pmeFlags & midi.PME_System_Safe:
                     mixer.setTrackNumber(midi.TrackNum_Master + virtualTrackIndex)
                 
                 event.handled = True

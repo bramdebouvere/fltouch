@@ -57,6 +57,8 @@ class MasterTransportSectionButtonsBehavior(McuBaseBehavior):
             return event
 
         elif event.data1 == mcu_buttons.Mode:
+            # TODO: this is kind of stupid, because it does the same as the record button below it
+            # let's find another feature to map to this button
             transport.globalTransport(midi.FPT_Mode, int(event.data2 > 0) * 2, event.pmeFlags)
             device.directFeedback(event)
             event.handled = True
