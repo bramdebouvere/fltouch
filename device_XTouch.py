@@ -261,16 +261,7 @@ class TMackieCU(mcu_base_class.McuBaseClass):
                         transport.globalTransport(midi.FPT_F1 - mcu_buttons.Cut + event.data1, int(event.data2 > 0) * 2, event.pmeFlags)
                         event.data1 = 0xFF
 
-                    if event.data1 == mcu_buttons.NameValue: # display mode
-                        if event.data2 > 0:
-                            if self.Shift:
-                                self.ExtenderPos = abs(self.ExtenderPos - 1)
-                                self.FirstTrackT[self.FirstTrack] = 1
-                                # self.SetMode(self.Mode)
-                                self.OnSendMsg('Extender on ' + self.MackieCU_ExtenderPosT[self.ExtenderPos])
-                            else:
-                                transport.globalTransport(midi.FPT_F2, int(event.data2 > 0) * 2, event.pmeFlags, 8)
-                    elif event.data1 == mcu_buttons.TimeFormat: # time format
+                    if event.data1 == mcu_buttons.TimeFormat: # time format
                         if event.data2 > 0:
                             ui.setTimeDispMin()
                     elif (event.data1 == mcu_buttons.FaderBankLeft) | (event.data1 == mcu_buttons.FaderBankRight): # mixer bank

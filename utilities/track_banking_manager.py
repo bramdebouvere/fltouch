@@ -15,7 +15,7 @@ class TrackBankingManager:
     def __init__(self, mcuDevice: McuDevice, softwareTrackCount: int | None = None):
         self.McuDevice = mcuDevice
         self.FirstTrack = 0
-        self.ExtenderPos = mcu_extender_location.Left # TODO: allow changing this
+        self.ExtenderPos = mcu_extender_location.Left
         self.TrackCount = 8  # Tracks per hardware unit
         self.Enabled = False
         self.softwareTrackCount = softwareTrackCount
@@ -90,6 +90,16 @@ class TrackBankingManager:
         # TODO: decide what to do with this later 
         print('Showing tracks ' + str(self.GetTrackIndexes()) + ' on this device')
         device.hardwareRefreshMixerTrack(-1)
+
+    def ToggleExtenderPosition(self):
+        """Toggle extender position between left and right and re-apply banking.
+
+        Returns the new extender position (mcu_extender_location.Left or .Right).
+        """
+        first = self.GetFirstTrack()
+        self.ExtenderPos = mcu_extender_location.Right if self.ExtenderPos == mcu_extender_location.Left else mcu_extender_location.Left
+        self.SetFirstTrackIndex(first)
+        return self.ExtenderPos
 
     def NotifyModeChange(self, mode):
         """ Notify extenders of mode change """

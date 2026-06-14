@@ -11,6 +11,7 @@ from behaviors.mixer_solo_button_behavior import MixerSoloButtonBehavior
 from behaviors.mixer_encoder_stereo_behavior import MixerEncoderStereoBehavior
 from behaviors.track_banking_behavior import TrackBankingBehavior
 from behaviors.mode_buttons_behavior import ModeButtonsBehavior
+from behaviors.namevalue_button_behavior import NameValueButtonBehavior
 from utilities.track_banking_manager import TrackBankingManager
 from device_hal.mcu_device import McuDevice
 from device_hal import mcu_buttons
@@ -33,7 +34,8 @@ class McuStereoMode(McuBaseMode):
             MixerMuteButtonBehavior(device, trackBankingManager),
             MixerShowBankInFLBehavior(device, trackBankingManager),
             MixerEncoderStereoBehavior(device, trackBankingManager),
-            JogWheelBehavior(device, screenBehavior)
+            JogWheelBehavior(device, screenBehavior),
+            NameValueButtonBehavior(device, trackBankingManager, screenBehavior)
         ], trackBankingManager)
 
     def OnEnable(self):
