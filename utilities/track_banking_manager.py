@@ -86,10 +86,7 @@ class TrackBankingManager:
         if old_first_track != self.FirstTrack:
             self._NotifyTrackChangeSubscribers(self.FirstTrack)
 
-        # Refresh hardware
-        # TODO: decide what to do with this later 
         print('Showing tracks ' + str(self.GetTrackIndexes()) + ' on this device')
-        device.hardwareRefreshMixerTrack(-1)
 
     def ToggleExtenderPosition(self):
         """Toggle extender position between left and right and re-apply banking.

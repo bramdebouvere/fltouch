@@ -19,6 +19,8 @@ class McuBaseScreenBehavior(McuBaseBehavior):
         self._trackBanking = trackBankingManager
         self.__callbackTime: float | None = None
         self.__callback: Callable[[], None] | None = None
+        self.__tempMessageToRender: str | None = None
+        self.__tempMessageDuration: int = 0
 
     def OnEnable(self):
         super().OnEnable()
@@ -27,13 +29,24 @@ class McuBaseScreenBehavior(McuBaseBehavior):
     def OnDisable(self):
         self._trackBanking.RemoveTrackChangeSubscriber(self._onTrackBankChange)
 
-        # Clear screen & colors
+        # Clear both text rows on the screen & the screen colors
+        self.McuDevice.SetTextDisplay('', 0, skipIsAssignedCheck = True)
         self.McuDevice.SetTextDisplay('', 1, skipIsAssignedCheck = True)
         self.McuDevice.SetScreenColors(skipIsAssignedCheck = True)
 
         super().OnDisable()
 
     def OnIdle(self):
+        # Render any pending temporary message. We defer it to OnIdle (rather than rendering it directly in
+        # OnSendTempMsg) because an OnRefresh might come right after OnSendTempMsg and overwrite the screen;
+        # OnIdle runs after any OnRefresh calls, so the message sticks.
+        # The message only takes over row 0; the other row and the colors stay on screen from the previous
+        # render, and the RenderMessage callback restores row 0 once the message expires.
+        if self.__tempMessageToRender is not None:
+            self.RenderMessage(self.__tempMessageToRender, row=0, duration=self.__tempMessageDuration, callback=lambda row: self.RenderScreen())
+            self.__tempMessageToRender = None
+            self.__tempMessageDuration = 0
+
         # Check if we have a callback to execute (for temporary messages)
         if (self.__callback is not None and self.__callbackTime is not None and time.time() >= self.__callbackTime):
             callback = self.__callback
@@ -43,7 +56,18 @@ class McuBaseScreenBehavior(McuBaseBehavior):
 
         super().OnIdle()
 
+    def OnSendTempMsg(self, msg: str, duration=2000):
+        # Stash the message; it is rendered in OnIdle (see OnIdle for why we defer).
+        self.__tempMessageToRender = msg
+        self.__tempMessageDuration = duration
+        return super().OnSendTempMsg(msg, duration)
+
     def _onTrackBankChange(self, newFirstTrack):
+        # Re-render screens when the bank changes.
+        self.RenderScreen()
+
+    def RenderScreen(self):
+        """Renders the full screen content. Override in subclasses; base is a no-op."""
         pass
 
     def OnRefresh(self, flags):

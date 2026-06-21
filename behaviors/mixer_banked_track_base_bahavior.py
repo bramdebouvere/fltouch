@@ -37,8 +37,13 @@ class MixerBankedTrackBaseBehavior(McuBaseBehavior):
         super().OnDisable()
 
     def OnTrackBankChange(self, newFirstTrack):
-        """Called when track banking changes, mark all tracks dirty to refresh controls."""
-        self.OnDirtyMixerTrack(-1)  # mark all tracks dirty to ensure controls are refreshed for new tracks in bank
+        """Called when track banking changes; repaint immediately for the new bank.
+
+        Banking is controller-side, so FL won't fire OnRefresh for it. We repaint directly here rather than
+        just marking dirty. OnDirtyMixerTrack + OnRefresh still handle FL-driven changes (control values,
+        selection) the usual way.
+        """
+        self.Update()
 
     
     def OnDirtyMixerTrack(self, trackNum):
