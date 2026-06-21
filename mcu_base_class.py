@@ -13,6 +13,7 @@ from behaviors.track_banking_behavior import TrackBankingBehavior
 from device_hal import mcu_buttons
 from utilities.track_banking_manager import TrackBankingManager
 import constants.mcu_constants as mcu_constants
+from constants import eq_controls
 from device_hal.mcu_device import McuDevice
 from mcu_track import McuTrack
 import constants.mcu_modes as mcu_modes
@@ -37,12 +38,13 @@ class McuBaseClass():
         # create track banking managers
         self.mixerTrackManager = TrackBankingManager(self.McuDevice)
         self.effectsTrackManager = TrackBankingManager(self.McuDevice, 255)
+        self.eqTrackManager = TrackBankingManager(self.McuDevice, eq_controls.EqControlCount) # banks the 9 EQ controls of the selected track
 
         # create modes
         self.modes: dict[int, McuBaseMode] = {
             mcu_modes.Pan: McuPanMode(self.McuDevice, self.mixerTrackManager),
             mcu_modes.Sends: McuSendsMode(self.McuDevice, self.mixerTrackManager),
-            mcu_modes.Equalizer: McuEQMode(self.McuDevice, self.mixerTrackManager),
+            mcu_modes.Equalizer: McuEQMode(self.McuDevice, self.eqTrackManager),
             mcu_modes.Stereo: McuStereoMode(self.McuDevice, self.mixerTrackManager),
             mcu_modes.Effects: McuEffectsMode(self.McuDevice, self.effectsTrackManager),
             mcu_modes.Free: McuUnusedMode(self.McuDevice, self.mixerTrackManager)
@@ -376,6 +378,7 @@ class McuBaseClass():
 
     def SetKnobValue(self, trackNumber, midiValue, resolution = midi.EKRes):
         """ Sets the value of a knob in FL Studio (for all except free page?) (and shows it on the display) """
+        return # this code is now disabled, only kept for reference purposes (we are in a refactor and this will be removed later)
         if not (self.Tracks[trackNumber].KnobEventID >= 0) & (self.Tracks[trackNumber].KnobMode != mcu_knob_mode.Off):
             return
 
@@ -415,19 +418,23 @@ class McuBaseClass():
                     # Because the midi index of the buttons is not in the correct order on the hardware, we need to map the button to the correct mode index
                     modeIndex = mcu_modes.ButtonModeMapping[event.data1]
                     event.handled = True
+                    # Propagate the mode change to the extenders FIRST, so they are already in the new mode
+                    # when we push them their per-extender track banking offsets.
+                    if not self.McuDevice.isExtender:
+                        self.McuDevice.SendButtonPressToExtenders(event.data1) # this is how mode changes are communicated to the extenders as well, by sending a "fake" button press for the mode button that was pressed
                     if self.Mode != self.modes[modeIndex]:
                         print('Switching to mode: ' + mcu_constants.ModeShortDescriptions[modeIndex])
                         self.EnableMode(self.modes[modeIndex])
                         self.OnSendMsg(mcu_constants.ModeDescriptions[modeIndex])
                     else:
-                        # when pressing the button of the currently active mode, we reset the track banking to the first bank
+                        # when pressing the button of the currently active mode while it's already active, we reset the track banking to the first bank
                         print('Resetting track manager')
                         if not self.McuDevice.isExtender:
                             self.mixerTrackManager.SetFirstTrackIndex(0)
                             self.effectsTrackManager.SetFirstTrackIndex(0)
+                            self.eqTrackManager.SetFirstTrackIndex(0)
                             self.OnSendMsg('Track banking has been reset.')
-                    if not self.McuDevice.isExtender:
-                        self.McuDevice.SendButtonPressToExtenders(event.data1) # this is how mode changes are communicated to the extenders as well, by sending a "fake" button press for the mode button that was pressed
+                    event.handled = True
                     return event
 
         # handle MIDI message in behaviors and mode

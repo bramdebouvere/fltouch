@@ -22,6 +22,8 @@ class McuMixerScreenBehavior(McuBaseScreenBehavior):
     def OnIdle(self):
         if (self.__messageToRender is not None):
             super().RenderMessage(self.__messageToRender, row=0, duration=self.__messageDuration, callback=lambda row: self.RenderScreen())
+            super().RenderTrackNames(row=1)
+            super().RenderTrackColors()
             self.__messageToRender = None
             self.__messageDuration = 0
 
@@ -44,7 +46,7 @@ class McuMixerScreenBehavior(McuBaseScreenBehavior):
     def RenderScreen(self):
         """Update the screen content based on the current state of the mixer."""
 
-        self.RenderTrackNumbers(row=0)
-        self.RenderTrackNames(row=1)
-        self.RenderTrackColors()
+        super().RenderTrackNumbers(row=0)
+        super().RenderTrackNames(row=1)
+        super().RenderTrackColors()
         pass

@@ -1,4 +1,6 @@
 
+from behaviors.eq_encoder_behavior import EqEncoderBehavior
+from behaviors.eq_screen_behavior import EqScreenBehavior
 from behaviors.track_banking_behavior import TrackBankingBehavior
 from behaviors.mode_buttons_behavior import ModeButtonsBehavior
 from utilities.track_banking_manager import TrackBankingManager
@@ -12,8 +14,10 @@ class McuEQMode(McuBaseMode):
 
     def __init__(self, device: McuDevice, trackBankingManager: TrackBankingManager):
         super().__init__(device, [
+            EqScreenBehavior(device, trackBankingManager),
             ModeButtonsBehavior(device, mcu_buttons.Equalizer),
-            TrackBankingBehavior(device, trackBankingManager)
+            TrackBankingBehavior(device, trackBankingManager),
+            EqEncoderBehavior(device, trackBankingManager),
         ], trackBankingManager)
 
     def OnEnable(self):

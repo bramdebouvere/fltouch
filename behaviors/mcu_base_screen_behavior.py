@@ -16,16 +16,16 @@ class McuBaseScreenBehavior(McuBaseBehavior):
 
     def __init__(self, mcuDevice: McuDevice, trackBankingManager: TrackBankingManager):
         super().__init__(mcuDevice)
-        self.__trackBanking = trackBankingManager
+        self._trackBanking = trackBankingManager
         self.__callbackTime: float | None = None
         self.__callback: Callable[[], None] | None = None
 
     def OnEnable(self):
         super().OnEnable()
-        self.__trackBanking.AddTrackChangeSubscriber(self._onTrackBankChange)
+        self._trackBanking.AddTrackChangeSubscriber(self._onTrackBankChange)
 
     def OnDisable(self):
-        self.__trackBanking.RemoveTrackChangeSubscriber(self._onTrackBankChange)
+        self._trackBanking.RemoveTrackChangeSubscriber(self._onTrackBankChange)
 
         # Clear screen & colors
         self.McuDevice.SetTextDisplay('', 1, skipIsAssignedCheck = True)
@@ -52,7 +52,7 @@ class McuBaseScreenBehavior(McuBaseBehavior):
     def RenderTrackNumbers(self, row: int):
         """Render track numbers on the screen based on the current track bank."""
 
-        tracks = self.__trackBanking.GetTrackIndexes()
+        tracks = self._trackBanking.GetTrackIndexes()
         text = ''
         for track in tracks:
             text += f'{track:^{ScribbleStripWidth}}' # center the track number within the space on the scribble strip screen
@@ -60,10 +60,10 @@ class McuBaseScreenBehavior(McuBaseBehavior):
 
     def RenderTrackNames(self, row: int):
         """Render track names on the screen based on the current track bank."""
-        tracks = self.__trackBanking.GetTrackIndexes()
+        tracks = self._trackBanking.GetTrackIndexes()
         text = ''
         for track in tracks:
-            if self.__trackBanking.VirtualTrackExists(track):
+            if self._trackBanking.VirtualTrackExists(track):
                 text += GetAsciiSafeTrackName(track, ScribbleStripWidth).ljust(ScribbleStripWidth)
             else:
                 text += '<empty>'.center(ScribbleStripWidth)
@@ -71,10 +71,10 @@ class McuBaseScreenBehavior(McuBaseBehavior):
 
     def RenderTrackColors(self):
         """Render track colors on the screen based on the current track bank."""
-        tracks = self.__trackBanking.GetTrackIndexes()
+        tracks = self._trackBanking.GetTrackIndexes()
         colorArr = []
         for track in tracks:
-            if self.__trackBanking.VirtualTrackExists(track):
+            if self._trackBanking.VirtualTrackExists(track):
                 colorArr.append(mixer.getTrackColor(track))
             else:
                 colorArr.append(GetMcuColor(ScreenColorBlack))

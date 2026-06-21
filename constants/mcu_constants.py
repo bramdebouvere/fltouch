@@ -8,8 +8,8 @@ ModeShortDescriptions = ('Pan', 'Stereo', 'Sends', 'EQ', 'Effects', 'Free')
 ModeDescriptions = (
     'Panning                                (press to reset)',
     'Stereo separation                      (press to reset)',
-    'EQ for selected track                  (press to reset)',
     'Sends for selected track              (press to enable)',
+    'EQ for selected track                  (press to reset)',
     'Effects for selected track            (press to enable)',
     'Lotsa free controls'
 )
