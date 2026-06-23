@@ -18,16 +18,13 @@ Gain = 0  # level
 Freq = 1  # frequency
 Q = 2     # width / slope
 
-# FL Studio color ints (0xRRGGBB) chosen so device_hal.mcu_colors.GetMcuColor maps them to the
-# intended MCU screen color. The X-Touch's MCU palette only has 7 colors (no true pink), so the bass
-# band uses the nearest available colour: purple/magenta.
-_CYAN = 0x478C8D    # -> MCU Cyan
-_GREEN = 0x00FF00   # -> MCU Green
-_YELLOW = 0xFFC000  # -> MCU Yellow
+# RGB values will be mapped by mcu_colors.GetMcuColor to the intended MCU screen color.
+_CYAN = 0x478C8D
+_GREEN = 0x00FF00
+_YELLOW = 0xFFC000
 
 # Reset defaults, as a normalized fraction (0.0 - 1.0) of each parameter's range, captured from FL
 # Studio. A click resets the control to this value (applied as round(fraction * midi.FromMIDI_Max)).
-# Use None to fall back to center (0.5) until the real value is filled in.
 _GAIN_DEFAULT = 0.5                      # 0 dB (center, same for all three bands)
 _LOW_FREQ_DEFAULT = 0.0881500244140625   # 90 Hz
 _PEAK_FREQ_DEFAULT = 0.5057525634765625  # 1500 Hz
@@ -42,7 +39,7 @@ _Q_DEFAULT = 0.26702880859375            # 0.27 (same for all three bands)
 #   'ringMode'   : encoder ring display mode
 #   'showCenter' : whether the ring's center LED is lit
 #   'reversed'   : (Q only) ring fills wide->narrow as the value rises, since a high Q is a narrow band
-#   'default'    : normalized fraction (0.0 - 1.0) an encoder click resets the control to (None = center)
+#   'default'    : normalized fraction (0.0 - 1.0) an encoder click resets the control to
 EQ_CONTROLS = [
     {'label': 'LowLvl',  'band': 0, 'param': Gain, 'color': _YELLOW, 'ringMode': mcu_knob_mode.BoostCut,  'showCenter': True,  'default': _GAIN_DEFAULT},
     {'label': 'LowFrq',  'band': 0, 'param': Freq, 'color': _YELLOW, 'ringMode': mcu_knob_mode.SingleDot, 'showCenter': False, 'default': _LOW_FREQ_DEFAULT},

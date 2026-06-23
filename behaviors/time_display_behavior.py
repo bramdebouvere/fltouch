@@ -1,6 +1,8 @@
 import device
 import midi
+import mixer
 import playlist
+import transport
 import ui
 import utils
 
@@ -63,9 +65,25 @@ class TimeDisplayBehavior(McuBaseBehavior):
         if flags & midi.HW_Dirty_LEDs:
             self.UpdateLeds()
 
+        if (flags & midi.HW_Dirty_Mixer_Controls):
+            self.UpdateRudeSoloLed()
+
     def UpdateLeds(self):
+        if (not device.isAssigned()):
+            return
         # SMPTE/BEATS
         isTimeDisp = ui.getTimeDispMin()
         self.McuDevice.SetButton(mcu_buttons.Smpte_Led, midi.TranzPort_OffOnT[isTimeDisp], 3, skipIsAssignedCheck=True)
         self.McuDevice.SetButton(mcu_buttons.Beats_Led, midi.TranzPort_OffOnT[not isTimeDisp], 4, skipIsAssignedCheck=True)
+
+    def UpdateRudeSoloLed(self):
+        """ Updates the rude solo LED to the current value """
+        if (not device.isAssigned()):
+            return
+        b = 0 # 0 = off, 1 = on
+        for m in range(0,  mixer.trackCount()):
+            if mixer.isTrackSolo(m):
+                b = 1
+                break
+        self.McuDevice.SetButton(mcu_buttons.Rude_Solo_Led, midi.TranzPort_OffOnT[b], 16, skipIsAssignedCheck=True)
     
