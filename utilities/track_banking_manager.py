@@ -71,7 +71,7 @@ class TrackBankingManager:
             extenderCount = device.dispatchReceiverCount()
             print('Setting first track to ' + str(value) + '; Extender count: ' + str(extenderCount))
             if (extenderCount == 0):
-                self.FirstTrack = 0
+                self.FirstTrack = value
             else:
                 if self.ExtenderPos == mcu_extender_location.Left:
                     for n in range(0, extenderCount):
