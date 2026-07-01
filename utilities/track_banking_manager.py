@@ -3,6 +3,7 @@ import midi
 import mixer
 
 from constants import mcu_extender_location
+from constants import mcu_constants
 from device_hal import mcu_buttons
 from device_hal.mcu_device import McuDevice
 
@@ -16,7 +17,7 @@ class TrackBankingManager:
         self.McuDevice = mcuDevice
         self.FirstTrack = 0
         self.ExtenderPos = mcu_extender_location.Left
-        self.TrackCount = 8  # Tracks per hardware unit
+        self.TrackCount = mcu_constants.TrackCount # Tracks per hardware unit
         self.Enabled = False
         self.softwareTrackCount = softwareTrackCount
         self.initialized = False

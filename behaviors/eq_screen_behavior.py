@@ -43,14 +43,14 @@ class EqScreenBehavior(McuBaseScreenBehavior):
 
         for virtualIndex in self._trackBanking.GetTrackIndexes():
             if self._trackBanking.VirtualTrackExists(virtualIndex):
-                topText += eq_controls.label_of(virtualIndex).center(ScribbleStripWidth)[:ScribbleStripWidth]
+                topText += eq_controls.GetEQControlLabel(virtualIndex).center(ScribbleStripWidth)[:ScribbleStripWidth]
 
-                eventId = eq_controls.event_id_of(baseEventId, virtualIndex)
+                eventId = eq_controls.GetEQControlEventID(baseEventId, virtualIndex)
                 rawValue = mixer.getAutoSmoothEventValue(eventId)
                 valueStr = TransliterateToAscii(mixer.getEventIDValueString(eventId, rawValue)).strip()
                 bottomText += valueStr.center(ScribbleStripWidth)[:ScribbleStripWidth]
 
-                colorArr.append(eq_controls.color_of(virtualIndex))
+                colorArr.append(eq_controls.GetEQControlColor(virtualIndex))
             else:
                 topText += ' ' * ScribbleStripWidth
                 bottomText += ' ' * ScribbleStripWidth

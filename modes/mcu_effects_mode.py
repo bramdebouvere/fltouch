@@ -1,56 +1,48 @@
+import mixer
+import plugins
 
-from behaviors.track_banking_behavior import TrackBankingBehavior
 from behaviors.mode_buttons_behavior import ModeButtonsBehavior
-from utilities.track_banking_manager import TrackBankingManager
 from device_hal.mcu_device import McuDevice
 from device_hal import mcu_buttons
-from modes.mcu_base_mode import McuBaseMode
-from utilities.fl_class_import import FlMidiMsg
+from modes.mcu_composite_mode import McuCompositeMode
+from modes.mcu_effect_slots_mode import McuEffectSlotsMode
+from modes.mcu_effect_parameters_mode import McuEffectParametersMode
+from utilities import effects_mode_state
+from utilities.effects_mode_state import EffectsModeState
+from utilities.track_banking_manager import TrackBankingManager
 
+class McuEffectsMode(McuCompositeMode):
+    """
+    Effects mode: control the selected mixer track's effect plugins.
 
-class McuEffectsMode(McuBaseMode):
+    Composed of two sub-modes:
+    - McuEffectSlotsMode (OVERVIEW): browse and select effect slots.
+    - McuEffectParametersMode (PARAMS): edit plugin parameters.
+    """
 
-    def __init__(self, device: McuDevice, trackBankingManager: TrackBankingManager):
-        super().__init__(device, [
-            ModeButtonsBehavior(device, mcu_buttons.Effects),
-            TrackBankingBehavior(device, trackBankingManager)
-        ], trackBankingManager)
+    def __init__(self, device: McuDevice, slotBankingManager: TrackBankingManager, paramBankingManager: TrackBankingManager):
+        self._state = EffectsModeState()
+        super().__init__(device, [ModeButtonsBehavior(device, mcu_buttons.Effects)])
 
-    def OnEnable(self):
-        super().OnEnable()
+        # sub-modes
+        slotMode = McuEffectSlotsMode(device, slotBankingManager, self)
+        paramMode = McuEffectParametersMode(device, paramBankingManager, self._state, self)
 
-    def OnDisable(self):
-        super().OnDisable()
+        self._addSubMode(effects_mode_state.OVERVIEW, slotMode)
+        self._addSubMode(effects_mode_state.PARAMS, paramMode)
 
-    def OnDirtyMixerTrack(self, SetTrackNum):
-        super().OnDirtyMixerTrack(SetTrackNum)
-
-    def OnUpdateMeters(self):
-        super().OnUpdateMeters()
-
-    def OnIdle(self):
-        super().OnIdle()
-
-    def OnSendTempMsg(self, msg: str, duration = 1000):
-        super().OnSendTempMsg(msg, duration)
-
-    def OnRefresh(self, flags):
-        super().OnRefresh(flags)
-
-    def OnMidiMsg(self, event: FlMidiMsg):
-        super().OnMidiMsg(event)
-
-    def OnSysEx(self, event: FlMidiMsg):
-        super().OnSysEx(event)
-
-    def OnFirstConnect(self):
-        super().OnFirstConnect()
-
-    def OnProjectLoad(self, status: int):
-        super().OnProjectLoad(status)
-
-    def OnUpdateBeatIndicator(self, value: int):
-        super().OnUpdateBeatIndicator(value)
-
-    def OnWaitingForInput(self):
-        super().OnWaitingForInput()
+    def OnModeSwitch(self, key, data):
+        """
+        Capture the target plugin's identity before the parameter sub-mode enables, or clear
+        the state when returning to the slot overview. Implements base class.
+        """
+        if key == effects_mode_state.PARAMS:
+            slot  = -1 if data is None else data
+            track = mixer.trackNumber()
+            self._state.slot = slot
+            self._state.track = track
+            self._state.pluginName = plugins.getPluginName(track, slot)
+        else: # OVERVIEW
+            self._state.slot = -1
+            self._state.track = -1
+            self._state.pluginName = ''

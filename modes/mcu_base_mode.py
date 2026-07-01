@@ -5,7 +5,6 @@ from utilities.fl_class_import import FlMidiMsg
 
 from device_hal.mcu_device import McuDevice
 from device_hal import mcu_buttons
-from utilities.track_banking_manager import TrackBankingManager
 
 class McuBaseMode():
     """
@@ -15,7 +14,7 @@ class McuBaseMode():
     To use this class, you need to create a class that inherits from this class and override the methods you want to use.
     """
 
-    def __init__(self, device: McuDevice, behaviors: list[McuBaseBehavior], trackBankingManager: TrackBankingManager):
+    def __init__(self, device: McuDevice, behaviors: list[McuBaseBehavior], trackBankingManager = None):
         self._mcuDevice = device
         self._behaviors = behaviors
         self._enabled = False
@@ -34,11 +33,13 @@ class McuBaseMode():
         self._enabled = True
         for behavior in self._behaviors:
             behavior.OnEnable()
-        self._trackBankingManager.Enable()
+        if self._trackBankingManager is not None:
+            self._trackBankingManager.Enable()
 
     def OnDisable(self):
         """ Called before the mode will be disabled """
-        self._trackBankingManager.Disable()
+        if self._trackBankingManager is not None:
+            self._trackBankingManager.Disable()
         for behavior in self._behaviors:
             behavior.OnDisable()
         self._enabled = False

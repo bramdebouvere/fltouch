@@ -14,6 +14,7 @@ from behaviors.mcu_base_behavior import McuBaseBehavior
 from device_hal import mcu_buttons
 from device_hal.mcu_device import McuDevice
 from utilities.button_manager import ButtonManager
+from utilities.encoder_resolution import CalculateEncoderMovementDelta
 
 
 class JogWheelBehavior(McuBaseBehavior):
@@ -28,10 +29,7 @@ class JogWheelBehavior(McuBaseBehavior):
         # Handle jog wheel rotation as a control change on the jog controller.
         if event.midiId == midi.MIDI_CONTROLCHANGE and event.midiChan == 0 and event.data1 == mcu_constants.JogCC:
             event.inEv = event.data2
-            if event.inEv >= 0x40:
-                event.outEv = -(event.inEv - 0x40)
-            else:
-                event.outEv = event.inEv
+            event.outEv = CalculateEncoderMovementDelta(event.data2)
 
             self.Jog(event)
             event.handled = True

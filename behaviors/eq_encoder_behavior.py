@@ -8,6 +8,8 @@ from device_hal import mcu_knob_mode
 from device_hal.mcu_device import McuDevice
 from utilities.track_banking_manager import TrackBankingManager
 from constants import eq_controls
+from constants import mcu_encoder
+from utilities.encoder_resolution import CalculateMixerEncoderRes, CalculateEncoderMovementDelta
 
 
 class EqEncoderBehavior(McuBaseBehavior):
@@ -79,14 +81,14 @@ class EqEncoderBehavior(McuBaseBehavior):
 
             if not self.__trackBanking.VirtualTrackExists(virtualIndex):
                 # No EQ control assigned to this encoder -> all leds off
-                track.knob.setLedsValue(mcu_knob_mode.SingleDot, False, 0)
+                track.knob.SetLedsValue(mcu_knob_mode.SingleDot, False, 0)
                 continue
 
-            eventId = eq_controls.event_id_of(baseEventId, virtualIndex)
+            eventId = eq_controls.GetEQControlEventID(baseEventId, virtualIndex)
             value = mixer.getEventValue(eventId, midi.MaxInt, False)
-            ringMode = eq_controls.ring_mode_of(virtualIndex)
-            showCenter, ledValue = eq_controls.ring_value_of(virtualIndex, value)
-            track.knob.setLedsValue(ringMode, showCenter, ledValue)
+            ringMode = eq_controls.GetEQControlEncoderMode(virtualIndex)
+            showCenter, ledValue = eq_controls.GetEQControlEncoderValue(virtualIndex, value)
+            track.knob.SetLedsValue(ringMode, showCenter, ledValue)
 
         self.__needsUpdate = False
 
@@ -100,7 +102,7 @@ class EqEncoderBehavior(McuBaseBehavior):
                 virtualIndex = self.__trackBanking.GetTrackIndex(encoderIndex)
                 if self.__trackBanking.VirtualTrackExists(virtualIndex):
                     baseEventId = mixer.getTrackPluginId(mixer.trackNumber(), 0)
-                    eventId = eq_controls.event_id_of(baseEventId, virtualIndex)
+                    eventId = eq_controls.GetEQControlEventID(baseEventId, virtualIndex)
                     self.__resetControl(virtualIndex, eventId)
                 event.handled = True
                 return event
@@ -110,15 +112,12 @@ class EqEncoderBehavior(McuBaseBehavior):
         if event.midiChan != 0:
             return super().OnMidiMsg(event)
 
-        # Encoder rotation: data1 = 0x10 + encoder index, data2 = relative rotation value
-        if event.data1 in [0x10, 0x11, 0x12, 0x13, 0x14, 0x15, 0x16, 0x17]:
-            encoderIndex = event.data1 - 0x10
+        # Encoder rotation: data1 = EncoderCcBase + encoder index, data2 = relative rotation value
+        if mcu_encoder.EncoderCcBase <= event.data1 <= mcu_encoder.EncoderCcLast:
+            encoderIndex = event.data1 - mcu_encoder.EncoderCcBase
 
             event.inEv = event.data2
-            if event.inEv >= 0x40:
-                event.outEv = -(event.inEv - 0x40)
-            else:
-                event.outEv = event.inEv
+            event.outEv = CalculateEncoderMovementDelta(event.data2)
 
             if encoderIndex < self.__trackBanking.TrackCount:
                 virtualIndex = self.__trackBanking.GetTrackIndex(encoderIndex)
@@ -126,8 +125,8 @@ class EqEncoderBehavior(McuBaseBehavior):
                     return super().OnMidiMsg(event)
 
                 baseEventId = mixer.getTrackPluginId(mixer.trackNumber(), 0)
-                eventId = eq_controls.event_id_of(baseEventId, virtualIndex)
-                Res = 0.005 + ((abs(event.outEv) - 1) / 2000)
+                eventId = eq_controls.GetEQControlEventID(baseEventId, virtualIndex)
+                Res = CalculateMixerEncoderRes(event.outEv)
                 mixer.automateEvent(eventId, event.outEv, midi.REC_Controller, 0, 1, Res)
 
             event.handled = True
@@ -137,7 +136,7 @@ class EqEncoderBehavior(McuBaseBehavior):
 
     def __resetControl(self, index, eventId):
         """Reset a control to its EQ default (per-control normalized value, or center as a fallback)."""
-        value = eq_controls.reset_value_of(index)
+        value = eq_controls.GetEQControlResetValue(index)
         if value is None:
             value = midi.FromMIDI_Max >> 1  # fall back to center until the real default is filled in
         mixer.automateEvent(eventId, value, midi.REC_MIDIController, 0)

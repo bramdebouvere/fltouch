@@ -60,27 +60,27 @@ def _clamp(value, low, high):
     return low if value < low else (high if value > high else value)
 
 
-def control_of(virtualTrackIndex):
+def GetEQControl(virtualTrackIndex):
     """The full definition dict for a control index."""
     return EQ_CONTROLS[virtualTrackIndex]
 
 
-def label_of(virtualTrackIndex):
+def GetEQControlLabel(virtualTrackIndex):
     """The short scribble-strip label for a control index."""
     return EQ_CONTROLS[virtualTrackIndex]['label']
 
 
-def color_of(virtualTrackIndex):
+def GetEQControlColor(virtualTrackIndex):
     """The FL Studio color int for a control index (per shelf)."""
     return EQ_CONTROLS[virtualTrackIndex]['color']
 
 
-def ring_mode_of(virtualTrackIndex):
+def GetEQControlEncoderMode(virtualTrackIndex):
     """The encoder ring display mode for a control index."""
     return EQ_CONTROLS[virtualTrackIndex]['ringMode']
 
 
-def reset_value_of(virtualTrackIndex):
+def GetEQControlResetValue(virtualTrackIndex):
     """
     The normalized event value (0..midi.FromMIDI_Max) an encoder click resets a control to,
     or None to fall back to center.
@@ -91,7 +91,7 @@ def reset_value_of(virtualTrackIndex):
     return round(fraction * midi.FromMIDI_Max)  # type: ignore
 
 
-def event_id_of(baseEventId, virtualIndex):
+def GetEQControlEventID(baseEventId, virtualIndex):
     """
     Returns the FL Studio event id for a control index, relative to the selected track's base plugin id
     (mixer.getTrackPluginId(track, 0)).
@@ -106,12 +106,12 @@ def event_id_of(baseEventId, virtualIndex):
     return baseEventId + midi.REC_Mixer_EQ_Q + band  # type: ignore
 
 
-def ring_value_of(index, value):
+def GetEQControlEncoderValue(virtualIndex, value):
     """
     Convert an FL Studio event value (0..midi.FromMIDI_Max) into a (showCenter, ledValue) pair for the
     encoder ring, based on the control's ring mode.
     """
-    control = EQ_CONTROLS[index]
+    control = EQ_CONTROLS[virtualIndex]
     showCenter = control['showCenter']
     fraction = value / midi.FromMIDI_Max  # type: ignore
 

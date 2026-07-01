@@ -37,7 +37,8 @@ class McuBaseClass():
 
         # create track banking managers
         self.mixerTrackManager = TrackBankingManager(self.McuDevice)
-        self.effectsTrackManager = TrackBankingManager(self.McuDevice, 255)
+        self.effectsSlotTrackManager = TrackBankingManager(self.McuDevice, mcu_constants.EffectsSlotCount) # banks the 10 effect slots of the selected track (Effects mode, slot overview)
+        self.effectsParamTrackManager = TrackBankingManager(self.McuDevice, 0) # banks the focused plugin's parameters (Effects mode, parameter view); count is set at runtime
         self.eqTrackManager = TrackBankingManager(self.McuDevice, eq_controls.EqControlCount) # banks the 9 EQ controls of the selected track
 
         # create modes
@@ -46,7 +47,7 @@ class McuBaseClass():
             mcu_modes.Sends: McuSendsMode(self.McuDevice, self.mixerTrackManager),
             mcu_modes.Equalizer: McuEQMode(self.McuDevice, self.eqTrackManager),
             mcu_modes.Stereo: McuStereoMode(self.McuDevice, self.mixerTrackManager),
-            mcu_modes.Effects: McuEffectsMode(self.McuDevice, self.effectsTrackManager),
+            mcu_modes.Effects: McuEffectsMode(self.McuDevice, self.effectsSlotTrackManager, self.effectsParamTrackManager),
             mcu_modes.Free: McuUnusedMode(self.McuDevice, self.mixerTrackManager)
         }
 
@@ -95,9 +96,6 @@ class McuBaseClass():
         self.McuDevice.Initialize()
         self.McuDevice.SetBackLightTimeout(2) # backlight timeout to 2 minutes
         self.McuDevice.SetClicking(True)
-
-        # set initial mode to pan
-        self.EnableMode(self.modes[mcu_modes.Pan])
 
         self.OnSendMsg('Linked to ' + ui.getProgTitle() + ' (' + ui.getVersion() + ')', 3000)
         print('OnInit ready')
@@ -431,7 +429,8 @@ class McuBaseClass():
                         print('Resetting track manager')
                         if not self.McuDevice.isExtender:
                             self.mixerTrackManager.SetFirstTrackIndex(0)
-                            self.effectsTrackManager.SetFirstTrackIndex(0)
+                            self.effectsSlotTrackManager.SetFirstTrackIndex(0)
+                            self.effectsParamTrackManager.SetFirstTrackIndex(0)
                             self.eqTrackManager.SetFirstTrackIndex(0)
                             self.OnSendMsg('Track banking has been reset.')
                     event.handled = True

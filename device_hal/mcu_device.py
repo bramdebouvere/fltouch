@@ -15,7 +15,10 @@ class McuDevice:
     def __init__(self, isExtender: bool):
         self.isExtender = isExtender
         self.__productId = 0x15 if isExtender else 0x14 # productID used by MCU protocol
+
+        # cache values
         self.__lastScreenColors = [0,0,0,0,0,0,0,0]
+        self.__lastTextDisplay = [None, None]
 
         # create tracks
         self._tracks = [McuDeviceTrack(i, self.__productId, i == 8) for i in range(8 if isExtender else 9)]
@@ -23,9 +26,10 @@ class McuDevice:
         if not isExtender:
             self.TimeDisplay = McuDeviceTimeDisplay()
 
-
     def Initialize(self):
         """ Initializes the MCU device """
+        self.__lastTextDisplay = [None, None]
+        self.__lastScreenColors = [0,0,0,0,0,0,0,0]
         if device.isAssigned():
             device.midiOutSysex(bytes([0xF0, 0x00, 0x00, 0x66, self.__productId, 0x0C, 1, 0xF7]))
 
@@ -52,6 +56,18 @@ class McuDevice:
         if self.isExtender:
             return
         self.SendMidiToExtenders(midi.MIDI_NOTEON + (button << 8) + (1 << 16))
+
+    def SendSubModeSwitchToExtender(self, key: int, data:int|None = None):
+        """
+        Dispatch a sub-mode switch to all dispatch receivers (for McuCompositeMode).
+        On the main unit the receivers are the extenders; on an extender the (single) receiver is the main unit.
+        key selects the target sub-mode (2 bits, 0-3); data is an optional value (5 bits, 0-31) carried with the switch.
+        """
+        payload = (key << 5) | (data & 0x1F if data is not None else 0)
+        message = midi.MIDI_NOTEON + (mcu_buttons.SubModeSwitch << 8) + (payload << 16)
+        receiverCount = device.dispatchReceiverCount()
+        for n in range(0, receiverCount):
+            device.dispatch(n, message)
 
     def SetBackLightTimeout(self, Minutes): 
         """ Sets the backlight timeout (0 should switch off immediately, but doesn't really work well) """
@@ -93,13 +109,20 @@ class McuDevice:
 
     def SetTextDisplay(self, message, row:int = 0, skipIsAssignedCheck: bool = False):
         """ Sends a message to the screen (row 0 = bottom, row 1 = top) """
-        if skipIsAssignedCheck or device.isAssigned():
-            lastMsgLen = 0x37
-            maxLen = 56 # The screens can only show 56 characters in total
+        if not (skipIsAssignedCheck or device.isAssigned()):
+            return
+        
+        # Cache the last message sent to avoid sending the same message multiple times
+        if message == self.__lastTextDisplay[row]:
+            return
+        self.__lastTextDisplay[row] = message
 
-            sysex = bytearray([0xF0, 0x00, 0x00, 0x66, self.__productId, 0x12, (lastMsgLen + 1) * row]) + bytearray(message.ljust(lastMsgLen + 1, ' ')[:maxLen], 'ascii')
-            sysex.append(0xF7)
-            device.midiOutSysex(bytes(sysex))
+        lastMsgLen = 0x37
+        maxLen = 56 # The screens can only show 56 characters in total
+
+        sysex = bytearray([0xF0, 0x00, 0x00, 0x66, self.__productId, 0x12, (lastMsgLen + 1) * row]) + bytearray(message.ljust(lastMsgLen + 1, ' ')[:maxLen], 'ascii')
+        sysex.append(0xF7)
+        device.midiOutSysex(bytes(sysex))
 
     def SetScreenColors(self, colorArray = [-10261391,-10261391,-10261391,-10261391,-10261391,-10261391,-10261391,-10261391], skipIsAssignedCheck: bool = False):
         """ Sets the colors of the screens (all white by default) """

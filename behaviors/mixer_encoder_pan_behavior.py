@@ -8,6 +8,8 @@ from device_hal import mcu_buttons
 from device_hal import mcu_knob_mode
 from utilities.track_banking_manager import TrackBankingManager
 from device_hal.mcu_device import McuDevice
+from constants import mcu_encoder
+from utilities.encoder_resolution import CalculateMixerEncoderRes, CalculateEncoderMovementDelta
 
 #TODO: add panning message on the unit?
 
@@ -40,10 +42,10 @@ class MixerEncoderPanBehavior(MixerBankedTrackBaseBehavior):
                     knobValue = 1 + round(panValue * (10 / midi.FromMIDI_Max))
                     
                     # Use BoostCut mode for pan (center-positioned parameter)
-                    track.knob.setLedsValue(mcu_knob_mode.BoostCut, True, knobValue)
+                    track.knob.SetLedsValue(mcu_knob_mode.BoostCut, True, knobValue)
                 else:
                     # Set to single dot mode with center led disabled, so no leds are lit
-                    track.knob.setLedsValue(mcu_knob_mode.SingleDot, False, 0)
+                    track.knob.SetLedsValue(mcu_knob_mode.SingleDot, False, 0)
 
     def OnMidiMsg(self, event: FlMidiMsg):
         """ Handle MIDI events for pan encoders """
@@ -71,14 +73,11 @@ class MixerEncoderPanBehavior(MixerBankedTrackBaseBehavior):
 
         # Handle encoder rotation (CC messages for encoders)
         # Encoder data format: data1 = 0x10 + encoder index, data2 = rotation value
-        if event.data1 in [0x10, 0x11, 0x12, 0x13, 0x14, 0x15, 0x16, 0x17]:
-            encoderIndex = event.data1 - 0x10
+        if mcu_encoder.EncoderCcBase <= event.data1 <= mcu_encoder.EncoderCcLast:
+            encoderIndex = event.data1 - mcu_encoder.EncoderCcBase
 
             event.inEv = event.data2
-            if event.inEv >= 0x40:
-                event.outEv = -(event.inEv - 0x40)
-            else:
-                event.outEv = event.inEv
+            event.outEv = CalculateEncoderMovementDelta(event.data2)
 
             if encoderIndex < self.TrackBanking.TrackCount:
                 virtualIndex = self.TrackBanking.GetTrackIndex(encoderIndex)
@@ -96,7 +95,7 @@ class MixerEncoderPanBehavior(MixerBankedTrackBaseBehavior):
                 currentPan = mixer.getEventValue(panEventId)
                 newPan = currentPan + panDelta
                 newPan = max(0, min(1, newPan))  # Clamp to 0-1
-                Res = 0.005 + ((abs(event.outEv)-1) / 2000)
+                Res = CalculateMixerEncoderRes(event.outEv)
                 
                 mixer.automateEvent(panEventId, event.outEv, midi.REC_Controller, 0, 1, Res)
 
@@ -108,7 +107,7 @@ class MixerEncoderPanBehavior(MixerBankedTrackBaseBehavior):
     def __getPanDeltaFromEncoderValue(self, value):
         # Convert MIDI CC value to pan delta
         # value: 0x40 = center, < 0x40 = left, > 0x40 = right
-        if value >= 0x40:
-            return (value - 0x40) / 64.0  # Right movement
+        if value >= mcu_encoder.EncoderMovementNeutral:
+            return (value - mcu_encoder.EncoderMovementNeutral) / 64.0  # Right movement
         else:
-            return (value - 0x40) / 64.0  # Left movement (negative)
+            return (value - mcu_encoder.EncoderMovementNeutral) / 64.0  # Left movement (negative)

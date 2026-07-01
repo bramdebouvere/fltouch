@@ -1,6 +1,7 @@
 # name=FLtouch X-Touch
 # url=https://forum.image-line.com/viewtopic.php?f=1994&t=269919
 # supportedDevices=X-Touch
+# receiveFrom=FLtouch X-Touch Extender
 
 import patterns
 import mixer
@@ -62,7 +63,28 @@ class TMackieCU(mcu_base_class.McuBaseClass):
         self.ExtenderPos = mcu_extender_location.Left
 
     def OnInit(self):
+
+        self.hasBeenIdle = False
         super().OnInit()
+
+    def OnFirstIdle(self):
+        self.hasBeenIdle = True
+        print('OnFirstIdle')
+        
+        # SET INITIAL MODE TO PAN
+        # Note: XTouch units are running OnInit in on the Main/Extender units in the order that they were physically turned on.
+        #       If someone turns on an extender after the main unit, the main unit will run its OnInit before the extender can,
+        #       in which case it cannot send the correct first track index to the extender, because the extender is not yet 
+        #       initialized and cannot receive it.
+        #       We need to make sure that all units are initialized before we run the code below. We do that by waiting for
+        #       the first Idle to initialize instead of OnInit. This fixes https://github.com/bramdebouvere/fltouch/issues/8
+        #
+        # - First send the button press to the extenders so they switch to Pan mode and enable it
+        #   This enables the track manager on the extenders, so they are ready to receive track banking messages
+        self.McuDevice.SendButtonPressToExtenders(mcu_buttons.Pan) 
+        # - Then enable the Pan mode on the main unit, which will also send the first track index to the extenders
+        self.EnableMode(self.modes[mcu_modes.Pan])
+
 
     def OnDeInit(self):
         super().OnDeInit()
@@ -576,6 +598,8 @@ class TMackieCU(mcu_base_class.McuBaseClass):
 
 
     def OnIdle(self):
+        if (not self.hasBeenIdle):
+            self.OnFirstIdle()
         super().OnIdle()
 
     def UpdateMasterSectionLEDs(self):

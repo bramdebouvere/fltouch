@@ -8,6 +8,8 @@ from device_hal import mcu_buttons
 from device_hal import mcu_knob_mode
 from utilities.track_banking_manager import TrackBankingManager
 from device_hal.mcu_device import McuDevice
+from constants import mcu_encoder
+from utilities.encoder_resolution import CalculateMixerEncoderRes, CalculateEncoderMovementDelta
 
 
 class MixerEncoderSendsBehavior(MixerBankedTrackBaseBehavior):
@@ -55,20 +57,20 @@ class MixerEncoderSendsBehavior(MixerBankedTrackBaseBehavior):
 
             if not self.TrackBanking.VirtualTrackExists(virtualIndex):
                 # Empty slot: all leds off
-                track.knob.setLedsValue(mcu_knob_mode.SingleDot, False, 0)
+                track.knob.SetLedsValue(mcu_knob_mode.SingleDot, False, 0)
                 continue
 
             if mixer.getRouteSendActive(sourceTrack, virtualIndex) == 0:
                 # No send route to this track: ring dark
-                track.knob.setLedsValue(mcu_knob_mode.Wrap, False, 0)
+                track.knob.SetLedsValue(mcu_knob_mode.Wrap, False, 0)
                 continue
 
             sendEventId = sourceBaseId + midi.REC_Mixer_Send_First + virtualIndex  # type: ignore
             sendValue = mixer.getEventValue(sendEventId, midi.MaxInt, False)
 
             # Convert FL Studio send value (0-FromMIDI_Max) to a wrap-style fill (0-11)
-            ledValue = round(sendValue * (11 / midi.FromMIDI_Max))
-            track.knob.setLedsValue(mcu_knob_mode.Wrap, False, ledValue)
+            ledValue = round(sendValue * (mcu_encoder.LedWrapMax / midi.FromMIDI_Max))
+            track.knob.SetLedsValue(mcu_knob_mode.Wrap, False, ledValue)
 
     def OnMidiMsg(self, event: FlMidiMsg):
         """Handle MIDI events for the send encoders (click = toggle route, turn = set level)."""
@@ -93,14 +95,11 @@ class MixerEncoderSendsBehavior(MixerBankedTrackBaseBehavior):
 
         # Handle encoder rotation (CC messages for encoders)
         # Encoder data format: data1 = 0x10 + encoder index, data2 = rotation value
-        if event.data1 in [0x10, 0x11, 0x12, 0x13, 0x14, 0x15, 0x16, 0x17]:
-            encoderIndex = event.data1 - 0x10
+        if mcu_encoder.EncoderCcBase <= event.data1 <= mcu_encoder.EncoderCcLast:
+            encoderIndex = event.data1 - mcu_encoder.EncoderCcBase
 
             event.inEv = event.data2
-            if event.inEv >= 0x40:
-                event.outEv = -(event.inEv - 0x40)
-            else:
-                event.outEv = event.inEv
+            event.outEv = CalculateEncoderMovementDelta(event.data2)
 
             if encoderIndex < self.TrackBanking.TrackCount:
                 virtualIndex = self.TrackBanking.GetTrackIndex(encoderIndex)
@@ -121,7 +120,7 @@ class MixerEncoderSendsBehavior(MixerBankedTrackBaseBehavior):
                     mixer.afterRoutingChanged()
 
                 sendEventId = mixer.getTrackPluginId(sourceTrack, 0) + midi.REC_Mixer_Send_First + virtualIndex  # type: ignore
-                Res = 0.005 + ((abs(event.outEv) - 1) / 2000)
+                Res = CalculateMixerEncoderRes(event.outEv)
                 mixer.automateEvent(sendEventId, event.outEv, midi.REC_Controller, 0, 1, Res)
 
             event.handled = True
