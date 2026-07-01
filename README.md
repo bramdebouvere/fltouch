@@ -1,10 +1,12 @@
 # fltouch
 
-FL Studio MIDI scripts for the Behringer X-Touch + extender(s) (Mackie Control Universal) MIDI controllers, based on the official scripts by Image-Line.
+FL Studio MIDI scripts for the Behringer X-Touch + extender(s) (Mackie Control Universal) MIDI controllers, completely rewritten from the official scripts by Image-Line.
 
 ## Differences with the official scripts
 
 - Support for multiple extenders
+- Support for controlling FX plugins
+- Support for controlling FX plugin parameters (press select on an effect plugin)
 - Support for colored scribble strips
 - Improved knob resolution and acceleration
 - Improved jog wheel with automatic window focus
@@ -18,7 +20,7 @@ FL Studio MIDI scripts for the Behringer X-Touch + extender(s) (Mackie Control U
 - Changing the tempo using the jog wheel now works
 - Added basic scrubbing functionality, hold shift for more accuracy
 - Name/Value button can now be used to rename tracks
-- Encoder assignment buttons have been reordered to _Pan, Stereo, Sends, EQ, Effects, Free_
+- Encoder assignment buttons have been reordered to _Pan, Stereo, EQ, Sends, Effects, Free_ to match the hardware
 - Various bugfixes and improvements
 
 More improvements later...
