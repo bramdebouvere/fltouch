@@ -1,5 +1,7 @@
+import midi
 import mixer
 import plugins
+import ui
 
 from behaviors.mode_buttons_behavior import ModeButtonsBehavior
 from device_hal.mcu_device import McuDevice
@@ -30,6 +32,11 @@ class McuEffectsMode(McuCompositeMode):
 
         self._addSubMode(effects_mode_state.OVERVIEW, slotMode)
         self._addSubMode(effects_mode_state.PARAMS, paramMode)
+
+    def OnEnable(self):
+        if not self.McuDevice.isExtender:
+            ui.setFocused(midi.widMixer)
+        super().OnEnable()
 
     def OnModeSwitch(self, key, data):
         """
