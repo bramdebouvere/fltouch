@@ -1,4 +1,5 @@
 
+from behaviors.flip_button_behavior import FlipButtonBehavior
 from behaviors.jogwheel_behavior import JogWheelBehavior
 from behaviors.mcu_mixer_screen_behavior import McuMixerScreenBehavior
 from behaviors.mixer_fader_behavior import MixerFaderBehavior
@@ -35,7 +36,8 @@ class McuStereoMode(McuBaseMode):
             MixerShowBankInFLBehavior(device, trackBankingManager),
             MixerEncoderStereoBehavior(device, trackBankingManager),
             JogWheelBehavior(device, screenBehavior),
-            NameValueButtonBehavior(device, trackBankingManager, screenBehavior)
+            NameValueButtonBehavior(device, trackBankingManager, screenBehavior),
+            FlipButtonBehavior(device),
         ], trackBankingManager)
 
     def OnEnable(self):
