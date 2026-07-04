@@ -2,9 +2,12 @@ import midi
 
 from behaviors.mcu_base_screen_behavior import McuBaseScreenBehavior
 
-
 class McuMixerScreenBehavior(McuBaseScreenBehavior):
     """Behavior for the screen."""
+
+    def OnEnable(self):
+        super().OnEnable()
+        self.RenderScreen()
 
     def OnRefresh(self, flags):
         super().OnRefresh(flags)

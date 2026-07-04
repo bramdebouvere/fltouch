@@ -17,10 +17,10 @@ reflect linked values on the control surface:
 
 
 TODO:
-- add button to turn off / on all effects on a mixer track
 - add button to switch the color on a mixer track??
 - add custom fx parameter mappings for some plugins
 - BUG: some effect plugins have parameters that cannot be set gradually,
   which causes them to be stuck (probably because our step isn't high enough)
 - Some plugins report a text parameter value of "2000.3Hz", which does not fit on the screen. The .3 is useless, can we convert it to "2000Hz"? That way "20000Hz" should still fit on the screen. We will need to  detect that it's a Hz value.
 - Some behaviors that light up buttons do not shut em off properly when disabling, fix this
+- Add reset mixer track function

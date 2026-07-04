@@ -55,30 +55,24 @@ EQ_CONTROLS = [
 # Number of EQ controls (3 bands x 3 parameters)
 EqControlCount = len(EQ_CONTROLS)
 
-
 def _clamp(value, low, high):
     return low if value < low else (high if value > high else value)
-
 
 def GetEQControl(virtualTrackIndex):
     """The full definition dict for a control index."""
     return EQ_CONTROLS[virtualTrackIndex]
 
-
 def GetEQControlLabel(virtualTrackIndex):
     """The short scribble-strip label for a control index."""
     return EQ_CONTROLS[virtualTrackIndex]['label']
-
 
 def GetEQControlColor(virtualTrackIndex):
     """The FL Studio color int for a control index (per shelf)."""
     return EQ_CONTROLS[virtualTrackIndex]['color']
 
-
 def GetEQControlEncoderMode(virtualTrackIndex):
     """The encoder ring display mode for a control index."""
     return EQ_CONTROLS[virtualTrackIndex]['ringMode']
-
 
 def GetEQControlResetValue(virtualTrackIndex):
     """
@@ -89,7 +83,6 @@ def GetEQControlResetValue(virtualTrackIndex):
     if fraction is None:
         return None
     return round(fraction * midi.FromMIDI_Max)  # type: ignore
-
 
 def GetEQControlEventID(baseEventId, virtualIndex):
     """
@@ -104,7 +97,6 @@ def GetEQControlEventID(baseEventId, virtualIndex):
     if param == Freq:
         return baseEventId + midi.REC_Mixer_EQ_Freq + band  # type: ignore
     return baseEventId + midi.REC_Mixer_EQ_Q + band  # type: ignore
-
 
 def GetEQControlEncoderValue(virtualIndex, value):
     """

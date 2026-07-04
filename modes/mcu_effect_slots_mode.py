@@ -2,6 +2,7 @@ from behaviors.effects_slot_screen_behavior import EffectsSlotScreenBehavior
 from behaviors.effects_slot_encoder_behavior import EffectsSlotEncoderBehavior
 from behaviors.effects_slot_mute_button_behavior import EffectsSlotMuteButtonBehavior
 from behaviors.effects_slot_select_button_behavior import EffectsSlotSelectButtonBehavior
+from behaviors.effects_slot_select_led_behavior import EffectsSlotSelectLedBehavior
 from behaviors.track_banking_behavior import TrackBankingBehavior
 from device_hal.mcu_device import McuDevice
 from modes.mcu_base_mode import McuBaseMode
@@ -22,5 +23,6 @@ class McuEffectSlotsMode(McuBaseMode):
             EffectsSlotEncoderBehavior(device, slotBankingManager),
             EffectsSlotMuteButtonBehavior(device, slotBankingManager),
             TrackBankingBehavior(device, slotBankingManager),
+            EffectsSlotSelectLedBehavior(device, slotBankingManager),
             EffectsSlotSelectButtonBehavior(device, slotBankingManager, compositeMode),
         ], slotBankingManager)

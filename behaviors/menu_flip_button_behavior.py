@@ -7,16 +7,16 @@ from modes.mcu_composite_mode import McuCompositeMode
 from utilities import mixer_menu_state
 from utilities.fl_class_import import FlMidiMsg
 
-class FlipButtonBehavior(McuBaseBehavior):
-    """Flip: opens the menu (see modes/mcu_menu_mode.py)."""
+class MenuFlipButtonBehavior(McuBaseBehavior):
+    """Pressing Flip again while the menu is showing cancels back to the overview sub-mode."""
 
     def __init__(self, mcuDevice: McuDevice, compositeMode: McuCompositeMode):
         super().__init__(mcuDevice)
         self._compositeMode = compositeMode
 
-    def OnMidiMsg(self, event: FlMidiMsg) -> FlMidiMsg:
+    def OnMidiMsg(self, event: FlMidiMsg):
         if event.midiId == midi.MIDI_NOTEON and event.data1 == mcu_buttons.Flip and event.data2 > 0:
-            self._compositeMode.SwitchTo(mixer_menu_state.MENU)
+            self._compositeMode.SwitchTo(mixer_menu_state.OVERVIEW)
             event.handled = True
             return event
         return super().OnMidiMsg(event)

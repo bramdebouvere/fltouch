@@ -14,6 +14,7 @@ from device_hal import mcu_buttons
 from utilities.track_banking_manager import TrackBankingManager
 import constants.mcu_constants as mcu_constants
 from constants import eq_controls
+from constants import menu_items
 from device_hal.mcu_device import McuDevice
 from mcu_track import McuTrack
 import constants.mcu_modes as mcu_modes
@@ -22,9 +23,9 @@ from modes.mcu_base_mode import McuBaseMode
 from modes.mcu_effects_mode import McuEffectsMode
 from modes.mcu_effects_mode import McuEffectsMode
 from modes.mcu_eq_mode import McuEQMode
-from modes.mcu_pan_mode import McuPanMode
-from modes.mcu_sends_mode import McuSendsMode
-from modes.mcu_stereo_mode import McuStereoMode
+from modes.mcu_pan_composite_mode import McuPanCompositeMode
+from modes.mcu_sends_composite_mode import McuSendsCompositeMode
+from modes.mcu_stereo_composite_mode import McuStereoCompositeMode
 from modes.mcu_unused_mode import McuUnusedMode
 from modes.mcu_unused_mode import McuUnusedMode
 import utilities.transliteration as transliteration
@@ -40,13 +41,14 @@ class McuBaseClass():
         self.effectsSlotTrackManager = TrackBankingManager(self.McuDevice, mcu_constants.EffectsSlotCount) # banks the 10 effect slots of the selected track (Effects mode, slot overview)
         self.effectsParamTrackManager = TrackBankingManager(self.McuDevice, 0) # banks the focused plugin's parameters (Effects mode, parameter view); count is set at runtime
         self.eqTrackManager = TrackBankingManager(self.McuDevice, eq_controls.EqControlCount) # banks the 9 EQ controls of the selected track
+        self.menuBankingManager = TrackBankingManager(self.McuDevice, menu_items.MenuItemCount) # banks the Flip menu's functions (Pan/Sends/Stereo modes)
 
         # create modes
         self.modes: dict[int, McuBaseMode] = {
-            mcu_modes.Pan: McuPanMode(self.McuDevice, self.mixerTrackManager),
-            mcu_modes.Sends: McuSendsMode(self.McuDevice, self.mixerTrackManager),
+            mcu_modes.Pan: McuPanCompositeMode(self.McuDevice, self.mixerTrackManager, self.menuBankingManager),
+            mcu_modes.Sends: McuSendsCompositeMode(self.McuDevice, self.mixerTrackManager, self.menuBankingManager),
             mcu_modes.Equalizer: McuEQMode(self.McuDevice, self.eqTrackManager),
-            mcu_modes.Stereo: McuStereoMode(self.McuDevice, self.mixerTrackManager),
+            mcu_modes.Stereo: McuStereoCompositeMode(self.McuDevice, self.mixerTrackManager, self.menuBankingManager),
             mcu_modes.Effects: McuEffectsMode(self.McuDevice, self.effectsSlotTrackManager, self.effectsParamTrackManager),
             mcu_modes.Free: McuUnusedMode(self.McuDevice, self.mixerTrackManager)
         }
@@ -432,6 +434,7 @@ class McuBaseClass():
                             self.effectsSlotTrackManager.SetFirstTrackIndex(0)
                             self.effectsParamTrackManager.SetFirstTrackIndex(0)
                             self.eqTrackManager.SetFirstTrackIndex(0)
+                            self.menuBankingManager.SetFirstTrackIndex(0)
                             self.OnSendMsg('Track banking has been reset.')
                     event.handled = True
                     return event
