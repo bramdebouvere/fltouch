@@ -20,6 +20,12 @@ class MixerRecButtonBehavior(MixerBankedTrackBaseBehavior):
         """Called by base class when track banking changes or when tracks are marked dirty, updates REC buttons."""
         self._updateRecButtons()
 
+    def OnDisable(self):
+        for track in self.McuDevice.tracks:
+            if track is not None and track.buttons is not None:
+                track.buttons.SetArmButton(False, False)
+        super().OnDisable()
+
     def OnMidiMsg(self, event):
         """Handle REC button presses to arm/unarm tracks for recording in FL Studio mixer."""
         if event.midiId == midi.MIDI_NOTEON and event.data2 > 0:

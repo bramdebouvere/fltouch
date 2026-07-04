@@ -17,7 +17,9 @@ class MixerMuteButtonBehavior(MixerBankedTrackBaseBehavior):
         super().OnEnable()
 
     def OnDisable(self):
-        # TODO: later we'll need to determine if we need to turn the button light off again when we disable the behavior.
+        for track in self.McuDevice.tracks:
+            if track is not None and track.buttons is not None:
+                track.buttons.SetMuteButton(False)
         super().OnDisable()
 
     def Update(self):

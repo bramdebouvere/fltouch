@@ -51,6 +51,11 @@ class JogWheelBehavior(McuBaseBehavior):
             self.McuDevice.SetButton(mcu_buttons.Scrub, midi.TranzPort_OffOnT[self._scrub], 15)
         super().OnRefresh(flags)
 
+    def OnDisable(self):
+        self.McuDevice.SetButton(mcu_buttons.Scrub, midi.TranzPort_OffOnT[0], 15)
+        self._scrub = False
+        super().OnDisable()
+
     def TrackSel(self, Index, Step):
         Index = 2 - Index
         if Index == 0:  # Channel Rack channel

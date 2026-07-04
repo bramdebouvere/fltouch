@@ -18,6 +18,12 @@ class MixerSoloButtonBehavior(MixerBankedTrackBaseBehavior):
         """Called when track banking changes, update SOLO buttons."""
         self._updateSoloButtons()
 
+    def OnDisable(self):
+        for track in self.McuDevice.tracks:
+            if track is not None and track.buttons is not None:
+                track.buttons.SetSoloButton(False)
+        super().OnDisable()
+
     def OnMidiMsg(self, event):
         """Handle SOLO button presses to solo/unsolo tracks in FL Studio mixer."""
         if event.midiId == midi.MIDI_NOTEON and event.data2 > 0:

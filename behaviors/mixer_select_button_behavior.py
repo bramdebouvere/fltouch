@@ -18,6 +18,12 @@ class MixerSelectButtonBehavior(MixerBankedTrackBaseBehavior):
         """ Called by base class when track banking changes or when tracks are marked dirty, updates select buttons. """
         self._updateSelectButtons()
 
+    def OnDisable(self):
+        for track in self.McuDevice.tracks:
+            if track is not None and track.buttons is not None:
+                track.buttons.SetSelectButton(False)
+        super().OnDisable()
+
     def OnMidiMsg(self, event):
         """Handle select button presses to select tracks in FL Studio mixer."""
         if event.midiId == midi.MIDI_NOTEON and event.data2 > 0:
