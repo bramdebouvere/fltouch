@@ -37,6 +37,36 @@ class TestFormatParamValue(unittest.TestCase):
         # Even when stripping does not fully fit, removing spaces keeps more meaningful characters.
         self.assertEqual(FormatEffectParameterValue('-42.65 dB', 0.5, WIDTH), '-42.65dB')
 
+    def test_rounds_decimal_hz_value(self):
+        self.assertEqual(FormatEffectParameterValue('2000.3Hz', 0.5, WIDTH), '2000Hz')
+
+    def test_rounds_decimal_hz_value_with_space(self):
+        self.assertEqual(FormatEffectParameterValue('2000.3 Hz', 0.5, WIDTH), '2000Hz')
+
+    def test_integer_hz_value_unchanged(self):
+        self.assertEqual(FormatEffectParameterValue('500Hz', 0.5, WIDTH), '500Hz')
+
+    def test_rounded_hz_value_fits_width(self):
+        # "20000.3Hz" is 9 chars; rounding to "20000Hz" fits exactly in 7.
+        self.assertEqual(FormatEffectParameterValue('20000.3Hz', 0.5, WIDTH), '20000Hz')
+
+    def test_lowercase_hz_suffix_is_rounded_and_case_preserved(self):
+        self.assertEqual(FormatEffectParameterValue('2000.3hz', 0.5, WIDTH), '2000hz')
+
+    def test_negative_hz_value_is_rounded(self):
+        self.assertEqual(FormatEffectParameterValue('-42.65Hz', 0.5, WIDTH), '-43Hz')
+
+    def test_khz_value_is_left_unchanged(self):
+        # Compound units are excluded: a kHz decimal represents up to 100s of Hz of precision.
+        self.assertEqual(FormatEffectParameterValue('1.5kHz', 0.5, WIDTH), '1.5kHz')
+
+    def test_non_hz_decimal_value_unchanged(self):
+        self.assertEqual(FormatEffectParameterValue('3.5 ms', 0.5, WIDTH), '3.5 ms')
+
+    def test_non_numeric_value_unchanged(self):
+        self.assertEqual(FormatEffectParameterValue('Off', 0.5, WIDTH), 'Off')
+        self.assertEqual(FormatEffectParameterValue('High Pass', 0.5, WIDTH), 'HighPass')
+
 # This allows running the tests from the command line
 if __name__ == '__main__':
     unittest.main()
