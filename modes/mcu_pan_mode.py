@@ -10,6 +10,7 @@ from behaviors.mixer_rec_button_behavior import MixerRecButtonBehavior
 from behaviors.mixer_select_button_behavior import MixerSelectButtonBehavior
 from behaviors.mixer_solo_button_behavior import MixerSoloButtonBehavior
 from behaviors.namevalue_button_behavior import NameValueButtonBehavior
+from behaviors.plugin_picker_button_behavior import PluginPickerButtonBehavior
 from behaviors.track_banking_behavior import TrackBankingBehavior
 from behaviors.mixer_show_bank_in_fl_behavior import MixerShowBankInFLBehavior
 from modes.mcu_composite_mode import McuCompositeMode
@@ -35,6 +36,7 @@ class McuPanMode(McuBaseMode):
             MixerShowBankInFLBehavior(device, trackBankingManager),
             JogWheelBehavior(device, screenBehavior),
             NameValueButtonBehavior(device, trackBankingManager, screenBehavior),
+            PluginPickerButtonBehavior(device),
             FlipButtonBehavior(device, compositeMode),
         ], trackBankingManager)
 

@@ -12,6 +12,7 @@ from behaviors.mixer_solo_button_behavior import MixerSoloButtonBehavior
 from behaviors.mixer_encoder_stereo_behavior import MixerEncoderStereoBehavior
 from behaviors.track_banking_behavior import TrackBankingBehavior
 from behaviors.namevalue_button_behavior import NameValueButtonBehavior
+from behaviors.plugin_picker_button_behavior import PluginPickerButtonBehavior
 from modes.mcu_composite_mode import McuCompositeMode
 from utilities.track_banking_manager import TrackBankingManager
 from device_hal.mcu_device import McuDevice
@@ -35,6 +36,7 @@ class McuStereoMode(McuBaseMode):
             MixerEncoderStereoBehavior(device, trackBankingManager),
             JogWheelBehavior(device, screenBehavior),
             NameValueButtonBehavior(device, trackBankingManager, screenBehavior),
+            PluginPickerButtonBehavior(device),
             FlipButtonBehavior(device, compositeMode),
         ], trackBankingManager)
 

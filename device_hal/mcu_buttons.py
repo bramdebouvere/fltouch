@@ -99,7 +99,7 @@ AddMarker = 0x49
 
 # Window / Time selection
 Browser = 0x4A
-StepSequencer = 0x4B # (main)
+Main = 0x4B # (playlist button)
 Window = 0x4C
 In = 0x4D
 Out = 0x4E

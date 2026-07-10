@@ -36,7 +36,6 @@ import utilities.transliteration as transliteration
 from behaviors.time_display_behavior import TimeDisplayBehavior
 from behaviors.transport_buttons_behavior import TransportButtonsBehavior
 from behaviors.master_transport_section_buttons_behavior import MasterTransportSectionButtonsBehavior
-from behaviors.plugin_picker_button_behavior import PluginPickerButtonBehavior
 
 class TMackieCU(mcu_base_class.McuBaseClass):
     def __init__(self):
@@ -52,7 +51,6 @@ class TMackieCU(mcu_base_class.McuBaseClass):
         self.PermanentBehaviors.append(JogSourcesButtonsBehavior(self.McuDevice))
         self.PermanentBehaviors.append(FunctionButtonsBehavior(self.McuDevice))
         self.PermanentBehaviors.append(ArrowZoomButtonsBehavior(self.McuDevice))
-        self.PermanentBehaviors.append(PluginPickerButtonBehavior(self.McuDevice))
 
         self.JogSource = 0
 

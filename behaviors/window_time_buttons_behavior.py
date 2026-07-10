@@ -17,7 +17,7 @@ class WindowTimeButtonsBehavior(McuBaseBehavior):
     def OnMidiMsg(self, event):
         if event.midiId == midi.MIDI_NOTEON and event.data1 in [
             mcu_buttons.Browser,
-            mcu_buttons.StepSequencer,
+            mcu_buttons.Main,
             mcu_buttons.Window,
             mcu_buttons.In,
             mcu_buttons.Out,
@@ -35,15 +35,15 @@ class WindowTimeButtonsBehavior(McuBaseBehavior):
                     20
                 )
 
-            elif btn == mcu_buttons.StepSequencer:
+            elif btn == mcu_buttons.Main:
                 if event.data2 > 0 and event.pmeFlags & midi.PME_System_Safe:
                     # does not always seem to work, I think it's a bug in FL Studio.
                     # I reported it here: https://forum.image-line.com/viewtopic.php?p=2061850#p2061850
-                    ui.showWindow(midi.widChannelRack)
-                    ui.setFocused(midi.widChannelRack)
+                    ui.showWindow(midi.widPlaylist)
+                    ui.setFocused(midi.widPlaylist)
                 self.McuDevice.SetButton(
-                    mcu_buttons.StepSequencer,
-                    midi.TranzPort_OffOnT[ui.getFocused(midi.widChannelRack)],
+                    mcu_buttons.Main,
+                    midi.TranzPort_OffOnT[ui.getFocused(midi.widPlaylist)],
                     21
                 )
 
@@ -81,15 +81,15 @@ class WindowTimeButtonsBehavior(McuBaseBehavior):
         return super().OnMidiMsg(event)
 
     def OnRefresh(self, flags):
-        if flags & midi.HW_Dirty_LEDs:
+        if flags & midi.HW_Dirty_LEDs or flags & midi.HW_Dirty_FocusedWindow:
             self.McuDevice.SetButton(
                 mcu_buttons.Browser,
                 midi.TranzPort_OffOnT[ui.getFocused(midi.widBrowser)],
                 20
             )
             self.McuDevice.SetButton(
-                mcu_buttons.StepSequencer,
-                midi.TranzPort_OffOnT[ui.getFocused(midi.widChannelRack)],
+                mcu_buttons.Main,
+                midi.TranzPort_OffOnT[ui.getFocused(midi.widPlaylist)],
                 21
             )
         super().OnRefresh(flags)

@@ -2,6 +2,7 @@ import device
 import midi
 import mixer
 
+import settings
 from constants import mcu_extender_location
 from constants import mcu_constants
 from device_hal import mcu_buttons
@@ -16,7 +17,7 @@ class TrackBankingManager:
     def __init__(self, mcuDevice: McuDevice, softwareTrackCount: int | None = None):
         self.McuDevice = mcuDevice
         self.FirstTrack = 0
-        self.ExtenderPos = mcu_extender_location.Left
+        self.ExtenderPos = settings.ExtenderPosition
         self.TrackCount = mcu_constants.TrackCount # Tracks per hardware unit
         self.Enabled = False
         self.softwareTrackCount = softwareTrackCount
@@ -24,7 +25,6 @@ class TrackBankingManager:
 
         # Subscribers for when first track changes
         self._TrackChangeSubscribers = []
-
 
     def Enable(self):
         """ Enable track banking """
@@ -88,16 +88,6 @@ class TrackBankingManager:
             self._NotifyTrackChangeSubscribers(self.FirstTrack)
 
         print('Showing tracks ' + str(self.GetTrackIndexes()) + ' on this device')
-
-    def ToggleExtenderPosition(self):
-        """Toggle extender position between left and right and re-apply banking.
-
-        Returns the new extender position (mcu_extender_location.Left or .Right).
-        """
-        first = self.GetFirstTrack()
-        self.ExtenderPos = mcu_extender_location.Right if self.ExtenderPos == mcu_extender_location.Left else mcu_extender_location.Left
-        self.SetFirstTrackIndex(first)
-        return self.ExtenderPos
 
     def NotifyModeChange(self, mode):
         """ Notify extenders of mode change """
@@ -184,3 +174,4 @@ class TrackBankingManager:
     def VirtualTrackExists(self, index: int):
         """ Returns whether a virtual track with the given index exists in the software. For example, if there are 9 mixer tracks in your FL Studio project, VirtualTrackExists(8) will return true but VirtualTrackExists(9) will return false. """
         return index < self.GetVirtualTrackCount()
+

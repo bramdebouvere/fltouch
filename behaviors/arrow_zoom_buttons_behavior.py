@@ -30,9 +30,8 @@ class ArrowZoomButtonsBehavior(McuBaseBehavior):
             return event
 
         if event.midiId == midi.MIDI_NOTEON and event.data1 == mcu_buttons.Zoom:
-            if ui.getFocused(midi.widBrowser):
-                ui.selectBrowserMenuItem()
-
+            device.directFeedback(event)
+            
             # Zoom can act as a jog source
             if event.data2 == 0:
                 if ButtonManager.JogSource == event.data1:
@@ -41,8 +40,17 @@ class ArrowZoomButtonsBehavior(McuBaseBehavior):
                 if ButtonManager.JogSource == 0:
                     ButtonManager.JogSource = event.data1
 
-            device.directFeedback(event)
-            event.handled = True
+            if event.data2 == 0 and ui.getFocused(midi.widBrowser):
+                ui.selectBrowserMenuItem()
+                event.handled = True
+                return event
+
+            # Also press enter
+            if (not ui.getFocused(midi.widMixer) and not ui.getFocused(midi.widChannelRack) and not ui.getFocused(midi.widPlaylist) and not ui.getFocused(midi.widPianoRoll) and not ui.getFocused(midi.widBrowser) and not ui.getFocused(midi.widPlugin) and not ui.getFocused(midi.widPluginEffect) and not ui.getFocused(midi.widPluginGenerator)):
+                transport.globalTransport(midi.FPT_Enter, int(event.data2 > 0) * 2, event.pmeFlags)
+                event.handled = True
+                return event
+
             return event
 
         return super().OnMidiMsg(event)
