@@ -49,6 +49,10 @@ More improvements later...
 
 *If these instructions are unclear, you can find a more detailed guide by Zizzer Productions [here](https://www.zizzerproductions.com/post/make-behringer-universal-control-surface-work-with-fl-studio).*
 
+### Settings
+
+You can edit `settings.py` using a text editor to change settings such as extender location.
+
 ### Layout
 
 You can print an overlay for this controller, courtesy of Bobby-Funk. The image must be printed 15.7956cm / 6.21875 inches wide in an A4 size.

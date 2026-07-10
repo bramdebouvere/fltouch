@@ -25,4 +25,3 @@ TODO:
 - Add reset mixer track function
 - Allow using alternate setups (main unit in the middle)
 - Add channel rack control
-- Fix encoders not being reset when mode disables
