@@ -113,9 +113,14 @@ class McuBaseClass():
         
         #self.McuDevice.DisableMeters()
 
-        #if device.isAssigned():
-        #    if ui.isClosing():
-        #        self.McuDevice.SetTextDisplay(ui.getProgTitle() + ' session closed at ' + time.ctime(time.time()), 0, skipIsAssignedCheck = True)
+        if device.isAssigned():
+            if ui.isClosing():
+                if (self.Mode != None):
+                    self.Mode.OnDisable()
+                    self.Mode = None
+                self.McuDevice.SetTextDisplay('FLTouch session closed at ' + time.ctime(time.time()), 0)
+                self.McuDevice.SetTextDisplay('Please consider donating if this script is useful to you', 1)
+                self.McuDevice.SetScreenColors()
         #    else:
         #        self.McuDevice.SetTextDisplay('', skipIsAssignedCheck = True)
 #
