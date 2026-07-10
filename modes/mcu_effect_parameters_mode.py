@@ -68,7 +68,7 @@ class McuEffectParametersMode(McuBaseMode):
             
             # When the plugin name changes (plugin gets replaced), exit to overview
             if (flags & midi.HW_Dirty_Names) and plugins.getPluginName(track, slot) != self._state.pluginName:
-                self._compositeMode.switchTo(effects_mode_state.OVERVIEW)
+                self._compositeMode.SwitchTo(effects_mode_state.OVERVIEW)
                 return
             
         super().OnRefresh(flags)
