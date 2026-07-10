@@ -28,6 +28,10 @@ class MixerEncoderSendsBehavior(MixerBankedTrackBaseBehavior):
         super().__init__(mcuDevice, trackBankingManager, midi.HW_Dirty_Mixer_Controls | midi.HW_Dirty_Mixer_Sel)
         self.__screenBehavior = screenBehavior
 
+    def OnDisable(self):
+        super().OnDisable()
+        self.McuDevice.ClearEncoderRings()
+
     def OnDirtyMixerTrack(self, trackNum):
         """
         Mark for refresh on changes to the selected (source) track. Needed for when a send level changes in FL Studio

@@ -38,11 +38,7 @@ class EqEncoderBehavior(McuBaseBehavior):
 
     def OnDisable(self):
         self.__trackBanking.RemoveTrackChangeSubscriber(self.__onTrackBankChange)
-        # Turn off all encoder rings
-        for hardwareIndex in range(self.__trackBanking.GetHardwareTrackCount()):
-            track = self.McuDevice.GetTrack(hardwareIndex)
-            if track is not None and track.knob is not None:
-                track.knob.SetLedsValueNone()
+        self.McuDevice.ClearEncoderRings()
         super().OnDisable()
 
     def __onTrackBankChange(self, newFirstTrack):

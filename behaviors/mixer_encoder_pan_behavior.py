@@ -19,6 +19,10 @@ class MixerEncoderPanBehavior(MixerBankedTrackBaseBehavior):
     def __init__(self, mcuDevice: McuDevice, trackBankingManager: TrackBankingManager):
         super().__init__(mcuDevice, trackBankingManager)
 
+    def OnDisable(self):
+        super().OnDisable()
+        self.McuDevice.ClearEncoderRings()
+
     def Update(self):
         """
         Called from base class when the track bank changes or when tracks are marked dirty

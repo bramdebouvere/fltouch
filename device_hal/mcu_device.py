@@ -103,6 +103,13 @@ class McuDevice:
                 assert track.meter is not None
                 track.meter.SetValue(0, True)
 
+    def ClearEncoderRings(self):
+        """ Turn off all encoder LED rings """
+        if device.isAssigned():
+            for track in self.tracksWithMeters:
+                assert track.knob is not None
+                track.knob.SetLedsValueNone()
+
     def GetTrack(self, index):
         """ Returns the an MCU mixer track instance """
         return self.tracks[index]
