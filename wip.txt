@@ -17,7 +17,6 @@ reflect linked values on the control surface:
 
 
 TODO:
-- add button to switch the color on a mixer track??
 - add custom fx parameter mappings for some plugins
 - BUG: some effect plugins have parameters that cannot be set gradually,
   which causes them to be stuck (probably because our step isn't high enough)

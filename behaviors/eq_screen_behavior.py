@@ -9,7 +9,6 @@ from device_hal.mcu_device import McuDevice
 from utilities.track_banking_manager import TrackBankingManager
 from utilities.transliteration import TransliterateToAscii
 
-
 class EqScreenBehavior(McuBaseScreenBehavior):
     """
     Screen behavior for EQ mode.

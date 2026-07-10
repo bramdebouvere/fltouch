@@ -11,7 +11,6 @@ from constants import eq_controls
 from constants import mcu_encoder
 from utilities.encoder_resolution import CalculateMixerEncoderRes, CalculateEncoderMovementDelta
 
-
 class EqEncoderBehavior(McuBaseBehavior):
     """
     Controls the selected mixer track's built-in 3-band parametric EQ using the rotary encoders.

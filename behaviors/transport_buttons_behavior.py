@@ -8,7 +8,6 @@ from device_hal import mcu_buttons
 from device_hal.mcu_device import McuDevice
 from utilities.button_manager import ButtonManager
 
-
 class TransportButtonsBehavior(McuBaseBehavior):
     """Behavior to handle transport button presses (rewind/ff/stop/play/record)."""
 

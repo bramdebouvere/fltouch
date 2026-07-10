@@ -6,7 +6,6 @@ from behaviors.mcu_base_behavior import McuBaseBehavior
 from device_hal import mcu_buttons
 from utilities.button_manager import ButtonManager
 
-
 class ArrowZoomButtonsBehavior(McuBaseBehavior):
     """Handles arrow buttons and zoom button."""
 

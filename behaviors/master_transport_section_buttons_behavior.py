@@ -10,7 +10,6 @@ from device_hal import mcu_buttons
 from device_hal.mcu_device import McuDevice
 from utilities.button_manager import ButtonManager
 
-
 class MasterTransportSectionButtonsBehavior(McuBaseBehavior):
     """Behavior for master transport section buttons such as shift."""
 

@@ -8,6 +8,20 @@ ScreenColorPurple = 0x05
 ScreenColorCyan = 0x06
 ScreenColorWhite = 0x07
 
+# Ordered cycle of the XTouch's available colors (excluding Black and White, which look identical to
+# the neutral default on the LCD). Values match FL Studio's own default mixer-track color swatches.
+TrackColorCycle = [
+    (ScreenColorRed, 0x9F3835),
+    (ScreenColorYellow, 0x8F9F35),
+    (ScreenColorGreen, 0x409F35),
+    (ScreenColorCyan, 0x359C9F),
+    (ScreenColorBlue, 0x354D9F),
+    (ScreenColorPurple, 0x6D359F),
+]
+
+# Default track color in FL Studio. Also the color a mixer track resets to after cycling through all colors in TrackColorCycle.
+DefaultTrackColor = 0x636C71
+
 Hue = 0
 Saturation = 1
 Value = 2

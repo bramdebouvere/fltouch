@@ -7,7 +7,6 @@ from behaviors.mcu_base_behavior import McuBaseBehavior
 from device_hal import mcu_buttons
 from utilities.button_manager import ButtonManager
 
-
 class WindowTimeButtonsBehavior(McuBaseBehavior):
     """Handles Browser, StepSequencer, Window, In, Out, Select buttons."""
 

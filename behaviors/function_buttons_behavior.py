@@ -5,7 +5,6 @@ from behaviors.mcu_base_behavior import McuBaseBehavior
 from device_hal import mcu_buttons
 from utilities.button_manager import ButtonManager
 
-
 class FunctionButtonsBehavior(McuBaseBehavior):
     """Handles the F1-F8 function row (Cut, Copy, Paste, Insert, Delete, ItemMenu, Undo, Un/Redo)."""
 

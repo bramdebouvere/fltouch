@@ -19,7 +19,7 @@ FL Studio MIDI scripts for the Behringer X-Touch + extender(s) (Mackie Control U
 - Sliders now function in free control mode
 - Changing the tempo using the jog wheel now works
 - Added basic scrubbing functionality, hold shift for more accuracy
-- Name/Value button can now be used to rename tracks
+- Name/Value button can now be used to rename tracks, pressing Shift + Name/Value will change the track's color
 - Encoder assignment buttons have been reordered to _Pan, Stereo, EQ, Sends, Effects, Free_ to match the hardware
 - Various bugfixes and improvements
 

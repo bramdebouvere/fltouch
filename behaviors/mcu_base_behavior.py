@@ -57,6 +57,8 @@ class McuBaseBehavior():
             HW_Dirty_Names 	            16384 	plugin names changes
             HW_Dirty_ChannelRackGroup 	32768 	Channel rack group changes
             HW_ChannelEvent 	        65536 	channel changes
+            HW_Dirty_Undo 	            131072 	Undo history changes (version 42)
+            HW_Dirty_ChannelRackGroup 	262144 	Undo history changes (version 42)
         """
         pass
 

@@ -4,7 +4,6 @@ from behaviors.mcu_base_behavior import McuBaseBehavior
 from device_hal import mcu_buttons
 from utilities.button_manager import ButtonManager
 
-
 class JogSourcesButtonsBehavior(McuBaseBehavior):
     """Handles the row of jog source buttons (Pattern, Mixer, Channels, Tempo, Free1-4)."""
 
