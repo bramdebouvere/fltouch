@@ -36,6 +36,7 @@ import utilities.transliteration as transliteration
 from behaviors.time_display_behavior import TimeDisplayBehavior
 from behaviors.transport_buttons_behavior import TransportButtonsBehavior
 from behaviors.master_transport_section_buttons_behavior import MasterTransportSectionButtonsBehavior
+from behaviors.footswitch_buttons_behavior import FootswitchButtonsBehavior
 
 class TMackieCU(mcu_base_class.McuBaseClass):
     def __init__(self):
@@ -45,6 +46,7 @@ class TMackieCU(mcu_base_class.McuBaseClass):
         self.PermanentBehaviors.append(MixerMainFaderBehavior(self.McuDevice))
         self.PermanentBehaviors.append(MasterTransportSectionButtonsBehavior(self.McuDevice))
         self.PermanentBehaviors.append(TransportButtonsBehavior(self.McuDevice))
+        self.PermanentBehaviors.append(FootswitchButtonsBehavior(self.McuDevice))
         self.PermanentBehaviors.append(WindowTimeButtonsBehavior(self.McuDevice))
         self.PermanentBehaviors.append(SystemButtonsBehavior(self.McuDevice))
         self.PermanentBehaviors.append(TrackMarkerBehavior(self.McuDevice))

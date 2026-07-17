@@ -135,6 +135,10 @@ Zoom = 0x64
 
 Scrub = 0x65
 
+# Footswitch jacks on the X-Touch rear panel (MCU "User Switch A/B")
+Footswitch_1 = 0x66  # 102
+Footswitch_2 = 0x67  # 103
+
 # Hold slider
 Slider_1 = 0x68
 Slider_2 = 0x69
