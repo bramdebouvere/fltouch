@@ -1,6 +1,6 @@
 import device
 import midi
-import mixer
+import channels
 import plugins
 
 from behaviors.mcu_base_screen_behavior import McuBaseScreenBehavior
@@ -9,22 +9,22 @@ from device_hal.mcu_colors import GetMcuColor, ScreenColorBlack, WhiteColor
 from device_hal.mcu_device import McuDevice
 from utilities.track_banking_manager import TrackBankingManager
 from utilities.transliteration import TransliterateToAscii
-from utilities.effects_mode_state import EffectsModeState
-from utilities.effects_param_mapper import EffectsParamMapper
+from utilities.channel_rack_mode_state import ChannelRackModeState
+from utilities.channel_param_mapper import ChannelParamMapper
 from utilities.effects_param_format import FormatEffectParameterValue
 from utilities.scribble_strip_text import StripSpacesIfOverWidth, CenterToWidth
 
-class EffectsParamScreenBehavior(McuBaseScreenBehavior):
+class ChannelParamScreenBehavior(McuBaseScreenBehavior):
     """
-    Screen behavior for the Effects parameter view.
+    Screen behavior for the Channel Rack parameter view.
 
-    Shows the opened plugin's parameter names (top row) and values (bottom row) for the parameters
-    currently banked onto this unit. The target plugin is the track + slot the view locked onto when it
-    was opened (EffectsModeState), and only the plugin's real, named parameters are shown: a banked
-    virtual index is translated to its FL parameter index through EffectsParamMapper.Map.
+    Shows the opened generator's parameter names (top row) and values (bottom row) for the parameters
+    currently banked onto this unit. The target generator is the channel the view locked onto when it was
+    opened (ChannelRackModeState), and only the generator's real, named parameters are shown: a banked
+    virtual index is translated to its FL parameter index through ChannelParamMapper.Map.
     """
 
-    def __init__(self, mcuDevice: McuDevice, trackBankingManager: TrackBankingManager, state: EffectsModeState):
+    def __init__(self, mcuDevice: McuDevice, trackBankingManager: TrackBankingManager, state: ChannelRackModeState):
         super().__init__(mcuDevice, trackBankingManager)
         self.__state = state
 
@@ -32,8 +32,8 @@ class EffectsParamScreenBehavior(McuBaseScreenBehavior):
         super().OnEnable()
         self.RenderScreen()
 
-    # We also need to re-render the screen when idle, to react to changes done by an automation clip
-    # Those don't trigger any refresh flags.
+    # Also re-render the screen when idle, to react to changes done by an automation clip
+    # (those don't trigger any refresh flags).
     def OnIdle(self):
         super().OnIdle()
         self.RenderScreen()
@@ -41,16 +41,14 @@ class EffectsParamScreenBehavior(McuBaseScreenBehavior):
     def OnRefresh(self, flags):
         super().OnRefresh(flags)
 
-        # Plugin parameter values report changes via HW_Dirty_ControlValues (and HW_Dirty_Mixer_Controls);
-        # the view is locked to its plugin, so a mixer selection change is not a render trigger.
-        if flags & (midi.HW_Dirty_Mixer_Controls | midi.HW_Dirty_ControlValues):
+        # Plugin parameter values report changes via HW_Dirty_ControlValues; also refresh on channel events.
+        if flags & (midi.HW_Dirty_ControlValues | midi.HW_ChannelEvent):
             self.RenderScreen()
 
     def RenderScreen(self):
-        """Render the parameter names, values and the plugin colour for the params banked on this unit."""
-        track = self.__state.track
-        slot = self.__state.slot
-        valid = track >= 0 and slot >= 0 and mixer.isTrackPluginValid(track, slot)
+        """Render the parameter names and values for the params banked on this unit."""
+        channel = self.__state.channel
+        valid = channel >= 0 and channel < channels.channelCount(True)
 
         topText = ''
         bottomText = ''
@@ -58,17 +56,17 @@ class EffectsParamScreenBehavior(McuBaseScreenBehavior):
 
         for virtualIndex in self._trackBanking.GetTrackIndexes():
             if valid and self._trackBanking.VirtualTrackExists(virtualIndex):
-                realIndex = EffectsParamMapper.Map[virtualIndex]
-                name = TransliterateToAscii(plugins.getParamName(realIndex, track, slot)).strip()
+                realIndex = ChannelParamMapper.Map[virtualIndex]
+                name = TransliterateToAscii(plugins.getParamName(realIndex, channel, -1, True)).strip()
                 name = StripSpacesIfOverWidth(name, ScribbleStripWidth)
                 topText += CenterToWidth(name, ScribbleStripWidth)
 
-                paramValue = plugins.getParamValue(realIndex, track, slot)
-                valueStr = TransliterateToAscii(plugins.getParamValueString(realIndex, track, slot))
+                paramValue = plugins.getParamValue(realIndex, channel, -1, True)
+                valueStr = TransliterateToAscii(plugins.getParamValueString(realIndex, channel, -1, useGlobalIndex=True))
                 display = FormatEffectParameterValue(valueStr, paramValue, ScribbleStripWidth)
                 bottomText += CenterToWidth(display, ScribbleStripWidth)
 
-                # Parameters have no inherent colour; keep the strip white (per-value colouring may come later).
+                # Parameters have no inherent colour; keep the strip white.
                 colorArr.append(WhiteColor)
             else:
                 topText += ' ' * ScribbleStripWidth

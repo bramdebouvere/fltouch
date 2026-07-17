@@ -1,6 +1,7 @@
 import midi
 
 from device_hal import mcu_knob_mode
+from device_hal.mcu_colors import YellowColor, GreenColor, CyanColor
 
 # Shared definitions for the 9 controls of the mixer's built-in 3-band parametric EQ.
 #
@@ -17,11 +18,6 @@ from device_hal import mcu_knob_mode
 Gain = 0  # level
 Freq = 1  # frequency
 Q = 2     # width / slope
-
-# RGB values will be mapped by mcu_colors.GetMcuColor to the intended MCU screen color.
-_CYAN = 0x478C8D
-_GREEN = 0x00FF00
-_YELLOW = 0xFFC000
 
 # Reset defaults, as a normalized fraction (0.0 - 1.0) of each parameter's range, captured from FL
 # Studio. A click resets the control to this value (applied as round(fraction * midi.FromMIDI_Max)).
@@ -41,15 +37,15 @@ _Q_DEFAULT = 0.26702880859375            # 0.27 (same for all three bands)
 #   'reversed'   : (Q only) ring fills wide->narrow as the value rises, since a high Q is a narrow band
 #   'default'    : normalized fraction (0.0 - 1.0) an encoder click resets the control to
 EQ_CONTROLS = [
-    {'label': 'LowLvl',  'band': 0, 'param': Gain, 'color': _YELLOW, 'ringMode': mcu_knob_mode.BoostCut,  'showCenter': True,  'default': _GAIN_DEFAULT},
-    {'label': 'LowFrq',  'band': 0, 'param': Freq, 'color': _YELLOW, 'ringMode': mcu_knob_mode.SingleDot, 'showCenter': False, 'default': _LOW_FREQ_DEFAULT},
-    {'label': 'LowQ',    'band': 0, 'param': Q,    'color': _YELLOW, 'ringMode': mcu_knob_mode.Spread,    'showCenter': True,  'default': _Q_DEFAULT,  'reversed': True},
-    {'label': 'PeakLvl', 'band': 1, 'param': Gain, 'color': _GREEN,  'ringMode': mcu_knob_mode.BoostCut,  'showCenter': True,  'default': _GAIN_DEFAULT},
-    {'label': 'PeakFrq', 'band': 1, 'param': Freq, 'color': _GREEN,  'ringMode': mcu_knob_mode.SingleDot, 'showCenter': False, 'default': _PEAK_FREQ_DEFAULT},
-    {'label': 'PeakQ',   'band': 1, 'param': Q,    'color': _GREEN,  'ringMode': mcu_knob_mode.Spread,    'showCenter': True,  'default': _Q_DEFAULT,  'reversed': True},
-    {'label': 'HighLvl', 'band': 2, 'param': Gain, 'color': _CYAN,   'ringMode': mcu_knob_mode.BoostCut,  'showCenter': True,  'default': _GAIN_DEFAULT},
-    {'label': 'HighFrq', 'band': 2, 'param': Freq, 'color': _CYAN,   'ringMode': mcu_knob_mode.SingleDot, 'showCenter': False, 'default': _HIGH_FREQ_DEFAULT},
-    {'label': 'HighQ',   'band': 2, 'param': Q,    'color': _CYAN,   'ringMode': mcu_knob_mode.Spread,    'showCenter': True,  'default': _Q_DEFAULT,  'reversed': True},
+    {'label': 'LowLvl',  'band': 0, 'param': Gain, 'color': YellowColor, 'ringMode': mcu_knob_mode.BoostCut,  'showCenter': True,  'default': _GAIN_DEFAULT},
+    {'label': 'LowFrq',  'band': 0, 'param': Freq, 'color': YellowColor, 'ringMode': mcu_knob_mode.SingleDot, 'showCenter': False, 'default': _LOW_FREQ_DEFAULT},
+    {'label': 'LowQ',    'band': 0, 'param': Q,    'color': YellowColor, 'ringMode': mcu_knob_mode.Spread,    'showCenter': True,  'default': _Q_DEFAULT,  'reversed': True},
+    {'label': 'PeakLvl', 'band': 1, 'param': Gain, 'color': GreenColor,  'ringMode': mcu_knob_mode.BoostCut,  'showCenter': True,  'default': _GAIN_DEFAULT},
+    {'label': 'PeakFrq', 'band': 1, 'param': Freq, 'color': GreenColor,  'ringMode': mcu_knob_mode.SingleDot, 'showCenter': False, 'default': _PEAK_FREQ_DEFAULT},
+    {'label': 'PeakQ',   'band': 1, 'param': Q,    'color': GreenColor,  'ringMode': mcu_knob_mode.Spread,    'showCenter': True,  'default': _Q_DEFAULT,  'reversed': True},
+    {'label': 'HighLvl', 'band': 2, 'param': Gain, 'color': CyanColor,   'ringMode': mcu_knob_mode.BoostCut,  'showCenter': True,  'default': _GAIN_DEFAULT},
+    {'label': 'HighFrq', 'band': 2, 'param': Freq, 'color': CyanColor,   'ringMode': mcu_knob_mode.SingleDot, 'showCenter': False, 'default': _HIGH_FREQ_DEFAULT},
+    {'label': 'HighQ',   'band': 2, 'param': Q,    'color': CyanColor,   'ringMode': mcu_knob_mode.Spread,    'showCenter': True,  'default': _Q_DEFAULT,  'reversed': True},
 ]
 
 # Number of EQ controls (3 bands x 3 parameters)

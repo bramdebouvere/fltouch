@@ -5,13 +5,10 @@ import plugins
 
 from behaviors.mcu_base_screen_behavior import McuBaseScreenBehavior
 from constants.mcu_constants import ScribbleStripWidth
-from device_hal.mcu_colors import GetMcuColor, ScreenColorBlack
+from device_hal.mcu_colors import GetMcuColor, ScreenColorBlack, WhiteColor
 from device_hal.mcu_device import McuDevice
 from utilities.track_banking_manager import TrackBankingManager
 from utilities.transliteration import TransliterateToAscii
-
-# FL colour int that GetMcuColor maps to a white scribble strip (used for slots with no plugin).
-_WHITE = 0xFFFFFF
 
 class EffectsSlotScreenBehavior(McuBaseScreenBehavior):
     """
@@ -65,12 +62,12 @@ class EffectsSlotScreenBehavior(McuBaseScreenBehavior):
                 # getSlotColor returns the FX slot's own colour. A slot can still report no colour (0),
                 # which would map to black; fall back to white so a populated slot is never shown black.
                 flColor = mixer.getSlotColor(track, virtualIndex)
-                colorArr.append(_WHITE if GetMcuColor(flColor) == ScreenColorBlack else flColor)
+                colorArr.append(WhiteColor if GetMcuColor(flColor) == ScreenColorBlack else flColor)
             else:
                 # Slot exists but is empty -> show "<empty>" on a white strip (black is reserved for slot
                 # indexes beyond the 10 available).
                 bottomText += '<empty>'.center(ScribbleStripWidth)[:ScribbleStripWidth]
-                colorArr.append(_WHITE)
+                colorArr.append(WhiteColor)
 
         if (device.isAssigned()):
             self.McuDevice.SetTextDisplay(topText, 0, skipIsAssignedCheck=True)

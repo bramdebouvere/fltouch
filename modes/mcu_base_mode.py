@@ -54,6 +54,13 @@ class McuBaseMode():
         for behavior in self._behaviors:
             behavior.OnDirtyMixerTrack(SetTrackNum)
 
+    def OnDirtyChannel(self, index):
+        """ Called on Channel Rack channel change. 'index' indicates channel index of channel that changed or -1 when all channels changed. """
+        if (not self._enabled):
+            return
+        for behavior in self._behaviors:
+            behavior.OnDirtyChannel(index)
+
     def OnUpdateMeters(self):
         """ Called when peak meters have updated values """
         if (not self._enabled):

@@ -14,7 +14,6 @@ from utilities.effects_mode_state import EffectsModeState
 from utilities.effects_param_mapper import EffectsParamMapper
 from utilities.track_banking_manager import TrackBankingManager
 
-
 class McuEffectParametersMode(McuBaseMode):
     """
     Effects mode Parameter view sub-mode.
@@ -46,11 +45,12 @@ class McuEffectParametersMode(McuBaseMode):
         assert self._trackBankingManager is not None
         self._trackBankingManager.softwareTrackCount = len(EffectsParamMapper.Map)
 
-        # enable behaviors + banking manager
-        super().OnEnable() 
+        # Enable behaviors + banking manager
+        super().OnEnable()
 
-        # Always reset track banking
-        self._trackBankingManager.SetFirstTrackIndex(0)
+        # Reset track banking
+        if not self.McuDevice.isExtender:
+            self._trackBankingManager.SetFirstTrackIndex(0)
 
     def OnRefresh(self, flags):
         if not self._enabled:

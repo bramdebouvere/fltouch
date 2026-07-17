@@ -1,4 +1,5 @@
 import mixer
+import channels
 
 TransliterateMap = {
     # ASCII Extended
@@ -136,6 +137,15 @@ def GetAsciiSafeTrackName(index: int, maxLength: int = 0) -> str:
     # If some characters need transliteration, take the full track name so we can fill the screen
     unicodeTrackName = mixer.getTrackName(index)
     transliterated = TransliterateToAscii(unicodeTrackName)
+    if maxLength > 0:
+        transliterated = transliterated[:maxLength]
+    return transliterated
+
+def GetAsciiSafeChannelName(index: int, maxLength: int = 0) -> str:
+    ''' Gets an ASCII compatible channel-rack channel name value (using the global channel index) '''
+
+    unicodeChannelName = channels.getChannelName(index, True) # True = useGlobalIndex
+    transliterated = TransliterateToAscii(unicodeChannelName)
     if maxLength > 0:
         transliterated = transliterated[:maxLength]
     return transliterated

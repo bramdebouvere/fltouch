@@ -44,7 +44,7 @@ class McuDeviceTrackEncoderKnob:
         """
         self.SetLedsValue(mcu_knob_mode.SingleDot, False, 0)
 
-    def setLedsValueAll(self):
+    def SetLedsValueAll(self):
         """
         All LEDs on the rotary encoder ON
         """

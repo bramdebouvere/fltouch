@@ -2,13 +2,11 @@ import midi
 import mixer
 
 from constants import mcu_constants
+from device_hal.mcu_colors import YellowColor, CyanColor
 
 # Shared definitions for the Flip menu's track utility functions.
 #
 # A TrackBankingManager indexes straight into the MENU_ITEMS list below
-
-_YELLOW = 0xFFC000
-_CYAN = 0x478C8D
 
 def _toggleCurrentTrackEffects(track):
     """Toggle all effect slots on/off for a single track."""
@@ -56,10 +54,10 @@ def _toggleTrackChannelSwap(track):
 #                Omit for a plain action with no on/off state to show (bottom row stays blank).
 #   'color'    : FL color int for the scribble strip
 MENU_ITEMS = [
-    {'label': 'FxSlots', 'execute': _toggleCurrentTrackEffects, 'getValue': mixer.isTrackSlotsEnabled,               'color': _YELLOW},
-    {'label': 'ALLFxSl', 'execute': _toggleAllTrackEffects,     'getValue': lambda track: _anyTrackEffectsEnabled(), 'color': _YELLOW},
-    {'label': 'Rev Pol', 'execute': _toggleTrackPolarity,       'getValue': mixer.isTrackRevPolarity,                'color': _CYAN},
-    {'label': 'Swap LR', 'execute': _toggleTrackChannelSwap,    'getValue': mixer.isTrackSwapChannels,               'color': _CYAN},
+    {'label': 'FxSlots', 'execute': _toggleCurrentTrackEffects, 'getValue': mixer.isTrackSlotsEnabled,               'color': YellowColor},
+    {'label': 'ALLFxSl', 'execute': _toggleAllTrackEffects,     'getValue': lambda track: _anyTrackEffectsEnabled(), 'color': YellowColor},
+    {'label': 'Rev Pol', 'execute': _toggleTrackPolarity,       'getValue': mixer.isTrackRevPolarity,                'color': CyanColor},
+    {'label': 'Swap LR', 'execute': _toggleTrackChannelSwap,    'getValue': mixer.isTrackSwapChannels,               'color': CyanColor},
 ]
 
 # Number of menu items

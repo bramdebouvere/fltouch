@@ -18,8 +18,11 @@ reflect linked values on the control surface:
 
 TODO:
 - add custom fx parameter mappings for some plugins
-- BUG: some effect plugins have parameters that cannot be set gradually,
+- BUG: some native FL Studio effect plugins have parameters that cannot be set gradually,
   which causes them to be stuck (probably because our step isn't high enough)
 - Add reset mixer track function
 - Allow using alternate setups (main unit in the middle)
-- Add channel rack control
+- Check if we can auto-assign to instrument track when adding a new generator plugin
+- Add support for a foot pedal
+- Add flip menu to channel rack mode, to execute functions like next preset / previous preset etc.
+- Assignment display currently shows nothing. It should display the mixer track number

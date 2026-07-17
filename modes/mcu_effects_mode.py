@@ -50,6 +50,14 @@ class McuEffectsMode(McuCompositeMode):
             self._state.track = track
             self._state.pluginName = plugins.getPluginName(track, slot)
         else: # OVERVIEW
+            # Close the effect plugin window the parameter view opened, if the slot still holds a plugin.
+            # The mixer API has no hide-editor call (unlike channels.showCSForm), so we focus that plugin's
+            # window and send Escape to close it - focusing first makes Escape target our plugin rather
+            # than whatever else might be focused. Main unit drives FL windows.
+            if (not self.McuDevice.isExtender and self._state.track >= 0 and self._state.slot >= 0
+                    and mixer.isTrackPluginValid(self._state.track, self._state.slot)):
+                mixer.focusEditor(self._state.track, self._state.slot)
+                ui.escape()
             self._state.slot = -1
             self._state.track = -1
             self._state.pluginName = ''

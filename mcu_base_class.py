@@ -26,8 +26,7 @@ from modes.mcu_eq_mode import McuEQMode
 from modes.mcu_pan_composite_mode import McuPanCompositeMode
 from modes.mcu_sends_composite_mode import McuSendsCompositeMode
 from modes.mcu_stereo_composite_mode import McuStereoCompositeMode
-from modes.mcu_unused_mode import McuUnusedMode
-from modes.mcu_unused_mode import McuUnusedMode
+from modes.mcu_channel_rack_mode import McuChannelRackMode
 import utilities.transliteration as transliteration
 
 class McuBaseClass():
@@ -42,6 +41,8 @@ class McuBaseClass():
         self.effectsParamTrackManager = TrackBankingManager(self.McuDevice, 0) # banks the focused plugin's parameters (Effects mode, parameter view); count is set at runtime
         self.eqTrackManager = TrackBankingManager(self.McuDevice, eq_controls.EqControlCount) # banks the 9 EQ controls of the selected track
         self.menuBankingManager = TrackBankingManager(self.McuDevice, menu_items.MenuItemCount) # banks the Flip menu's functions (Pan/Sends/Stereo modes)
+        self.channelRackManager = TrackBankingManager(self.McuDevice, 0) # banks all channel-rack channels (Channel Rack mode, overview); count is set at runtime
+        self.channelParamManager = TrackBankingManager(self.McuDevice, 0) # banks the opened generator's parameters (Channel Rack mode, parameter view); count is set at runtime
 
         # create modes
         self.modes: dict[int, McuBaseMode] = {
@@ -50,7 +51,7 @@ class McuBaseClass():
             mcu_modes.Equalizer: McuEQMode(self.McuDevice, self.eqTrackManager),
             mcu_modes.Stereo: McuStereoCompositeMode(self.McuDevice, self.mixerTrackManager, self.menuBankingManager),
             mcu_modes.Effects: McuEffectsMode(self.McuDevice, self.effectsSlotTrackManager, self.effectsParamTrackManager),
-            mcu_modes.Free: McuUnusedMode(self.McuDevice, self.mixerTrackManager)
+            mcu_modes.Free: McuChannelRackMode(self.McuDevice, self.channelRackManager, self.channelParamManager)
         }
 
         self.Mode: McuBaseMode | None = None # the current mode
@@ -136,6 +137,13 @@ class McuBaseClass():
             behavior.OnDirtyMixerTrack(SetTrackNum)
         if (self.Mode != None):
             self.Mode.OnDirtyMixerTrack(SetTrackNum)
+
+    def OnDirtyChannel(self, index):
+        """ Called on Channel Rack channel change (channel-rack analog of OnDirtyMixerTrack). """
+        for behavior in self.PermanentBehaviors:
+            behavior.OnDirtyChannel(index)
+        if (self.Mode != None):
+            self.Mode.OnDirtyChannel(index)
 
     def UpdateTextDisplay(self):
         """ Updates the mixer track names and colors """
@@ -440,6 +448,8 @@ class McuBaseClass():
                             self.effectsParamTrackManager.SetFirstTrackIndex(0)
                             self.eqTrackManager.SetFirstTrackIndex(0)
                             self.menuBankingManager.SetFirstTrackIndex(0)
+                            self.channelRackManager.SetFirstTrackIndex(0)
+                            self.channelParamManager.SetFirstTrackIndex(0)
                             self.OnSendMsg('Track banking has been reset.')
                     event.handled = True
                     return event

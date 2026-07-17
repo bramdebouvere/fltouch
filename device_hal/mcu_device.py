@@ -57,6 +57,18 @@ class McuDevice:
             return
         self.SendMidiToExtenders(midi.MIDI_NOTEON + (button << 8) + (1 << 16))
 
+    def SendChannelDirtyToExtenders(self):
+        """
+        Tell every extender to re-run OnDirtyChannel so it repaints its channel strips.
+
+        Used for channel changes that FL Studio does not report to every unit through its own callbacks, in particular
+        color change (channels.setChannelColor fires no channel refresh), in case the changed channel
+        is displayed on an extender rather than the main unit.
+        """
+        if self.isExtender:
+            return
+        self.SendMidiToExtenders(midi.MIDI_NOTEON + (mcu_buttons.ChannelDirtyBroadcast << 8) + (1 << 16))
+
     def SendSubModeSwitchToExtender(self, key: int, data:int|None = None):
         """
         Dispatch a sub-mode switch to all dispatch receivers (for McuCompositeMode).

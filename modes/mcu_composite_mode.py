@@ -117,6 +117,11 @@ class McuCompositeMode(McuBaseMode):
         if self._activeSubMode is not None:
             self._activeSubMode.OnDirtyMixerTrack(SetTrackNum)
 
+    def OnDirtyChannel(self, index):
+        super().OnDirtyChannel(index)
+        if self._activeSubMode is not None:
+            self._activeSubMode.OnDirtyChannel(index)
+
     def OnUpdateMeters(self):
         super().OnUpdateMeters()
         if self._activeSubMode is not None:

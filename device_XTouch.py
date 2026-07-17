@@ -662,6 +662,9 @@ def OnDeInit():
 def OnDirtyMixerTrack(SetTrackNum):
     MackieCU.OnDirtyMixerTrack(SetTrackNum)
 
+def OnDirtyChannel(index, flag=0):
+    MackieCU.OnDirtyChannel(index)
+
 def OnRefresh(Flags):
     MackieCU.OnRefresh(Flags)
 

@@ -12,15 +12,27 @@ ScreenColorWhite = 0x07
 # the neutral default on the LCD). Values match FL Studio's own default mixer-track color swatches.
 TrackColorCycle = [
     (ScreenColorRed, 0x9F3835),
-    (ScreenColorYellow, 0x8F9F35),
+    (ScreenColorYellow, 0xAE943A),
     (ScreenColorGreen, 0x409F35),
     (ScreenColorCyan, 0x359C9F),
     (ScreenColorBlue, 0x354D9F),
-    (ScreenColorPurple, 0x6D359F),
+    (ScreenColorPurple, 0x94359F),
 ]
+
+
+# RGB COLORS (FL Studio values)
+# ----------
 
 # Default track color in FL Studio. Also the color a mixer track resets to after cycling through all colors in TrackColorCycle.
 DefaultTrackColor = 0x636C71
+# White
+WhiteColor = 0xFFFFFF
+# Yellow
+YellowColor = 0xFFC000
+# Cyan
+CyanColor = 0x478C8D
+# Green
+GreenColor = 0x00FF00
 
 Hue = 0
 Saturation = 1

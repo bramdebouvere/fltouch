@@ -26,6 +26,13 @@ class McuBaseBehavior():
         """
         pass
 
+    def OnDirtyChannel(self, index):
+        """
+        Called when a Channel Rack channel changes ('index' is the changed channel, or -1 for all). This is
+        the channel-rack analog of OnDirtyMixerTrack
+        """
+        pass
+
     def OnUpdateMeters(self):
         """ Called when peak meters have updated values """
         pass
