@@ -58,7 +58,8 @@ class McuEffectsMode(McuCompositeMode):
             if (not self.McuDevice.isExtender and self._state.track >= 0 and self._state.slot >= 0
                     and mixer.isTrackPluginValid(self._state.track, self._state.slot)):
                 mixer.focusEditor(self._state.track, self._state.slot)
-                ui.escape()
+                if ui.getFocused(midi.widPluginEffect): # make sure
+                    ui.escape()
             self._state.slot = -1
             self._state.track = -1
             self._state.pluginName = ''
