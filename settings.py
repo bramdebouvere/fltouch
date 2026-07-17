@@ -18,7 +18,7 @@ ExtenderPosition = mcu_extender_location.Left
 # Available actions:
 #   footswitch_action.TogglePlay       Start playback; press again to stop. (Same as the Play button.)
 #   footswitch_action.ToggleRecord     Turn recording on; press again to turn it off. (Same as the Record button.)
-#   footswitch_action.ToggleMetronome  Turn the metronome (click) on; press again to turn it off.
-#   footswitch_action.Passthrough      Do nothing here, so you can map the pedal yourself in FL Studio's MIDI settings.
+#   footswitch_action.ToggleMetronome  Turn the metronome on; press again to turn it off.
+#   footswitch_action.Passthrough      Do nothing here, so you can map the pedal yourself otherwise in FL Studio.
 FootswitchAction1 = footswitch_action.TogglePlay     # Foot SW 1
 FootswitchAction2 = footswitch_action.ToggleRecord   # Foot SW 2
