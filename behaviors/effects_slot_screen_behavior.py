@@ -57,7 +57,8 @@ class EffectsSlotScreenBehavior(McuBaseScreenBehavior):
             topText += str(virtualIndex + 1).center(ScribbleStripWidth)[:ScribbleStripWidth]
 
             if mixer.isTrackPluginValid(track, virtualIndex):
-                name = TransliterateToAscii(plugins.getPluginName(track, virtualIndex, True)).strip()
+                pluginName = plugins.getPluginName(track, virtualIndex, True)
+                name = TransliterateToAscii(pluginName).strip()
                 bottomText += name.center(ScribbleStripWidth)[:ScribbleStripWidth]
                 # getSlotColor returns the FX slot's own colour. A slot can still report no colour (0),
                 # which would map to black; fall back to white so a populated slot is never shown black.

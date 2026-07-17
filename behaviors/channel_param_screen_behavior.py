@@ -36,13 +36,15 @@ class ChannelParamScreenBehavior(McuBaseScreenBehavior):
     # (those don't trigger any refresh flags).
     def OnIdle(self):
         super().OnIdle()
-        self.RenderScreen()
+        # Don't repaint over a temporary message; the base restores the screen when it expires.
+        if not self._isShowingTempMessage:
+            self.RenderScreen()
 
     def OnRefresh(self, flags):
         super().OnRefresh(flags)
 
         # Plugin parameter values report changes via HW_Dirty_ControlValues; also refresh on channel events.
-        if flags & (midi.HW_Dirty_ControlValues | midi.HW_ChannelEvent):
+        if flags & (midi.HW_Dirty_ControlValues | midi.HW_ChannelEvent): # and not self._isShowingTempMessage:
             self.RenderScreen()
 
     def RenderScreen(self):
@@ -54,24 +56,29 @@ class ChannelParamScreenBehavior(McuBaseScreenBehavior):
         bottomText = ''
         colorArr = []
 
-        for virtualIndex in self._trackBanking.GetTrackIndexes():
-            if valid and self._trackBanking.VirtualTrackExists(virtualIndex):
-                realIndex = ChannelParamMapper.Map[virtualIndex]
-                name = TransliterateToAscii(plugins.getParamName(realIndex, channel, -1, True)).strip()
-                name = StripSpacesIfOverWidth(name, ScribbleStripWidth)
-                topText += CenterToWidth(name, ScribbleStripWidth)
+        try:
+            for virtualIndex in self._trackBanking.GetTrackIndexes():
+                if valid and self._trackBanking.VirtualTrackExists(virtualIndex):
+                    realIndex = ChannelParamMapper.Map[virtualIndex]
+                    name = TransliterateToAscii(plugins.getParamName(realIndex, channel, -1, True)).strip()
+                    name = StripSpacesIfOverWidth(name, ScribbleStripWidth)
+                    topText += CenterToWidth(name, ScribbleStripWidth)
 
-                paramValue = plugins.getParamValue(realIndex, channel, -1, True)
-                valueStr = TransliterateToAscii(plugins.getParamValueString(realIndex, channel, -1, useGlobalIndex=True))
-                display = FormatEffectParameterValue(valueStr, paramValue, ScribbleStripWidth)
-                bottomText += CenterToWidth(display, ScribbleStripWidth)
+                    paramValue = plugins.getParamValue(realIndex, channel, -1, True)
+                    valueStr = TransliterateToAscii(plugins.getParamValueString(realIndex, channel, -1, useGlobalIndex=True))
+                    display = FormatEffectParameterValue(valueStr, paramValue, ScribbleStripWidth)
+                    bottomText += CenterToWidth(display, ScribbleStripWidth)
 
-                # Parameters have no inherent colour; keep the strip white.
-                colorArr.append(WhiteColor)
-            else:
-                topText += ' ' * ScribbleStripWidth
-                bottomText += ' ' * ScribbleStripWidth
-                colorArr.append(GetMcuColor(ScreenColorBlack))
+                    # Parameters have no inherent colour; keep the strip white.
+                    colorArr.append(WhiteColor)
+                else:
+                    topText += ' ' * ScribbleStripWidth
+                    bottomText += ' ' * ScribbleStripWidth
+                    colorArr.append(GetMcuColor(ScreenColorBlack))
+        except RuntimeError:
+            # FL raises "Operation unsafe at current time" when queried while a modal is open (e.g. the
+            # F2 rename box). Skip this render; a later refresh/idle repaints once FL is safe again.
+            return
 
         if (device.isAssigned()):
             self.McuDevice.SetTextDisplay(topText, 0, skipIsAssignedCheck=True)

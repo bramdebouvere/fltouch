@@ -5,6 +5,7 @@ import plugins
 from behaviors.effects_param_screen_behavior import EffectsParamScreenBehavior
 from behaviors.effects_param_encoder_behavior import EffectsParamEncoderBehavior
 from behaviors.effects_param_select_button_behavior import EffectsParamSelectButtonBehavior
+from behaviors.effects_param_namevalue_button_behavior import EffectsParamNameValueButtonBehavior
 from behaviors.plugin_picker_button_behavior import PluginPickerButtonBehavior
 from behaviors.track_banking_behavior import TrackBankingBehavior
 from device_hal.mcu_device import McuDevice
@@ -31,11 +32,13 @@ class McuEffectParametersMode(McuBaseMode):
                  state: EffectsModeState, compositeMode):
         self._state = state
         self._compositeMode = compositeMode
+        screenBehavior = EffectsParamScreenBehavior(device, paramBankingManager, state)
         super().__init__(device, [
-            EffectsParamScreenBehavior(device, paramBankingManager, state),
+            screenBehavior,
             EffectsParamEncoderBehavior(device, paramBankingManager, state),
             TrackBankingBehavior(device, paramBankingManager),
             EffectsParamSelectButtonBehavior(device, compositeMode),
+            EffectsParamNameValueButtonBehavior(device, state, screenBehavior),
             PluginPickerButtonBehavior(device),
         ], paramBankingManager)
 

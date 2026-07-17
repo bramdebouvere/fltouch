@@ -35,6 +35,7 @@ class McuEffectsMode(McuCompositeMode):
 
     def OnEnable(self):
         if not self.McuDevice.isExtender:
+            ui.showWindow(midi.widMixer)
             ui.setFocused(midi.widMixer)
         super().OnEnable()
 

@@ -62,6 +62,15 @@ class McuBaseScreenBehavior(McuBaseBehavior):
         self.__tempMessageDuration = duration
         return super().OnSendTempMsg(msg, duration)
 
+    @property
+    def _isShowingTempMessage(self) -> bool:
+        """
+        True while a temporary message is on screen or still pending. Subclasses that repaint themselves
+        on OnIdle/OnRefresh must skip repainting while this holds, otherwise they immediately overwrite the
+        message; the base restores the normal screen (via the RenderMessage callback) once it expires.
+        """
+        return self.__tempMessageToRender is not None or self.__callback is not None
+
     def _onTrackBankChange(self, newFirstTrack):
         # Re-render screens when the bank changes.
         self.RenderScreen()
