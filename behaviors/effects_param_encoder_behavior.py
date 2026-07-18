@@ -1,4 +1,6 @@
 import midi
+import channels
+import general
 import mixer
 import plugins
 
@@ -125,16 +127,21 @@ class EffectsParamEncoderBehavior(McuBaseBehavior):
             if (self.__trackBanking.VirtualTrackExists(virtualIndex)
                     and track >= 0 and slot >= 0 and mixer.isTrackPluginValid(track, slot)):
                 realIndex = EffectsParamMapper.Map[virtualIndex]
-                current = plugins.getParamValue(realIndex, track, slot)
-                # Variable step: very fine when turning slowly, accelerating as you spin faster.
-                res = CalculateParamEncoderRes(steps)
-                newValue = max(0.0, min(1.0, current + steps * res))
-                plugins.setParamValue(newValue, realIndex, track, slot)
 
-                # Reflect the new value on the ring right away (FL may not echo a refresh for our own change).
+                # Get eventId for the parameter
+                eventId = mixer.getTrackPluginId(track, slot) + midi.REC_Plug_Plugin_First + realIndex  # type: ignore
+                # res sets the per-detent granularity for continuous params (fine, accelerating on
+                # faster turns); FL ignores it for discrete params, stepping those one value per detent.
+                res = CalculateParamEncoderRes(steps)
+                newValue = channels.incEventValue(eventId, steps, res)
+                general.processRECEvent(eventId, newValue, midi.REC_UpdateValue | midi.REC_UpdateControl)
+
+                # Reflect the applied value on the ring right away (FL may not echo a refresh for our own change).
                 hwTrack = self.__trackBanking.GetHardwareTrack(virtualIndex)
                 if hwTrack is not None and hwTrack.knob is not None:
-                    hwTrack.knob.SetLedsValue(mcu_knob_mode.Wrap, False, max(0, min(11, round(newValue * 11))))
+                    value = plugins.getParamValue(realIndex, track, slot) # normalized 0.0 - 1.0
+                    ledValue = max(0, min(mcu_encoder.LedWrapMax, round(value * mcu_encoder.LedWrapMax)))
+                    hwTrack.knob.SetLedsValue(mcu_knob_mode.Wrap, False, ledValue)
 
             event.handled = True
             return event
