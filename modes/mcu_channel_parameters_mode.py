@@ -6,6 +6,7 @@ from behaviors.channel_param_screen_behavior import ChannelParamScreenBehavior
 from behaviors.channel_param_encoder_behavior import ChannelParamEncoderBehavior
 from behaviors.channel_param_select_button_behavior import ChannelParamSelectButtonBehavior
 from behaviors.channel_namevalue_button_behavior import ChannelNameValueButtonBehavior
+from behaviors.fader_touch_suppress_behavior import FaderTouchSuppressBehavior
 from behaviors.plugin_picker_button_behavior import PluginPickerButtonBehavior
 from behaviors.track_banking_behavior import TrackBankingBehavior
 from device_hal.mcu_device import McuDevice
@@ -40,6 +41,7 @@ class McuChannelParametersMode(McuBaseMode):
             ChannelParamSelectButtonBehavior(device, compositeMode),
             ChannelNameValueButtonBehavior(device, screenBehavior),
             PluginPickerButtonBehavior(device, 0), # category 0 = plugin picker generators
+            FaderTouchSuppressBehavior(device),
         ], paramBankingManager)
 
     def OnEnable(self):

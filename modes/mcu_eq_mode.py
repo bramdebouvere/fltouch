@@ -1,6 +1,7 @@
 
 from behaviors.eq_encoder_behavior import EqEncoderBehavior
 from behaviors.eq_screen_behavior import EqScreenBehavior
+from behaviors.fader_touch_suppress_behavior import FaderTouchSuppressBehavior
 from behaviors.plugin_picker_button_behavior import PluginPickerButtonBehavior
 from behaviors.track_banking_behavior import TrackBankingBehavior
 from behaviors.mode_buttons_behavior import ModeButtonsBehavior
@@ -20,6 +21,7 @@ class McuEQMode(McuBaseMode):
             TrackBankingBehavior(device, trackBankingManager),
             EqEncoderBehavior(device, trackBankingManager),
             PluginPickerButtonBehavior(device),
+            FaderTouchSuppressBehavior(device),
         ], trackBankingManager)
 
     def OnEnable(self):

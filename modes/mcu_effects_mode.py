@@ -4,6 +4,7 @@ import plugins
 import ui
 
 from behaviors.mode_buttons_behavior import ModeButtonsBehavior
+from behaviors.fader_touch_suppress_behavior import FaderTouchSuppressBehavior
 from device_hal.mcu_device import McuDevice
 from device_hal import mcu_buttons
 from modes.mcu_composite_mode import McuCompositeMode
@@ -24,7 +25,10 @@ class McuEffectsMode(McuCompositeMode):
 
     def __init__(self, device: McuDevice, slotBankingManager: TrackBankingManager, paramBankingManager: TrackBankingManager):
         self._state = EffectsModeState()
-        super().__init__(device, [ModeButtonsBehavior(device, mcu_buttons.Effects)])
+        super().__init__(device, [
+            ModeButtonsBehavior(device, mcu_buttons.Effects),
+            FaderTouchSuppressBehavior(device),
+        ])
 
         # sub-modes
         slotMode = McuEffectSlotsMode(device, slotBankingManager, self)

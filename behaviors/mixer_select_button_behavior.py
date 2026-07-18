@@ -1,5 +1,6 @@
 import midi
 import mixer
+import ui
 
 from behaviors.mcu_base_behavior import McuBaseBehavior
 from behaviors.mixer_banked_track_base_bahavior import MixerBankedTrackBaseBehavior
@@ -37,6 +38,8 @@ class MixerSelectButtonBehavior(MixerBankedTrackBaseBehavior):
                 assert virtualTrackIndex != -1, "Invalid track index for select button press"
                 # Only select if the track exists in FL Studio
                 if self.TrackBanking.VirtualTrackExists(virtualTrackIndex) and event.pmeFlags & midi.PME_System_Safe:
+                    ui.showWindow(midi.widMixer)
+                    ui.setFocused(midi.widMixer)
                     mixer.setTrackNumber(midi.TrackNum_Master + virtualTrackIndex)
                 
                 event.handled = True
