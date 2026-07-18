@@ -6,7 +6,6 @@ from behaviors.mcu_base_behavior import McuBaseBehavior
 from utilities.track_banking_manager import TrackBankingManager
 from device_hal import mcu_buttons
 from device_hal.mcu_device import McuDevice
-# from mcu_track import McuTrack
 
 class TrackBankingBehavior(McuBaseBehavior):
     """Behavior for handling track banking button presses."""
