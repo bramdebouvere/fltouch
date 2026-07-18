@@ -1,6 +1,5 @@
 import device
 import midi
-import utils
 
 from device_hal import mcu_buttons
 from device_hal.mcu_device_track import McuDeviceTrack
@@ -157,18 +156,21 @@ class McuDevice:
             device.midiOutSysex(bytes(sysex))
             self.__lastScreenColors = colorArray
 
-    def SetAssignmentMessage(self, number= -1, skipIsAssignedCheck: bool = False):
-        """ Sets the assignment screen (shows track number, -1 = empty) """
-        # if -1, show empty, else fill with spaces so it's at least 2 characters
-        message = '  ' if number == -1 else utils.Zeros(number, 2, ' ')
+    def SetAssignmentText(self, text = '  ', skipIsAssignedCheck: bool = False):
+        """ Sets the 2-char assignment display (e.g. a mode label like 'Pn'); '' / '  ' blanks it.
 
-        # only show the last 2 characters if the message is longer
-        message = message[-2:]
+        The display is NOT plain ASCII: each digit takes a 6-bit glyph code (value & 0x3F,
+        covering ASCII 0x20-0x5F), and bit 0x40 is the decimal point. So the char code is
+        `ord(c) & 0x3F` and masking off 0x40 keeps the dot clear. There are no lowercase glyph
+        codes, so text is upper-cased first; several uppercase codes (N, T, B, D, O, R) already
+        render as lowercase-styled glyphs (so 'PN' shows as "Pn").
+        """
+        text = (text if text else '  ').upper() + '  '   # normalize case, ensure at least 2 chars
+        text = text[:2]                                   # keep exactly 2
 
-        # send to display
         if skipIsAssignedCheck or device.isAssigned():
-            device.midiOutMsg(midi.MIDI_CONTROLCHANGE + ((0x4B) << 8) + (ord(message[0]) << 16))
-            device.midiOutMsg(midi.MIDI_CONTROLCHANGE + ((0x4A) << 8) + (ord(message[1]) << 16))
+            device.midiOutMsg(midi.MIDI_CONTROLCHANGE + ((0x4B) << 8) + ((ord(text[0]) & 0x3F) << 16))
+            device.midiOutMsg(midi.MIDI_CONTROLCHANGE + ((0x4A) << 8) + ((ord(text[1]) & 0x3F) << 16))
 
     def SetButton(self, button: int, active: int, index:int, skipIsAssignedCheck: bool = False):
         """Send a button LED update.

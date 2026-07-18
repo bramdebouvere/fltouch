@@ -93,7 +93,7 @@ class TMackieCU(mcu_base_class.McuBaseClass):
 
         if device.isAssigned():
             # clear assignment message
-            self.McuDevice.SetAssignmentMessage(skipIsAssignedCheck = True)
+            self.McuDevice.SetAssignmentText(skipIsAssignedCheck = True)
 
         print('OnDeInit ready')
 
