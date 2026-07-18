@@ -39,7 +39,7 @@ More improvements later...
     - Rotate encoder 2 to select the interface to use (e.g. `USB`).
     - Pres the SELECT button for channel 1 to confirm settings.
     - The unit will now boot.
-    - For more info, check out "*Step 3: Getting started*" in [the official quick-start guide](https://mediadl.musictribe.com/media/PLM/data/docs/P0B1X/X-TOUCH_QSG_WW.pdf), p. 24.
+    - For more info, check out "*Step 3: Getting started*" in [the official quick-start guide](https://cdn-media.empowertribe.com/5f4ebaa5746d48b39c2bc317641de448/QSG_BE_0808-AAD_X-TOUCH_WW.pdf), p. 13.
 
 2. Download all files in this repository *(Code -> Download ZIP)*. From the ZIP archive, copy all the files in the `fltouch-main` folder to your FL Studio Scripts folder, in a dedicated subfolder. Usually this would be:
 
