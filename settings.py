@@ -8,9 +8,13 @@ for the change to take effect.
 from constants import mcu_extender_location
 from constants import footswitch_action
 
-# Which side of the main X-Touch unit your X-Touch Extender(s) are connected on.
-# Use mcu_extender_location.Left or mcu_extender_location.Right.
-ExtenderPosition = mcu_extender_location.Left
+# How extenders are positioned relative to the main unit (physical location).
+#   mcu_extender_location.Left    All extenders to the left of the main unit   (EEEM)
+#   mcu_extender_location.Right   All extenders to the right of the main unit  (MEEE)
+#   mcu_extender_location.Middle  One extender to the left of the main unit,
+#                                 all remaining extenders to its right         (EMEE)
+# Note: extenders must be switched on in left-to-right order for FL studio to pick them up properly.
+ExtenderPosition = mcu_extender_location.Middle                                                     
 
 # What each foot pedal plugged into the back of your X-Touch does when you press it.
 # There are two pedal jacks: "Foot SW 1" and "Foot SW 2". Set an action for each below.

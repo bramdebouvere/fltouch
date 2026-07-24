@@ -4,7 +4,7 @@ FL Studio MIDI scripts for the Behringer X-Touch + extender(s) (Mackie Control U
 
 ## Differences with the official scripts
 
-- Support for multiple extenders
+- Support for multiple extenders (support for placement left/right and around the main unit)
 - Support for colored scribble strips
 - Support for controlling FX plugins on the selected mixer track
 - Support for controlling FX plugin parameters (press select on an effect plugin)

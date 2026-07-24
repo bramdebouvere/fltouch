@@ -74,20 +74,34 @@ class TrackBankingManager:
             if (extenderCount == 0):
                 self.FirstTrack = value
             else:
-                if self.ExtenderPos == mcu_extender_location.Left:
-                    for n in range(0, extenderCount):
-                        self.McuDevice.SetFirstTrackOnExtender(n, value + (n * self.TrackCount))
-                    self.FirstTrack = value + extenderCount * self.TrackCount
-                elif self.ExtenderPos == mcu_extender_location.Right:
-                    self.FirstTrack = value
-                    for n in range(0, extenderCount):
-                        self.McuDevice.SetFirstTrackOnExtender(n, value + ((n + 1) * self.TrackCount))
+                # The hardware units form one contiguous, left-to-right block of tracks starting at
+                # 'value'. mainUnitIndex is the main unit's slot in that block (= how many extenders sit
+                # to its left); the extenders fill every other slot in dispatch (left-to-right) order.
+                mainUnitIndex = self._GetMainUnitIndex(extenderCount)
+                for n in range(0, extenderCount):
+                    slot = n if n < mainUnitIndex else n + 1
+                    self.McuDevice.SetFirstTrackOnExtender(n, value + slot * self.TrackCount)
+                self.FirstTrack = value + mainUnitIndex * self.TrackCount
 
         # Notify subscribers if changed
         if old_first_track != self.FirstTrack:
             self._NotifyTrackChangeSubscribers(self.FirstTrack)
 
         print('Showing tracks ' + str(self.GetTrackIndexes()) + ' on this device')
+
+    def _GetMainUnitIndex(self, extenderCount: int):
+        """
+        Returns the main unit's slot in the left-to-right hardware array, i.e. how many extenders sit to
+        the LEFT of the main unit. Driven by settings.ExtenderPosition:
+          Left   -> all extenders left of the main     (EEM)
+          Right  -> all extenders right of the main    (MEE)
+          Middle -> one extender left, the rest right  (EMEE)
+        """
+        if self.ExtenderPos == mcu_extender_location.Right:
+            return 0
+        if self.ExtenderPos == mcu_extender_location.Middle:
+            return min(1, extenderCount)
+        return extenderCount  # Left (default)
 
     def NotifyModeChange(self, mode):
         """ Notify extenders of mode change """
@@ -164,7 +178,7 @@ class TrackBankingManager:
 
     def GetFirstTrack(self):
         """ Returns the index of the first virtual track that is currently set to be displayed on any hardware unit including extenders. """
-        trackOffset = (device.dispatchReceiverCount() * self.TrackCount) if self.ExtenderPos == mcu_extender_location.Left else 0
+        trackOffset = self._GetMainUnitIndex(device.dispatchReceiverCount()) * self.TrackCount
         return self.FirstTrack - trackOffset
 
     def GetVirtualTrackCount(self):

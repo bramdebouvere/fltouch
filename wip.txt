@@ -19,6 +19,5 @@ reflect linked values on the control surface:
 TODO:
 - add custom fx parameter mappings for some plugins
 - Add reset mixer track function
-- Allow using alternate setups (main unit in the middle)
 - Check if we can auto-assign to instrument track when adding a new generator plugin
 - Add flip menu to channel rack mode, to execute functions like next preset / previous preset etc.
