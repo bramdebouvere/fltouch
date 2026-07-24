@@ -12,6 +12,7 @@
 # Sub-states
 OVERVIEW = 0
 PARAMS = 1
+MENU = 2 # Flip menu (prev/next preset buttons)
 
 class EffectsModeState:
     """Holds the active Effects sub-state and, when in the parameter view, the locked plugin's location."""

@@ -1,9 +1,8 @@
 import midi
-import mixer
 
 from behaviors.mcu_base_screen_behavior import McuBaseScreenBehavior
-from constants import menu_items
-from constants.mcu_constants import OffOnStr, ScribbleStripWidth
+from datatypes.menu_item import MenuItem
+from constants.mcu_constants import ScribbleStripWidth
 from device_hal.mcu_colors import GetMcuColor, ScreenColorBlack
 from device_hal.mcu_device import McuDevice
 from utilities.track_banking_manager import TrackBankingManager
@@ -13,12 +12,12 @@ class MenuScreenBehavior(McuBaseScreenBehavior):
     Screen behavior for the Flip menu.
 
     For the menu items currently banked onto this unit it shows the item label (top row) and its
-    current on/off state for the selected track (bottom row). A virtual index here is a menu item, 
-    not a mixer track, so it targets mixer.trackNumber() (the active track) directly.
+    current on/off state (bottom row). A virtual index here is a menu item, not a mixer track.
     """
 
-    def __init__(self, mcuDevice: McuDevice, trackBankingManager: TrackBankingManager):
+    def __init__(self, mcuDevice: McuDevice, trackBankingManager: TrackBankingManager, menuItems: list[MenuItem]):
         super().__init__(mcuDevice, trackBankingManager)
+        self._menuItems = menuItems
 
     def OnEnable(self):
         super().OnEnable()
@@ -33,8 +32,6 @@ class MenuScreenBehavior(McuBaseScreenBehavior):
 
     def RenderScreen(self):
         """Render the labels and current values for the menu items currently banked on this unit."""
-        track = mixer.trackNumber()
-
         topText = ''
         bottomText = ''
         colorArr = []
@@ -46,12 +43,13 @@ class MenuScreenBehavior(McuBaseScreenBehavior):
                 colorArr.append(GetMcuColor(ScreenColorBlack))
                 continue
 
-            topText += menu_items.GetMenuItemLabel(virtualIndex).center(ScribbleStripWidth)[:ScribbleStripWidth]
-            value = menu_items.GetMenuItemValue(virtualIndex, track)
-            # Plain actions have no on/off state (GetMenuItemValue returns None) -> leave the bottom row blank
-            valueText = ' ' * ScribbleStripWidth if value is None else OffOnStr[int(value)]
+            menuItem = self._menuItems[virtualIndex]
+            topText += menuItem.label.center(ScribbleStripWidth)[:ScribbleStripWidth]
+            menuItemValue = None if menuItem.getValue is None else menuItem.getValue()
+            # Items with no getValue (plain actions, presets) -> leave the bottom row blank
+            valueText = ' ' * ScribbleStripWidth if menuItemValue is None else menuItemValue
             bottomText += valueText.center(ScribbleStripWidth)[:ScribbleStripWidth]
-            colorArr.append(menu_items.GetMenuItemColor(virtualIndex))
+            colorArr.append(menuItem.color)
 
         self.McuDevice.SetTextDisplay(topText, 0, skipIsAssignedCheck=True)
         self.McuDevice.SetTextDisplay(bottomText, 1, skipIsAssignedCheck=True)

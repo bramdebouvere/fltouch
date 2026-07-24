@@ -14,6 +14,7 @@ from behaviors.track_banking_behavior import TrackBankingBehavior
 from behaviors.namevalue_button_behavior import NameValueButtonBehavior
 from behaviors.plugin_picker_button_behavior import PluginPickerButtonBehavior
 from modes.mcu_composite_mode import McuCompositeMode
+from utilities import mixer_menu_state
 from utilities.track_banking_manager import TrackBankingManager
 from device_hal.mcu_device import McuDevice
 from modes.mcu_base_mode import McuBaseMode
@@ -37,7 +38,7 @@ class McuStereoMode(McuBaseMode):
             JogWheelBehavior(device, screenBehavior),
             NameValueButtonBehavior(device, trackBankingManager, screenBehavior),
             PluginPickerButtonBehavior(device),
-            FlipButtonBehavior(device, compositeMode),
+            FlipButtonBehavior(device, compositeMode, mixer_menu_state.MENU),
         ], trackBankingManager)
 
     def OnEnable(self):

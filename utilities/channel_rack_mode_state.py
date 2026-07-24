@@ -7,6 +7,7 @@
 # Sub-states
 OVERVIEW = 0
 PARAMS = 1
+MENU = 2 # Flip menu (prev/next preset buttons)
 
 class ChannelRackModeState:
     """Holds the active Channel Rack sub-state and, when in the parameter view, the locked generator's channel."""

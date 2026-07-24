@@ -5,11 +5,13 @@ import ui
 
 from behaviors.mode_buttons_behavior import ModeButtonsBehavior
 from behaviors.fader_touch_suppress_behavior import FaderTouchSuppressBehavior
+from constants import plugin_menu_items
 from device_hal.mcu_device import McuDevice
 from device_hal import mcu_buttons
 from modes.mcu_composite_mode import McuCompositeMode
 from modes.mcu_effect_slots_mode import McuEffectSlotsMode
 from modes.mcu_effect_parameters_mode import McuEffectParametersMode
+from modes.mcu_menu_mode import McuMenuMode
 from utilities import effects_mode_state
 from utilities.effects_mode_state import EffectsModeState
 from utilities.track_banking_manager import TrackBankingManager
@@ -18,9 +20,10 @@ class McuEffectsMode(McuCompositeMode):
     """
     Effects mode: control the selected mixer track's effect plugins.
 
-    Composed of two sub-modes:
+    Composed of three sub-modes:
     - McuEffectSlotsMode (OVERVIEW): browse and select effect slots.
     - McuEffectParametersMode (PARAMS): edit plugin parameters.
+    - McuMenuMode (MENU): Flip preset menu with utility functions
     """
 
     def __init__(self, device: McuDevice, slotBankingManager: TrackBankingManager, paramBankingManager: TrackBankingManager):
@@ -32,10 +35,16 @@ class McuEffectsMode(McuCompositeMode):
 
         # sub-modes
         slotMode = McuEffectSlotsMode(device, slotBankingManager, self)
+        
         paramMode = McuEffectParametersMode(device, paramBankingManager, self._state, self)
+        
+        menuItems = plugin_menu_items.BuildEffectMenuItems(self._state)
+        menuBankingManager = TrackBankingManager(device, len(menuItems))
+        presetMenuMode = McuMenuMode(device, menuBankingManager, self, menuItems, effects_mode_state.PARAMS)
 
         self._addSubMode(effects_mode_state.OVERVIEW, slotMode)
         self._addSubMode(effects_mode_state.PARAMS, paramMode)
+        self._addSubMode(effects_mode_state.MENU, presetMenuMode)
 
     def OnEnable(self):
         if not self.McuDevice.isExtender:
@@ -49,12 +58,16 @@ class McuEffectsMode(McuCompositeMode):
         the state when returning to the slot overview. Implements base class.
         """
         if key == effects_mode_state.PARAMS:
-            slot  = -1 if data is None else data
-            track = mixer.trackNumber()
-            self._state.slot = slot
-            self._state.track = track
-            self._state.pluginName = plugins.getPluginName(track, slot)
-        else: # OVERVIEW
+            # Only capture the plugin when opening from the slot overview. Returning from the preset
+            # menu keeps the already-locked plugin. Re-capturing would
+            # reset the slot to -1, since the return switch carries no data.
+            if self._activeSubModeKey == effects_mode_state.OVERVIEW:
+                slot = -1 if data is None else data
+                track = mixer.trackNumber()
+                self._state.slot = slot
+                self._state.track = track
+                self._state.pluginName = plugins.getPluginName(track, slot)
+        elif key == effects_mode_state.OVERVIEW:
             # Close the effect plugin window the parameter view opened, if the slot still holds a plugin.
             # The mixer API has no hide-editor call (unlike channels.showCSForm), so we focus that plugin's
             # window and send Escape to close it - focusing first makes Escape target our plugin rather

@@ -14,6 +14,7 @@ from behaviors.plugin_picker_button_behavior import PluginPickerButtonBehavior
 from behaviors.track_banking_behavior import TrackBankingBehavior
 from behaviors.mixer_show_bank_in_fl_behavior import MixerShowBankInFLBehavior
 from modes.mcu_composite_mode import McuCompositeMode
+from utilities import mixer_menu_state
 from utilities.track_banking_manager import TrackBankingManager
 from device_hal.mcu_device import McuDevice
 from modes.mcu_base_mode import McuBaseMode
@@ -37,7 +38,7 @@ class McuSendsMode(McuBaseMode):
             JogWheelBehavior(device, screenBehavior),
             NameValueButtonBehavior(device, trackBankingManager, screenBehavior),
             PluginPickerButtonBehavior(device),
-            FlipButtonBehavior(device, compositeMode),
+            FlipButtonBehavior(device, compositeMode, mixer_menu_state.MENU),
         ], trackBankingManager)
 
     def OnEnable(self):

@@ -6,6 +6,7 @@ from behaviors.effects_param_screen_behavior import EffectsParamScreenBehavior
 from behaviors.effects_param_encoder_behavior import EffectsParamEncoderBehavior
 from behaviors.effects_param_select_button_behavior import EffectsParamSelectButtonBehavior
 from behaviors.effects_param_namevalue_button_behavior import EffectsParamNameValueButtonBehavior
+from behaviors.flip_button_behavior import FlipButtonBehavior
 from behaviors.plugin_picker_button_behavior import PluginPickerButtonBehavior
 from behaviors.track_banking_behavior import TrackBankingBehavior
 from device_hal.mcu_device import McuDevice
@@ -39,6 +40,7 @@ class McuEffectParametersMode(McuBaseMode):
             TrackBankingBehavior(device, paramBankingManager),
             EffectsParamSelectButtonBehavior(device, compositeMode),
             EffectsParamNameValueButtonBehavior(device, state, screenBehavior),
+            FlipButtonBehavior(device, compositeMode, effects_mode_state.MENU),
             PluginPickerButtonBehavior(device),
         ], paramBankingManager)
 
