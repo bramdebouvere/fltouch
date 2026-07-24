@@ -18,11 +18,12 @@ class McuMenuMode(McuBaseMode):
     """
 
     def __init__(self, device: McuDevice, menuBankingManager: TrackBankingManager, compositeMode: McuCompositeMode):
+        menuScreenBehavior = MenuScreenBehavior(device, menuBankingManager)
         super().__init__(device, [
-            MenuScreenBehavior(device, menuBankingManager),
+            menuScreenBehavior,
             TrackBankingBehavior(device, menuBankingManager),
             MenuSelectLedBehavior(device, menuBankingManager),
-            MenuSelectButtonBehavior(device, menuBankingManager, compositeMode),
+            MenuSelectButtonBehavior(device, menuBankingManager, menuScreenBehavior),
             MenuFlipButtonBehavior(device, compositeMode),
             MenuFlipLedBehavior(device),
             PluginPickerButtonBehavior(device),

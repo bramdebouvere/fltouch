@@ -1,4 +1,4 @@
-# fltouch
+# fltouch V2
 
 FL Studio MIDI scripts for the Behringer X-Touch + extender(s) (Mackie Control Universal) MIDI controllers, completely rewritten from the official scripts by Image-Line.
 
@@ -23,6 +23,7 @@ FL Studio MIDI scripts for the Behringer X-Touch + extender(s) (Mackie Control U
 - Changing the tempo using the jog wheel now works
 - Added basic scrubbing functionality, hold shift for more accuracy
 - Name/Value button can now be used to rename tracks, pressing Shift + Name/Value will change the track's color. Also works in the channel rack.
+- The "Flip" button can now be used to bring up a menu with extra functions in certain modes.
 - Encoder assignment buttons have been reordered to _Pan, Stereo, EQ, Sends, Effects, Free_ to match the hardware
 - Various bugfixes and improvements
 
@@ -65,3 +66,7 @@ You can print an overlay for this controller, courtesy of Bobby-Funk. The image 
 ## Video
 
 [![Using the Behringer X-Touch with FL Studio](https://img.youtube.com/vi/yJk2arJgTCM/0.jpg)](https://www.youtube.com/watch?v=yJk2arJgTCM)
+
+## Older versions
+
+For V1, which still uses parts of Image-Line's original code, please check https://github.com/bramdebouvere/fltouch/tree/legacy

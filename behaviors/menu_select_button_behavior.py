@@ -2,11 +2,10 @@ import midi
 import mixer
 
 from behaviors.mcu_base_behavior import McuBaseBehavior
+from behaviors.menu_screen_behavior import MenuScreenBehavior
 from constants import menu_items
 from device_hal import mcu_buttons
 from device_hal.mcu_device import McuDevice
-from modes.mcu_composite_mode import McuCompositeMode
-from utilities import mixer_menu_state
 from utilities.fl_class_import import FlMidiMsg
 from utilities.track_banking_manager import TrackBankingManager
 
@@ -14,14 +13,16 @@ class MenuSelectButtonBehavior(McuBaseBehavior):
     """
     Handles SELECT button presses in the Flip menu.
 
-    On press: runs the pressed item's action against the currently selected mixer track, then returns
-    to the overview sub-mode.
+    On press: runs the pressed item's action against the currently selected mixer track, then re-renders
+    the menu screen so the new on/off state shows immediately. The menu stays open (press Flip to leave);
+    the explicit re-render is needed because some actions (Rev Pol, Swap LR) apply their change without
+    firing an FL OnRefresh, so the screen would otherwise keep showing the stale value.
     """
 
-    def __init__(self, mcuDevice: McuDevice, menuBankingManager: TrackBankingManager, compositeMode: McuCompositeMode):
+    def __init__(self, mcuDevice: McuDevice, menuBankingManager: TrackBankingManager, menuScreen: MenuScreenBehavior):
         super().__init__(mcuDevice)
         self._menuBanking = menuBankingManager
-        self._compositeMode = compositeMode
+        self._menuScreen = menuScreen
 
     def OnMidiMsg(self, event: FlMidiMsg):
         if not (event.midiId == midi.MIDI_NOTEON and event.data2 > 0 and
@@ -35,7 +36,7 @@ class MenuSelectButtonBehavior(McuBaseBehavior):
             return event
 
         menu_items.ExecuteMenuItem(virtualIndex, mixer.trackNumber())
-        self._compositeMode.SwitchTo(mixer_menu_state.OVERVIEW)
+        self._menuScreen.RenderScreen() # re-render the menu screen so values are up-to-date
 
         event.handled = True
         return event
