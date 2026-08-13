@@ -12,6 +12,7 @@ from utilities.transliteration import TransliterateToAscii
 from utilities.channel_rack_mode_state import ChannelRackModeState
 from utilities.channel_param_mapper import ChannelParamMapper
 from utilities.effects_param_format import FormatEffectParameterValue
+from utilities.plugin_param_config import PluginParamConfig
 from utilities.scribble_strip_text import StripSpacesIfOverWidth, CenterToWidth
 
 class ChannelParamScreenBehavior(McuBaseScreenBehavior):
@@ -69,8 +70,8 @@ class ChannelParamScreenBehavior(McuBaseScreenBehavior):
                     display = FormatEffectParameterValue(valueStr, paramValue, ScribbleStripWidth)
                     bottomText += CenterToWidth(display, ScribbleStripWidth)
 
-                    # Parameters have no inherent colour; keep the strip white.
-                    colorArr.append(WhiteColor)
+                    color = PluginParamConfig.GetColor(self.__state.pluginName, realIndex)
+                    colorArr.append(color if color is not None else WhiteColor)
                 else:
                     topText += ' ' * ScribbleStripWidth
                     bottomText += ' ' * ScribbleStripWidth

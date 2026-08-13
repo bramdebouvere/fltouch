@@ -3,6 +3,7 @@
 import plugins
 
 from constants.mcu_constants import MidiCcBlockStart
+from utilities.plugin_param_config import PluginParamConfig
 
 class _ChannelParamMapper:
     """
@@ -25,15 +26,15 @@ class _ChannelParamMapper:
     """
 
     def __init__(self):
-        self._map = []
+        self._map: list[int] = []
 
     @property
-    def Map(self):
+    def Map(self) -> list[int]:
         """The virtual->real parameter index list. Map[v] is the FL parameter index for virtual param v."""
         return self._map
 
-    def CreateMapForChannel(self, channel):
-        """Build the map for the generator at the given global channel index. Returns an empty map when the channel is invalid."""
+    def CreateMapForChannel(self, channel: int) -> None:
+        """Build the map for the generator at the given global channel index. Builds an empty map for an invalid channel."""
         # Non-plugin channels (e.g. automation clips) hold no plugin, so the SELECT flow then opens 
         # the editor but shows no parameters, like a sample or automation clip.
         if channel < 0 or not plugins.isValid(channel, -1, True):
@@ -42,7 +43,8 @@ class _ChannelParamMapper:
         pluginName = plugins.getPluginName(channel, -1, False, True)
         print(f"Building parameter map for {pluginName} at channel {channel}")
         limit = min(plugins.getParamCount(channel, -1, True), MidiCcBlockStart)
-        self._map = [p for p in range(limit) if plugins.getParamName(p, channel, -1, True).strip() != ''] # removes parameters with no name
+        visibleParameterIndexes = [p for p in range(limit) if plugins.getParamName(p, channel, -1, True).strip() != ''] # removes parameters with no name
+        self._map = PluginParamConfig.GetOrderedIndexes(pluginName, visibleParameterIndexes)
 
 # Singleton
 ChannelParamMapper = _ChannelParamMapper()

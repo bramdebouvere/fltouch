@@ -1,0 +1,77 @@
+{
+  "pluginName": "RC 24",
+  "parameters": [
+    {
+      "index": 8,
+      "name": "Algorithm"
+    },
+    {
+      "index": 10,
+      "name": "Mix Mode"
+    },
+    {
+      "index": 11,
+      "name": "Mix"
+    },
+    {
+      "index": 0,
+      "name": "Predelay",
+      "color": "#9F3835"
+    },
+    {
+      "index": 1,
+      "name": "Depth",
+      "color": "#9F3835"
+    },
+    {
+      "index": 2,
+      "name": "Intensity",
+      "color": "#9F3835"
+    },
+    {
+      "index": 3,
+      "name": "Modulation",
+      "color": "#9F3835"
+    },
+    {
+      "index": 4,
+      "name": "Bass",
+      "color": "#AE943A"
+    },
+    {
+      "index": 5,
+      "name": "Mid",
+      "color": "#AE943A"
+    },
+    {
+      "index": 6,
+      "name": "Crossover",
+      "color": "#AE943A"
+    },
+    {
+      "index": 7,
+      "name": "Hi Cut",
+      "color": "#AE943A"
+    },
+    {
+      "index": 9,
+      "name": "Rev Color",
+      "color": "#354D9F"
+    },
+    {
+      "index": 12,
+      "name": "Input",
+      "color": "#354D9F"
+    },
+    {
+      "index": 13,
+      "name": "Output",
+      "color": "#354D9F"
+    },
+    {
+      "index": 14,
+      "name": "Quantization Noi",
+      "color": "#354D9F"
+    }
+  ]
+}

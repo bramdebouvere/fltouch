@@ -4,6 +4,7 @@ import mixer
 import plugins
 
 from constants.mcu_constants import MidiCcBlockStart
+from utilities.plugin_param_config import PluginParamConfig
 
 class _EffectsParamMapper:
     """
@@ -23,22 +24,23 @@ class _EffectsParamMapper:
     """
 
     def __init__(self):
-        self._map = []
+        self._map: list[int] = []
 
     @property
-    def Map(self):
+    def Map(self) -> list[int]:
         """The virtual->real parameter index list. Map[v] is the FL parameter index for virtual param v."""
         return self._map
 
-    def CreateMapForPlugin(self, track, slot):
-        """Build the map for the plugin at (track, slot). Yields an empty map for an invalid slot."""
+    def CreateMapForPlugin(self, track: int, slot: int) -> None:
+        """Build the map for the plugin at (track, slot). Builds an empty map for an invalid slot."""
         if track < 0 or slot < 0 or not mixer.isTrackPluginValid(track, slot):
             self._map = []
             return
         pluginName = plugins.getPluginName(track, slot)
         print(f"Building parameter map for {pluginName} at ({track}, {slot})")
         limit = min(plugins.getParamCount(track, slot), MidiCcBlockStart)
-        self._map = [p for p in range(limit) if plugins.getParamName(p, track, slot).strip() != ''] # removes parameters with no name
+        visibleParameterIndexes = [p for p in range(limit) if plugins.getParamName(p, track, slot).strip() != ''] # removes parameters with no name
+        self._map = PluginParamConfig.GetOrderedIndexes(pluginName, visibleParameterIndexes)
 
 # Singleton
 EffectsParamMapper = _EffectsParamMapper()

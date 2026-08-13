@@ -4,6 +4,7 @@ import plugins
 
 from behaviors.effects_param_screen_behavior import EffectsParamScreenBehavior
 from behaviors.effects_param_encoder_behavior import EffectsParamEncoderBehavior
+from behaviors.effects_param_dump_behavior import EffectsParamDumpBehavior
 from behaviors.effects_param_select_button_behavior import EffectsParamSelectButtonBehavior
 from behaviors.effects_param_namevalue_button_behavior import EffectsParamNameValueButtonBehavior
 from behaviors.flip_button_behavior import FlipButtonBehavior
@@ -42,6 +43,7 @@ class McuEffectParametersMode(McuBaseMode):
             EffectsParamNameValueButtonBehavior(device, state, screenBehavior),
             FlipButtonBehavior(device, compositeMode, effects_mode_state.MENU),
             PluginPickerButtonBehavior(device),
+            EffectsParamDumpBehavior(device, state),
         ], paramBankingManager)
 
     def OnEnable(self):

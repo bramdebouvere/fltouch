@@ -10,6 +10,7 @@ FL Studio MIDI scripts for the Behringer X-Touch + extender(s) (Mackie Control U
 - Support for controlling FX plugin parameters (press select on an effect plugin)
 - Support for controlling the Channel Rack
 - Support for controlling Channel Rack plugin FX parameters (press select on a generator)
+- Ability to make custom configurations per plugin (reorder & color parameters)
 - Free mode has been removed, as it was replaced by the Channel Rack. If you still want to manually control plugins with "link to controller", you can use the faders in the plug-in mode to do so.
 - Improved knob resolution and acceleration
 - Improved jog wheel with automatic window focus

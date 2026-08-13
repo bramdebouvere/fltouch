@@ -1,4 +1,3 @@
 TODO:
-- add custom fx parameter mappings for some plugins
 - Add reset mixer track function
-- Check if we can auto-assign to instrument track when adding a new generator plugin
+- Check if we can auto-assign to instrument track when adding a new generator plugin or add assign to mixer track function

@@ -1,0 +1,164 @@
+{
+  "pluginName": "Kepler",
+  "parameters": [
+    {
+      "index": 31,
+      "name": "Hold"
+    },
+    {
+      "index": 32,
+      "name": "Octave"
+    },
+    {
+      "index": 33,
+      "name": "Volume"
+    },
+    {
+      "index": 0,
+      "name": "Arpeggio",
+      "color": "#354D9F"
+    },
+    {
+      "index": 1,
+      "name": "Arpeggio mode",
+      "color": "#354D9F"
+    },
+    {
+      "index": 2,
+      "name": "Arpeggio range",
+      "color": "#354D9F"
+    },
+    {
+      "index": 4,
+      "name": "Tempo sync ARP rate",
+      "color": "#354D9F"
+    },
+    {
+      "index": 3,
+      "name": "Arpeggio rate",
+      "color": "#354D9F"
+    },
+    {
+      "index": 6,
+      "name": "Tempo sync LFO rate",
+      "color": "#9F3835"
+    },
+    {
+      "index": 5,
+      "name": "LFO rate",
+      "color": "#9F3835"
+    },
+    {
+      "index": 7,
+      "name": "LFO delay time",
+      "color": "#9F3835"
+    },
+    {
+      "index": 8,
+      "name": "LFO trigger mode",
+      "color": "#9F3835"
+    },
+    {
+      "index": 9,
+      "name": "LFO trigger",
+      "color": "#9F3835"
+    },
+    {
+      "index": 34,
+      "name": "LFO Retrig phase on",
+      "color": "#9F3835"
+    },
+    {
+      "index": 35,
+      "name": "LFO phase",
+      "color": "#9F3835"
+    },
+    {
+      "index": 10,
+      "name": "DCO LFO"
+    },
+    {
+      "index": 11,
+      "name": "DCO PWM"
+    },
+    {
+      "index": 12,
+      "name": "DCO source"
+    },
+    {
+      "index": 13,
+      "name": "DCO pulse active"
+    },
+    {
+      "index": 14,
+      "name": "DCO saw active"
+    },
+    {
+      "index": 15,
+      "name": "DCO sub active"
+    },
+    {
+      "index": 16,
+      "name": "DCO Sub osc"
+    },
+    {
+      "index": 17,
+      "name": "DCO Noise"
+    },
+    {
+      "index": 18,
+      "name": "HPF Frequency",
+      "color": "#9F3835"
+    },
+    {
+      "index": 19,
+      "name": "VCF Frequency"
+    },
+    {
+      "index": 20,
+      "name": "VCF Reso"
+    },
+    {
+      "index": 21,
+      "name": "VCF polarity"
+    },
+    {
+      "index": 22,
+      "name": "VCF Env"
+    },
+    {
+      "index": 23,
+      "name": "VCF LFO"
+    },
+    {
+      "index": 24,
+      "name": "VCF Keyboard"
+    },
+    {
+      "index": 25,
+      "name": "VCA source",
+      "color": "#9F3835"
+    },
+    {
+      "index": 26,
+      "name": "Envelope attack"
+    },
+    {
+      "index": 27,
+      "name": "Envelope decay"
+    },
+    {
+      "index": 28,
+      "name": "Envelope sustain"
+    },
+    {
+      "index": 29,
+      "name": "Envelope release"
+    },
+    {
+      "index": 30,
+      "name": "Mode",
+      "color": "#354D9F"
+    }
+  ]
+}

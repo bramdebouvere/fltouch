@@ -12,6 +12,7 @@ from utilities.transliteration import TransliterateToAscii
 from utilities.effects_mode_state import EffectsModeState
 from utilities.effects_param_mapper import EffectsParamMapper
 from utilities.effects_param_format import FormatEffectParameterValue
+from utilities.plugin_param_config import PluginParamConfig
 from utilities.scribble_strip_text import StripSpacesIfOverWidth, CenterToWidth
 
 class EffectsParamScreenBehavior(McuBaseScreenBehavior):
@@ -72,8 +73,8 @@ class EffectsParamScreenBehavior(McuBaseScreenBehavior):
                     display = FormatEffectParameterValue(valueStr, paramValue, ScribbleStripWidth)
                     bottomText += CenterToWidth(display, ScribbleStripWidth)
 
-                    # Parameters have no inherent colour; keep the strip white (per-value colouring may come later).
-                    colorArr.append(WhiteColor)
+                    color = PluginParamConfig.GetColor(self.__state.pluginName, realIndex)
+                    colorArr.append(color if color is not None else WhiteColor)
                 else:
                     topText += ' ' * ScribbleStripWidth
                     bottomText += ' ' * ScribbleStripWidth

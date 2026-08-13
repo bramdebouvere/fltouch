@@ -4,6 +4,7 @@ import plugins
 
 from behaviors.channel_param_screen_behavior import ChannelParamScreenBehavior
 from behaviors.channel_param_encoder_behavior import ChannelParamEncoderBehavior
+from behaviors.channel_param_dump_behavior import ChannelParamDumpBehavior
 from behaviors.channel_param_select_button_behavior import ChannelParamSelectButtonBehavior
 from behaviors.channel_namevalue_button_behavior import ChannelNameValueButtonBehavior
 from behaviors.fader_touch_suppress_behavior import FaderTouchSuppressBehavior
@@ -44,6 +45,7 @@ class McuChannelParametersMode(McuBaseMode):
             FlipButtonBehavior(device, compositeMode, channel_rack_mode_state.MENU),
             PluginPickerButtonBehavior(device, 0), # category 0 = plugin picker generators
             FaderTouchSuppressBehavior(device),
+            ChannelParamDumpBehavior(device, state),
         ], paramBankingManager)
 
     def OnEnable(self):
