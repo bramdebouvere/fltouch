@@ -15,7 +15,8 @@ class MenuSelectButtonBehavior(McuBaseBehavior):
     On press: runs the pressed item's action, then re-renders the menu screen so the new on/off state
     shows immediately. The menu stays open (press Flip to leave); the explicit re-render is needed
     because some actions apply their change without firing an FL OnRefresh, so the screen would
-    otherwise keep showing the stale value.
+    otherwise keep showing the stale value. If the action returns a status message (meaning it
+    cannot complete), that message is flashed on screen instead, then the menu re-renders once it expires.
     """
 
     def __init__(self, mcuDevice: McuDevice, menuBankingManager: TrackBankingManager, menuScreen: MenuScreenBehavior,
@@ -36,8 +37,11 @@ class MenuSelectButtonBehavior(McuBaseBehavior):
         if virtualIndex == -1 or not self._menuBanking.VirtualTrackExists(virtualIndex):
             return event
 
-        self._menuItems[virtualIndex].execute()
-        self._menuScreen.RenderScreen() # re-render the menu screen so values are up-to-date
+        statusMessage = self._menuItems[virtualIndex].execute()
+        if statusMessage:
+            self._menuScreen.RenderMessage(statusMessage, row=0, callback=lambda row: self._menuScreen.RenderScreen())
+        else:
+            self._menuScreen.RenderScreen() # re-render the menu screen so values are up-to-date
 
         event.handled = True
         return event

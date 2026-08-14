@@ -26,8 +26,10 @@ class MenuScreenBehavior(McuBaseScreenBehavior):
     def OnRefresh(self, flags):
         super().OnRefresh(flags)
 
-        # Re-render on selection change (retarget to another track) and when values change (menu item selection)
-        if flags & (midi.HW_Dirty_Mixer_Sel | midi.HW_Dirty_Mixer_Controls):
+        # Re-render on selection change (retarget to another track) and when values change (menu item selection).
+        # Skipped while a temporary message (e.g. "No free mixer track available") is on screen; the base
+        # class restores the normal screen via RenderScreen once it expires.
+        if flags & (midi.HW_Dirty_Mixer_Sel | midi.HW_Dirty_Mixer_Controls) and not self._isShowingTempMessage:
             self.RenderScreen()
 
     def RenderScreen(self):
