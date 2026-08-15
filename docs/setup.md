@@ -25,7 +25,7 @@ If you have one or more X-Touch Extenders, put each of them into MCU mode the sa
 
 ## 2. Install the script files
 
-1. Download this repository (**Code → Download ZIP** on GitHub).
+1. Download this repository (**Code → Download ZIP** on [the fltouch GitHub page](https://github.com/bramdebouvere/fltouch)).
 2. Copy everything inside the ZIP's `fltouch-main` folder into a new subfolder of your FL Studio
    Scripts folder. This repository *is* that subfolder — the finished path should look like:
    - Windows: `%UserProfile%\Documents\Image-Line\Data\FL Studio\Settings\Hardware\fltouch`
@@ -95,10 +95,10 @@ rather have on that jack.
 
 ## 5. Printable overlay (optional)
 
-Bobby-Funk has made a printable overlay for the controller's function labels. Print it
+Bobby-Funk has made a printable overlay (which is now slightly changed for the V2) for the controller's function labels. Print it
 15.7956 cm / 6.21875 inches wide on A4 paper:
 
-<img width="1194" alt="Printable X-Touch overlay" src="https://github.com/bramdebouvere/fltouch/assets/3641681/375d51c0-6e41-424d-98f3-13a54432b747">
+<img width="1194" height="1338" alt="Printable X-Touch overlay" src="https://github.com/user-attachments/assets/4348e560-4b87-4ae2-90d4-27f00ec10172" />
 
 ---
 
