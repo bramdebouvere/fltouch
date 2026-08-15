@@ -1,0 +1,48 @@
+{
+  "pluginName": "Fruity parametric EQ 2",
+  "parameters": [
+    { "index": 0, "name": "Band 1 level", "color": "#94359F" },
+    { "index": 7, "name": "Band 1 freq", "color": "#94359F" },
+    { "index": 14, "name": "Band 1 width", "color": "#94359F" },
+    { "index": 21, "name": "Band 1 type", "color": "#94359F" },
+    { "index": 28, "name": "Band 1 order", "color": "#94359F" },
+
+    { "index": 1, "name": "Band 2 level", "color": "#9F3835" },
+    { "index": 8, "name": "Band 2 freq", "color": "#9F3835" },
+    { "index": 15, "name": "Band 2 width", "color": "#9F3835" },
+    { "index": 22, "name": "Band 2 type", "color": "#9F3835" },
+    { "index": 29, "name": "Band 2 order", "color": "#9F3835" },
+
+    { "index": 2, "name": "Band 3 level", "color": "#FFFFFF" },
+    { "index": 9, "name": "Band 3 freq", "color": "#FFFFFF" },
+    { "index": 16, "name": "Band 3 width", "color": "#FFFFFF" },
+    { "index": 23, "name": "Band 3 type", "color": "#FFFFFF" },
+    { "index": 30, "name": "Band 3 order", "color": "#FFFFFF" },
+
+    { "index": 3, "name": "Band 4 level", "color": "#AE943A" },
+    { "index": 10, "name": "Band 4 freq", "color": "#AE943A" },
+    { "index": 17, "name": "Band 4 width", "color": "#AE943A" },
+    { "index": 24, "name": "Band 4 type", "color": "#AE943A" },
+    { "index": 31, "name": "Band 4 order", "color": "#AE943A" },
+
+    { "index": 4, "name": "Band 5 level", "color": "#409F35" },
+    { "index": 11, "name": "Band 5 freq", "color": "#409F35" },
+    { "index": 18, "name": "Band 5 width", "color": "#409F35" },
+    { "index": 25, "name": "Band 5 type", "color": "#409F35" },
+    { "index": 32, "name": "Band 5 order", "color": "#409F35" },
+
+    { "index": 5, "name": "Band 6 level", "color": "#359C9F" },
+    { "index": 12, "name": "Band 6 freq", "color": "#359C9F" },
+    { "index": 19, "name": "Band 6 width", "color": "#359C9F" },
+    { "index": 26, "name": "Band 6 type", "color": "#359C9F" },
+    { "index": 33, "name": "Band 6 order", "color": "#359C9F" },
+
+    { "index": 6, "name": "Band 7 level", "color": "#354D9F" },
+    { "index": 13, "name": "Band 7 freq", "color": "#354D9F" },
+    { "index": 20, "name": "Band 7 width", "color": "#354D9F" },
+    { "index": 27, "name": "Band 7 type", "color": "#354D9F" },
+    { "index": 34, "name": "Band 7 order", "color": "#354D9F" },
+
+    { "index": 35, "name": "Main level" }
+  ]
+}

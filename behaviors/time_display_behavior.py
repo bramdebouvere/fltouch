@@ -1,0 +1,89 @@
+import device
+import midi
+import mixer
+import playlist
+import transport
+import ui
+import utils
+
+from behaviors.mcu_base_behavior import McuBaseBehavior
+from device_hal import mcu_buttons
+from device_hal.mcu_device import McuDevice
+
+class TimeDisplayBehavior(McuBaseBehavior):
+    """ Behavior for updating the time display screen (main unit)"""
+
+    def __init__(self, device: McuDevice):
+        super().__init__(device)
+
+    def OnMidiMsg(self, event):
+        if event.midiId == midi.MIDI_NOTEON and event.data2 > 0:
+            if event.data1 == mcu_buttons.TimeFormat:
+                # Toggle time display mode between SMPTE/Min and Beats
+                ui.setTimeDispMin()
+                device.directFeedback(event)
+                event.handled = True
+                return event
+        return super().OnMidiMsg(event)
+
+    def OnIdle(self):
+        self.UpdateTimeDisplay()
+
+    def OnWaitingForInput(self):
+        self.McuDevice.TimeDisplay.SetMessage('..........')
+
+    def OnDisable(self):
+        # clear time message
+        self.McuDevice.TimeDisplay.SetMessage('')
+
+    def UpdateTimeDisplay(self):
+        """ Updates the time display to the current value """
+        if (not device.isAssigned()):
+            return
+        
+        # time display
+        if ui.getTimeDispMin():
+            # HHH.MM.SS.CC_
+            if playlist.getVisTimeBar() == -midi.MaxInt:
+                s = '-   0'
+            else:
+                n = abs(playlist.getVisTimeBar())
+                h, m = utils.DivModU(n, 60)
+                s = utils.Zeros_Strict((h * 100 + m) * utils.SignOf(playlist.getVisTimeBar()), 5, ' ')
+
+            s = s + utils.Zeros_Strict(abs(playlist.getVisTimeStep()), 2) + utils.Zeros_Strict(playlist.getVisTimeTick(), 2) + ' '
+        else:
+            # BBB.BB.__.TTT
+            s = utils.Zeros_Strict(playlist.getVisTimeBar(), 3, ' ') + utils.Zeros_Strict(abs(playlist.getVisTimeStep()), 2) + '  ' + utils.Zeros_Strict(playlist.getVisTimeTick(), 3)
+
+        self.McuDevice.TimeDisplay.SetMessage(s, skipIsAssignedCheck = True)
+
+    def OnRefresh(self, flags):
+        super().OnRefresh(flags)
+
+        # LEDs
+        if flags & midi.HW_Dirty_LEDs:
+            self.UpdateLeds()
+
+        if (flags & midi.HW_Dirty_Mixer_Controls):
+            self.UpdateRudeSoloLed()
+
+    def UpdateLeds(self):
+        if (not device.isAssigned()):
+            return
+        # SMPTE/BEATS
+        isTimeDisp = ui.getTimeDispMin()
+        self.McuDevice.SetButton(mcu_buttons.Smpte_Led, midi.TranzPort_OffOnT[isTimeDisp], 3, skipIsAssignedCheck=True)
+        self.McuDevice.SetButton(mcu_buttons.Beats_Led, midi.TranzPort_OffOnT[not isTimeDisp], 4, skipIsAssignedCheck=True)
+
+    def UpdateRudeSoloLed(self):
+        """ Updates the rude solo LED to the current value """
+        if (not device.isAssigned()):
+            return
+        b = 0 # 0 = off, 1 = on
+        for m in range(0,  mixer.trackCount()):
+            if mixer.isTrackSolo(m):
+                b = 1
+                break
+        self.McuDevice.SetButton(mcu_buttons.Rude_Solo_Led, midi.TranzPort_OffOnT[b], 16, skipIsAssignedCheck=True)
+    

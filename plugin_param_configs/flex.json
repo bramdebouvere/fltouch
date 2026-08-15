@@ -1,0 +1,207 @@
+{
+  "pluginName": "FLEX",
+  "parameters": [
+    {
+      "index": 36,
+      "name": "Output volume",
+      "color": "#9F3835"
+    },
+    {
+      "index": 10,
+      "name": "Filter"
+    },
+    {
+      "index": 11,
+      "name": "Vibrato"
+    },
+    {
+      "index": 12,
+      "name": "Unison"
+    },
+    {
+      "index": 13,
+      "name": "Distortion"
+    },
+    {
+      "index": 14,
+      "name": "Reverb"
+    },
+    {
+      "index": 15,
+      "name": "Phaser"
+    },
+    {
+      "index": 16,
+      "name": "..."
+    },
+    {
+      "index": 17,
+      "name": "..."
+    },
+    {
+      "index": 39,
+      "name": "Pitch",
+      "color": "#FF0000"
+    },
+    {
+      "index": 5,
+      "name": "Filter envelope attack",
+      "color": "#94359F"
+    },
+    {
+      "index": 6,
+      "name": "Filter envelope hold",
+      "color": "#94359F"
+    },
+    {
+      "index": 7,
+      "name": "Filter envelope decay",
+      "color": "#94359F"
+    },
+    {
+      "index": 8,
+      "name": "Filter envelope sustain",
+      "color": "#94359F"
+    },
+    {
+      "index": 9,
+      "name": "Filter envelope release",
+      "color": "#94359F"
+    },
+    {
+      "index": 19,
+      "name": "Filter env amt",
+      "color": "#94359F"
+    },
+    {
+      "index": 18,
+      "name": "Filter cutoff",
+      "color": "#94359F"
+    },
+    {
+      "index": 20,
+      "name": "Filter resonance",
+      "color": "#94359F"
+    },
+    {
+      "index": 0,
+      "name": "Volume envelope attack",
+      "color": "#354D9F"
+    },
+    {
+      "index": 1,
+      "name": "Volume envelope hold",
+      "color": "#354D9F"
+    },
+    {
+      "index": 2,
+      "name": "Volume envelope decay",
+      "color": "#354D9F"
+    },
+    {
+      "index": 3,
+      "name": "Volume envelope sustain",
+      "color": "#354D9F"
+    },
+    {
+      "index": 4,
+      "name": "Volume envelope release",
+      "color": "#354D9F"
+    },
+    {
+      "index": 40,
+      "name": "Post filter",
+      "color": "#359C9F"
+    },
+    {
+      "index": 21,
+      "name": "Post filter cutoff",
+      "color": "#359C9F"
+    },
+    {
+      "index": 22,
+      "name": "Post filter resonance",
+      "color": "#359C9F"
+    },
+    {
+      "index": 37,
+      "name": "Delay",
+      "color": "#AE943A"
+    },
+    {
+      "index": 26,
+      "name": "Delay time",
+      "color": "#AE943A"
+    },
+    {
+      "index": 25,
+      "name": "Delay mix",
+      "color": "#AE943A"
+    },
+    {
+      "index": 27,
+      "name": "Delay feedback",
+      "color": "#AE943A"
+    },
+    {
+      "index": 29,
+      "name": "Delay color",
+      "color": "#AE943A"
+    },
+    {
+      "index": 28,
+      "name": "Delay mod",
+      "color": "#AE943A"
+    },
+    {
+      "index": 38,
+      "name": "Reverb",
+      "color": "#409F35"
+    },
+    {
+      "index": 44,
+      "name": "Reverb Mod speed",
+      "color": "#409F35"
+    },
+    {
+      "index": 30,
+      "name": "Reverb mix",
+      "color": "#409F35"
+    },
+    {
+      "index": 32,
+      "name": "Reverb size",
+      "color": "#409F35"
+    },
+    {
+      "index": 34,
+      "name": "Reverb color",
+      "color": "#409F35"
+    },
+    {
+      "index": 31,
+      "name": "Reverb decay",
+      "color": "#409F35"
+    },
+    {
+      "index": 33,
+      "name": "Reverb mod",
+      "color": "#409F35"
+    },
+    {
+      "index": 41,
+      "name": "Limiter",
+      "color": "#9F3835"
+    },
+    {
+      "index": 35,
+      "name": "Limiter pre volume",
+      "color": "#9F3835"
+    },
+    {
+      "index": 42,
+      "name": "LMH Mix",
+      "color": "#9F3835"
+    }
+  ]
+}
