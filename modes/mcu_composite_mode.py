@@ -1,10 +1,8 @@
-import midi
-
 from behaviors.mcu_base_behavior import McuBaseBehavior
 from utilities.fl_class_import import FlMidiMsg
 from device_hal.mcu_device import McuDevice
-from device_hal import mcu_buttons
 from modes.mcu_base_mode import McuBaseMode
+from utilities.sub_mode_switch_sysex import DecodeSubModeSwitch
 
 class McuCompositeMode(McuBaseMode):
     """
@@ -31,7 +29,8 @@ class McuCompositeMode(McuBaseMode):
     # -------------------------------------------------------
 
     def SwitchTo(self, key: int, data:int|None=None):
-        """Switch to the sub-mode identified by key, carrying an optional data (5 bits max = 31)."""
+        """Switch to the sub-mode identified by key, carrying an optional data value of any size (sent via
+        SysEx — see utilities/sub_mode_switch_sysex.py)."""
         if self.McuDevice.isExtender:
             # Extenders request via MIDI; the main coordinates and re-broadcasts
             self._dispatchSwitch(key, data)
@@ -92,17 +91,6 @@ class McuCompositeMode(McuBaseMode):
     def OnMidiMsg(self, event: FlMidiMsg):
         if not self._enabled:
             return
-        # Sub-mode sync message from another unit (main <-> extenders)
-        if event.midiId == midi.MIDI_NOTEON and event.data1 == mcu_buttons.SubModeSwitch:
-            # Decode: upper 2 bits = sub-mode key, lower 5 bits = payload data
-            key  = (event.data2 >> 5) & 0x03
-            data = event.data2 & 0x1F
-            if self.McuDevice.isExtender:
-                self._applySwitch(key, data)
-            else:
-                self._coordinateSwitch(key, data)
-            event.handled = True
-            return event
         super().OnMidiMsg(event)
         if self._activeSubMode is not None:
             self._activeSubMode.OnMidiMsg(event)
@@ -138,6 +126,17 @@ class McuCompositeMode(McuBaseMode):
             self._activeSubMode.OnSendTempMsg(msg, duration)
 
     def OnSysEx(self, event: FlMidiMsg):
+        switchData = DecodeSubModeSwitch(bytes(event.sysex)) if event.sysex else None
+
+        # check if switchData is valid and the key points to an actual submode
+        if switchData is not None and switchData[0] in self._subModes:
+            key, data = switchData
+            if self.McuDevice.isExtender:
+                self._applySwitch(key, data)
+            else:
+                self._coordinateSwitch(key, data)
+            event.handled = True
+            return event
         super().OnSysEx(event)
         if self._activeSubMode is not None:
             self._activeSubMode.OnSysEx(event)

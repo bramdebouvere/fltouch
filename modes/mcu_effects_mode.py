@@ -66,7 +66,11 @@ class McuEffectsMode(McuCompositeMode):
                 track = mixer.trackNumber()
                 self._state.slot = slot
                 self._state.track = track
-                self._state.pluginName = plugins.getPluginName(track, slot)
+                self._state.pluginName = (
+                    plugins.getPluginName(track, slot)
+                    if mixer.isTrackPluginValid(track, slot)
+                    else ''
+                )
         elif key == effects_mode_state.OVERVIEW:
             # Close the effect plugin window the parameter view opened, if the slot still holds a plugin.
             # The mixer API has no hide-editor call (unlike channels.showCSForm), so we focus that plugin's

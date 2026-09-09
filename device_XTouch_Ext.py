@@ -23,6 +23,9 @@ class TMackieCU_Ext(mcu_base_class.McuBaseClass):
     def OnMidiMsg(self, event):
         super().OnMidiMsg(event)
 
+    def OnSysEx(self, event):
+        super().OnSysEx(event)
+
     def OnSendMsg(self, Msg: str, duration: int = 2000):
         super().OnSendMsg(Msg, duration)
 
@@ -46,6 +49,9 @@ def OnRefresh(Flags):
 
 def OnMidiMsg(event):
     MackieCU_Ext.OnMidiMsg(event)
+
+def OnSysEx(event):
+    MackieCU_Ext.OnSysEx(event)
 
 def OnSendTempMsg(Msg, Duration = 1000):
     MackieCU_Ext.OnSendMsg(Msg)

@@ -52,7 +52,7 @@ class McuChannelRackMode(McuCompositeMode):
             return event
         return super().OnMidiMsg(event)
 
-    def OnModeSwitch(self, key, _data):
+    def OnModeSwitch(self, key, data):
         """
         Capture the target generator's channel before the parameter sub-mode enables, or clear the state
         when returning to the channel overview. Implements base class.
@@ -61,11 +61,14 @@ class McuChannelRackMode(McuCompositeMode):
             # Only capture the generator when opening from the channel overview. Returning from the
             # preset menu keeps the already-locked generator.
             if self._activeSubModeKey == channel_rack_mode_state.OVERVIEW:
-                # The SELECT behavior selects the generator's channel first, and we read the selection back
-                # here (global index), so any channel index is handled.
-                channel = channels.selectedChannel(indexGlobal=True)
+                # The SELECT behavior takes the channel and switches to the param mode for that channel.
+                channel = data if data is not None else -1
                 self._state.channel = channel
-                self._state.pluginName = plugins.getPluginName(channel, -1, False, True)
+                self._state.pluginName = (
+                    plugins.getPluginName(channel, -1, False, True)
+                    if channel >= 0 and plugins.isValid(channel, -1, True)
+                    else ''
+                )
         elif key == channel_rack_mode_state.OVERVIEW:
             # Close the generator window the parameter view opened, if that channel still exists.
             # Main unit drives FL windows.

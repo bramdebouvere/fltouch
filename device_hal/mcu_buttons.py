@@ -158,5 +158,4 @@ Relay_Click = 0x76
 
 # Midi events for communication to extenders (not actual physical buttons)
 SetFirstTrackOnExtender = 0x7F # + extender index, value = first track index for that extender
-SubModeSwitch = 0x7E # Submode sync, value contains submode key and submode data
 ChannelDirtyBroadcast = 0x7D # Tells extenders to re-run OnDirtyChannel (used for changes FL doesn't report to every unit, e.g. channel color)

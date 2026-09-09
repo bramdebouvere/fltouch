@@ -59,12 +59,13 @@ class ChannelSelectButtonBehavior(ChannelBankedTrackBaseBehavior):
             channels.selectOneChannel(virtualIndex, True)
 
             ChannelParamMapper.CreateMapForChannel(virtualIndex)
+
             if len(ChannelParamMapper.Map) > 0:
                 # Generator with real params: open its window and switch to the parameter view. The
                 # window is closed again when we return to the overview (see McuChannelRackMode.OnModeSwitch).
                 channels.showCSForm(virtualIndex, 1, True) # 1 = show
                 channels.focusEditor(virtualIndex, True)
-                self._compositeMode.SwitchTo(PARAMS)
+                self._compositeMode.SwitchTo(PARAMS, virtualIndex)
             else:
                 # No editable params (for example sample / automation clip): Stay in the overview.
                 # Selecting a new channel always shows its editor.
