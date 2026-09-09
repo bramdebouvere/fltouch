@@ -70,7 +70,7 @@ class McuChannelParametersMode(McuBaseMode):
         if not self.McuDevice.isExtender:
             channel = self._state.channel
 
-            if channel < 0 or channel >= channels.channelCount(True):
+            if channel < 0 or channel >= channels.channelCount(True) or not plugins.isValid(channel, -1, True):
                 self._compositeMode.SwitchTo(channel_rack_mode_state.OVERVIEW)
                 return
 

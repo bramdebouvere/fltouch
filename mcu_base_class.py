@@ -166,6 +166,13 @@ class McuBaseClass():
         if (self.Mode != None):
             self.Mode.OnMidiMsg(event)
 
+    def OnSysEx(self, event):
+        """ Called when a SysEx MIDI message has been received """
+        for behavior in self.PermanentBehaviors:
+            behavior.OnSysEx(event)
+        if (self.Mode != None):
+            self.Mode.OnSysEx(event)
+
     def OnUpdateBeatIndicator(self, Value):
         """ Called when beat indicator has updated value """
         for behavior in self.PermanentBehaviors:

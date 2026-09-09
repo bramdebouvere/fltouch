@@ -77,6 +77,9 @@ class TMackieCU(mcu_base_class.McuBaseClass):
     def OnMidiMsg(self, event):
         super().OnMidiMsg(event)
 
+    def OnSysEx(self, event):
+        super().OnSysEx(event)
+
     def OnSendMsg(self, Msg: str, duration: int = 2000):
         super().OnSendMsg(Msg, duration)
 
@@ -108,6 +111,9 @@ def OnRefresh(Flags):
 
 def OnMidiMsg(event):
     MackieCU.OnMidiMsg(event)
+
+def OnSysEx(event):
+    MackieCU.OnSysEx(event)
 
 def OnSendTempMsg(Msg, Duration = 1000):
     """ Called when a hint message should be displayed on the controller. The duration of message is in ms. """

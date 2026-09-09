@@ -5,6 +5,7 @@ from device_hal import mcu_buttons
 from device_hal.mcu_device_track import McuDeviceTrack
 from device_hal.mcu_device_time_display import McuDeviceTimeDisplay
 from device_hal.mcu_colors import GetMcuColor
+from utilities.sub_mode_switch_sysex import EncodeSubModeSwitch
 
 class McuDevice:
     """
@@ -68,17 +69,23 @@ class McuDevice:
             return
         self.SendMidiToExtenders(midi.MIDI_NOTEON + (mcu_buttons.ChannelDirtyBroadcast << 8) + (1 << 16))
 
-    def SendSubModeSwitchToExtender(self, key: int, data:int|None = None):
+    def SendSysexToExtenders(self, sysexBytes: bytes):
         """
-        Dispatch a sub-mode switch to all dispatch receivers (for McuCompositeMode).
-        On the main unit the receivers are the extenders; on an extender the (single) receiver is the main unit.
-        key selects the target sub-mode (2 bits, 0-3); data is an optional value (5 bits, 0-31) carried with the switch.
+        Dispatches a SysEx payload to all receivers (extenders on the main unit; the main unit
+        itself on an extender).
         """
-        payload = (key << 5) | (data & 0x1F if data is not None else 0)
-        message = midi.MIDI_NOTEON + (mcu_buttons.SubModeSwitch << 8) + (payload << 16)
         receiverCount = device.dispatchReceiverCount()
         for n in range(0, receiverCount):
-            device.dispatch(n, message)
+            device.dispatch(n, 0xF0, sysexBytes)
+
+    def SendSubModeSwitchToExtender(self, key: int, data:int|None = None):
+        """
+        Dispatch a sub-mode switch to all dispatch receivers (for McuCompositeMode), via SysEx.
+        On the main unit the receivers are the extenders; on an extender the (single) receiver is the main unit.
+        key selects the target sub-mode (2 bits, 0-3); data is an optional accompanying value of any size (e.g. a
+        channel index).
+        """
+        self.SendSysexToExtenders(EncodeSubModeSwitch(key, data))
 
     def SetBackLightTimeout(self, Minutes): 
         """ Sets the backlight timeout (0 should switch off immediately, but doesn't really work well) """
