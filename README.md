@@ -31,6 +31,8 @@ Version 2 focuses heavily on being more hands-off your keyboard and mouse and be
 
 ## 🎥 Video
 
+[![New functions in version 2](https://img.youtube.com/vi/Z4ken1YLSYE/0.jpg)](https://www.youtube.com/watch?v=Z4ken1YLSYE)
+
 [![Using the Behringer X-Touch with FL Studio](https://img.youtube.com/vi/yJk2arJgTCM/0.jpg)](https://www.youtube.com/watch?v=yJk2arJgTCM)
 
 ## 🪦 Older versions
