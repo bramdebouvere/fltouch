@@ -11,7 +11,8 @@ class EffectsSlotMuteButtonBehavior(McuBaseBehavior):
     """
     Mutes/bypasses the selected mixer track's effect slots with the per-strip MUTE buttons.
 
-    A virtual index handed out by the TrackBankingManager is an effect slot (0-9) of the selected track.
+    A virtual index handed out by the TrackBankingManager is an effect slot (0-based, up to the
+    track's dynamic slot count) of the selected track.
     The slot's enabled state is the REC_Plug_Mute event: it reads high when the slot is enabled/active
     and low when muted (confirmed on hardware). The MUTE LED is therefore lit when the slot is NOT
     enabled. Like EqEncoderBehavior, this targets the selected track rather than treating the virtual

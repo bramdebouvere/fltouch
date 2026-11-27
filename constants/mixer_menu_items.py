@@ -4,6 +4,7 @@ import mixer
 from constants import mcu_constants
 from datatypes.menu_item import MenuItem
 from device_hal.mcu_colors import YellowColor, CyanColor
+from utilities.effects_slot_count import GetEffectsSlotCount
 
 # The track-utility Flip menu for the mixer modes (Pan/Sends/Stereo). BuildMixerMenuItems() returns the
 # items; each is bound to the live selected mixer track (mixer.trackNumber()), so no per-mode state is
@@ -21,7 +22,7 @@ def _anyTrackEffectsEnabled():
 
 def _trackHasPlugin(track):
     """Returns True if the track has a valid plugin in any slot, False otherwise."""
-    return any(mixer.isTrackPluginValid(track, slot) for slot in range(mcu_constants.EffectsSlotCount))
+    return any(mixer.isTrackPluginValid(track, slot) for slot in range(GetEffectsSlotCount(track)))
 
 def _toggleAllTrackEffects(track):
     """Toggle all effect slots on/off for every track (mirrors the old Shift+Flip behavior)."""

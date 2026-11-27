@@ -1,6 +1,6 @@
 # Shared, controller-driven state for the Effects mode's two sub-states.
 #
-# The Effects mode has two sub-states: a slot overview (the selected track's 10 effect slots) and a
+# The Effects mode has two sub-states: a slot overview (the selected track's effect slots) and a
 # parameter view (one focused plugin's parameters). McuEffectsMode is the single writer of this object;
 # the parameter behaviors are readers. It exists because the parameter behaviors are built once at mode
 # construction, but the slot they operate on is only known when the user opens a plugin at runtime.

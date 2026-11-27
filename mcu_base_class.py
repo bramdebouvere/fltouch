@@ -27,7 +27,7 @@ class McuBaseClass():
 
         # create track banking managers
         self.mixerTrackManager = TrackBankingManager(self.McuDevice)
-        self.effectsSlotTrackManager = TrackBankingManager(self.McuDevice, mcu_constants.EffectsSlotCount) # banks the 10 effect slots of the selected track (Effects mode, slot overview)
+        self.effectsSlotTrackManager = TrackBankingManager(self.McuDevice, mcu_constants.EffectsSlotCount) # banks the selected track's effect slots (Effects mode, slot overview); starts at 10 slot default. on newer versions of FL, it is resized dynamically
         self.effectsParamTrackManager = TrackBankingManager(self.McuDevice, 0) # banks the focused plugin's parameters (Effects mode, parameter view); count is set at runtime
         self.eqTrackManager = TrackBankingManager(self.McuDevice, eq_controls.EqControlCount) # banks the 9 EQ controls of the selected track
         self.channelRackManager = TrackBankingManager(self.McuDevice, 0) # banks all channel-rack channels (Channel Rack mode, overview); count is set at runtime

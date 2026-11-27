@@ -15,7 +15,8 @@ class EffectsSlotEncoderBehavior(McuBaseBehavior):
     Controls the per-slot mix (dry/wet) level of the selected mixer track's effect slots with the rotary
     encoders.
 
-    A virtual index handed out by the TrackBankingManager is an effect slot (0-9) of the selected track,
+    A virtual index handed out by the TrackBankingManager is an effect slot (0-based, up to the
+    track's dynamic slot count) of the selected track,
     so the slots spread across the unit and bank like the EQ controls do. This mirrors EqEncoderBehavior
     rather than extending MixerBankedTrackBaseBehavior (a virtual index is a slot, not a mixer track).
     """

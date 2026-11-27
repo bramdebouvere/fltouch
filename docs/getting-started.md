@@ -66,7 +66,7 @@ you have an FL Studio project open with a few tracks and at least one effect on 
 5. **Press Fader Bank Right**, then **Fader Bank Left** to see the
    banking move to the next 8 tracks and back.
 6. **Turn the jog wheel** with nothing else held down — it scrubs the playlist position. **Press Scrub** for finer control.
-7. **Press Effects.** You're now looking at the selected track's 10 effect slots. **Press Select**
+7. **Press Effects.** You're now looking at the selected track's effect slots. **Press Select**
    under a slot that has a plugin loaded — you've jumped into that plugin's parameters. Turn an
    encoder to change a parameter, then **press Select** again to go back to the slot list.
 8. **Press Plugin Picker / Global View** to open the plugin picker. Use the **arrows** to go trough the plugins and select one to **insert using the Middle button** in the arrows, or using the **Enter** button.
