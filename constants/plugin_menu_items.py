@@ -3,11 +3,11 @@ import midi
 import mixer
 import plugins
 
-from constants import mcu_constants
 from datatypes.menu_item import MenuItem
 from device_hal.mcu_colors import GreenColor, YellowColor
 from utilities.channel_rack_mode_state import ChannelRackModeState
 from utilities.effects_mode_state import EffectsModeState
+from utilities.effects_slot_count import GetEffectsSlotCount
 
 # Flip menus for the plugin parameter views (Effects mode's FX plugins and Channel Rack mode's generators).
 # Currently just preset stepping, but this is where further per-plugin actions would go.
@@ -46,7 +46,7 @@ def _genNextPreset(state: ChannelRackModeState):
 def _isTrackFree(track: int) -> bool:
     """Returns True if `track` has no effect plugins loaded and isn't already targeted by any channel,
     False otherwise."""
-    for slot in range(mcu_constants.EffectsSlotCount):
+    for slot in range(GetEffectsSlotCount(track)):
         if mixer.isTrackPluginValid(track, slot):
             return False
     for channel in range(channels.channelCount(True)):

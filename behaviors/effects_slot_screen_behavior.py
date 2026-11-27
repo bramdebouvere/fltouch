@@ -16,7 +16,7 @@ class EffectsSlotScreenBehavior(McuBaseScreenBehavior):
 
     For the effect slots currently banked onto this unit it shows the slot number (top row) and the
     plugin name (bottom row), coloured with the plugin's own FL Studio colour. Empty slots show only
-    the slot number on a black strip; slot indexes beyond the 10 available are left blank.
+    the slot number on a black strip; slot indexes beyond the track's available slots are left blank.
 
     Like the EQ screen, a virtual index here is an effect slot of the selected mixer track, not a mixer
     track, so it targets mixer.trackNumber() directly.
@@ -66,7 +66,7 @@ class EffectsSlotScreenBehavior(McuBaseScreenBehavior):
                 colorArr.append(WhiteColor if GetMcuColor(flColor) == ScreenColorBlack else flColor)
             else:
                 # Slot exists but is empty -> show "<empty>" on a white strip (black is reserved for slot
-                # indexes beyond the 10 available).
+                # indexes beyond the track's available slots).
                 bottomText += '<empty>'.center(ScribbleStripWidth)[:ScribbleStripWidth]
                 colorArr.append(WhiteColor)
 

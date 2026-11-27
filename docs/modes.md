@@ -80,7 +80,7 @@ Press **Effects** (display shows `Ef`). Browses and edits the effect plugins loa
 
 ### Slot overview (the default view)
 
-The track's 10 effect slots, spread across the 8 encoders (bank to see the rest).
+The track's effect slots, spread across the 8 encoders (bank to see the rest).
 
 | Control | Behavior |
 |---|---|

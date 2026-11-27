@@ -2,7 +2,7 @@
 
 FreeEventID = 400 # Base CC value for free events
 FreeTrackCount = 64 # Number of tracks in free mode
-EffectsSlotCount = 10 # Number of effect plugin slots per mixer track (banked through in Effects mode)
+EffectsSlotCount = 10 # Default number of effect plugin slots per mixer track before FL Studio 26.2.0; fallback when mixer.getSlotCount() is unavailable
 MidiCcBlockStart = 4096 # First index of the MIDI-CC block in a wrapped VST's 4240-param array; params from here up (128 MIDI-CC sends + 16 channel-aftertouch) are never real plugin parameters
 ScribbleStripWidth = 7 # Width of the scribble strip in characters, used for truncating text to fit the screen
 TrackCount = 8 # Number of tracks per hardware unit
